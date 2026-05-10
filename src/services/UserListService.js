@@ -1,4 +1,4 @@
-import { AUTH_ROUTES } from './auth.js'
+import { USER_ROUTES } from './auth.js'
 
 /**
  * @param {Response} response
@@ -23,7 +23,7 @@ export async function carregarUsuarios(token) {
     throw new Error('Token de autenticação não encontrado. Faça login novamente.')
   }
 
-  const resp = await fetch(AUTH_ROUTES.listausers, {
+  const resp = await fetch(USER_ROUTES.listar, {
     method: 'GET',
     headers: {
       'Accept': 'application/json',

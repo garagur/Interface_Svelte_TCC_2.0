@@ -1,4 +1,4 @@
-import { AUTH_ROUTES } from './auth.js'
+import { USER_ROUTES } from './auth.js'
 
 /**
  * @param {Response} response
@@ -28,7 +28,7 @@ export async function cadastrarUsuario(novoUsuario, token) {
     throw new Error('Dados do usuário incompletos.')
   }
 
-  const resp = await fetch(AUTH_ROUTES.cadastro, {
+  const resp = await fetch(USER_ROUTES.cadastro, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
