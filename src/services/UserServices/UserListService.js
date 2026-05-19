@@ -36,10 +36,11 @@ export async function carregarUsuarios(token) {
   if (!resp.ok) {
     throw new Error(dados?.message || dados?.error || 'Erro ao carregar usuários.')
   }
-  
-    const lista = /** @type {any[]} */ (Array.isArray(dados) ? dados : dados?.data || dados?.users || [])   
+
+  const lista = /** @type {any[]} */ (Array.isArray(dados) ? dados : dados?.data || dados?.users || [])
 
   return lista.map(u => ({
+    id: u.id,
     nome: u.name || u.nome || '',
     email: u.email || '',
     cargo: u.cargo || '',

@@ -1,9 +1,10 @@
-export const API_URL = 'http://localhost:8000/api/eafinware'
+import { API_URL } from '../../config/constants.js'
 
 export const AUTH_ROUTES = {
   login: `${API_URL}/auth/login`,
   logout: `${API_URL}/auth/logout`,
   me: `${API_URL}/auth/me`,
+  updatePassword: `${API_URL}/auth/password`,
 }
 
 export const USER_ROUTES = {
@@ -12,5 +13,5 @@ export const USER_ROUTES = {
   /** @param {number} id */
   buscar: (id) => `${API_URL}/users/${id}`,
   /** @param {number} id */
-  deletar: (id) => `${API_URL}/users/${id}`,
+  atualizar: (id) => `${API_URL}/users/${id}`,
 }

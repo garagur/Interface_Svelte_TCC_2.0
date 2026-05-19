@@ -1,44 +1,37 @@
 <script>
-  import LoginScreen from './routes/LoginScreen.svelte'
-  import MainScreen from './routes/MainScreen.svelte'
-  import CadastroUserScreen from './routes/CadastroUserScreen.svelte'
+  import LoginScreen from "./routes/LoginScreen.svelte";
+  import MainScreen from "./routes/MainScreen.svelte";
+  import CadastroUserScreen from "./routes/UserConfigScreen.svelte";
 
-  let tela = 'login'
-  let token = ''
-  let matricula = ''
+  let tela = "login";
+  let token = "";
+  let matricula = "";
 
   function navegarPara(nomeTela) {
-    tela = nomeTela
+    tela = nomeTela;
   }
 
   function aoFazerLogin(data) {
-    token = data.token
-    matricula = data.user?.matricula || ''
-    tela = 'main'
+    token = data.token;
+    matricula = data.user?.matricula || "";
+    tela = "main";
   }
 
   function aoSair() {
-    token = ''
-    matricula = ''
-    tela = 'login'
+    token = "";
+    matricula = "";
+    tela = "login";
   }
 </script>
 
-{#if tela === 'login'}
+{#if tela === "login"}
   <LoginScreen onLogin={aoFazerLogin} />
-
-{:else if tela === 'main'}
-  <MainScreen
-    {matricula}
-    {token}
-    aoSair={aoSair}
-    onNavigate={navegarPara}
-  />
-{:else if tela === 'CadastroUserScreen'}
+{:else if tela === "main"}
+  <MainScreen {matricula} {token} {aoSair} onNavigate={navegarPara} />
+{:else if tela === "CadastroUserScreen"}
   <CadastroUserScreen
     {token}
     matriculaLogado={matricula}
-    onSair={() => navegarPara('main')}
+    onSair={() => navegarPara("main")}
   />
-
 {/if}
