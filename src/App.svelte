@@ -2,6 +2,8 @@
   import LoginScreen from "./routes/LoginScreen.svelte";
   import MainScreen from "./routes/MainScreen.svelte";
   import CadastroUserScreen from "./routes/UserConfigScreen.svelte";
+  import CadastroSalaScreen from "./routes/CadastroSalaScreen.svelte";
+  import CadastroEquipamentoScreen from "./routes/CadastroEquipamentoScreen.svelte";
 
   let tela = "login";
   let token = "";
@@ -34,4 +36,8 @@
     matriculaLogado={matricula}
     onSair={() => navegarPara("main")}
   />
+{:else if tela === "CadastroSalaScreen"}
+  <CadastroSalaScreen {token} onSair={() => navegarPara("main")} />
+{:else if tela === "CadastroEquipamentoScreen"}
+  <CadastroEquipamentoScreen {token} onSair={() => navegarPara("main")} />
 {/if}

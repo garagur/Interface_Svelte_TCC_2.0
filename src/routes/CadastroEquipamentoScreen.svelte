@@ -1,21 +1,24 @@
-/*
 <script>
     import { onMount } from "svelte";
-    import { cadastrarSala } from "../services/SalaServices/CreateSalaService.js";
-    import { atualizarSala } from "../services/SalaServices/UpdateSalaService.js";
-    import { carregarSalas } from "../services/SalaServices/ShowSalaServices.js";
+    import { cadastrarEquipamento } from "../services/EquipamentoServices/CreateEquipamentoService.js";
+    import { carregarEquipamentos } from "../services/EquipamentoServices/EquipamentoListService.js";
 
     export let onSair;
     export let token = "";
 
-    let novaSala = { nome: "", numero: "", obs: "", status: true };
-    let salas = [];
+    let novoEquipamento = {
+        nome: "",
+        N_patrimonio: null,
+        obs: "",
+        status: true,
+    };
+    let equipamentos = [];
     let carregando = false;
     let carregandoLista = false;
     let erro = "";
     let sucesso = "";
     let editando = false;
-    let salaEditandoId = null;
+    let equipamentoEditandoId = null;
 
     onMount(async () => {
         if (!token) {
@@ -29,53 +32,57 @@
         carregandoLista = true;
         erro = "";
         try {
-            salas = await carregarSalas(token);
+            equipamentos = await carregarEquipamentos(token);
         } catch (e) {
-            erro = e?.message || "Não foi possível carregar as salas.";
+            erro = e?.message || "Não foi possível carregar os equipamentos.";
         } finally {
             carregandoLista = false;
         }
     }
 
-    async function salvarSala() {
+    async function salvarEquipamento() {
         erro = "";
         sucesso = "";
 
-        if (!novaSala.nome || !novaSala.numero || novaSala.obs === "") {
+        if (
+            !novoEquipamento.nome ||
+            !novoEquipamento.N_patrimonio ||
+            novoEquipamento.obs === ""
+        ) {
             erro = "Preencha todos os campos do formulário.";
             return;
         }
 
         carregando = true;
         try {
-            if (editando && salaEditandoId) {
-                await atualizarSala(salaEditandoId, novaSala, token);
-                sucesso = "Sala atualizada com sucesso.";
-            } else {
-                await cadastrarSala(novaSala, token);
-                sucesso = "Sala cadastrada com sucesso.";
-            }
+            await cadastrarEquipamento(novoEquipamento, token);
+            sucesso = "Equipamento cadastrado com sucesso.";
             resetForm();
             await carregarLista();
         } catch (e) {
-            erro = e?.message || "Erro ao salvar sala.";
+            erro = e?.message || "Erro ao salvar equipamento.";
         } finally {
             carregando = false;
         }
     }
 
-    function editarSala(sala) {
-        novaSala = { ...sala };
-        salaEditandoId = sala.id;
+    function editarEquipamento(equipamento) {
+        novoEquipamento = { ...equipamento };
+        equipamentoEditandoId = equipamento.id;
         editando = true;
         sucesso = "";
         erro = "";
     }
 
     function resetForm() {
-        novaSala = { nome: "", numero: "", obs: "", status: true };
+        novoEquipamento = {
+            nome: "",
+            N_patrimonio: null,
+            obs: "",
+            status: true,
+        };
         editando = false;
-        salaEditandoId = null;
+        equipamentoEditandoId = null;
     }
 </script>
 
@@ -83,10 +90,14 @@
     <header class="app-bar">
         <div class="title-section">
             <h1>Portal de Agendamento</h1>
-            <span>Cadastro de Salas</span>
+            <span>Cadastro de Equipamentos</span>
         </div>
         <div class="actions-section">
-            <button class="btn-icon" on:click={onSair} title="Voltar para a Home">
+            <button
+                class="btn-icon"
+                on:click={onSair}
+                title="Voltar para a Home"
+            >
                 <span class="material-symbols-outlined">arrow_back</span>
             </button>
         </div>
@@ -101,58 +112,90 @@
                 </span>
             </div>
 
-            <form on:submit|preventDefault={salvarSala}>
+            <form on:submit|preventDefault={salvarEquipamento}>
                 <div class="field">
-                    <label for="nome-sala">Nome da Sala</label>
-                    <input id="nome-sala" type="text" bind:value={novaSala.nome} placeholder="Ex: Sala de Reunião A"
-                        required />
+                    <label for="nome-equipamento">Nome do Equipamento</label>
+                    <input
+                        id="nome-equipamento"
+                        type="text"
+                        bind:value={novoEquipamento.nome}
+                        placeholder="Ex: Notebook Dell"
+                        required
+                    />
                 </div>
 
                 <div class="field">
                     <label for="numero-sala">Número</label>
-                    <input id="numero-sala" type="number" bind:value={novaSala.numero} placeholder="Ex: 101" required />
+                    <input
+                        id="numero-sala"
+                        type="number"
+                        bind:value={novoEquipamento.N_patrimonio}
+                        placeholder="Ex: 101"
+                        required
+                    />
                 </div>
 
                 <div class="field">
                     <label for="obs-sala">Observação</label>
-                    <input id="obs-sala" type="text" bind:value={novaSala.obs}
-                        placeholder="Ex: Capacidade para 10 pessoas" required />
+                    <input
+                        id="obs-sala"
+                        type="text"
+                        bind:value={novoEquipamento.obs}
+                        placeholder="Ex: Capacidade para 10 pessoas"
+                        required
+                    />
                 </div>
 
                 <div class="field field-toggle">
                     <label for="status-sala">Status</label>
                     <div class="toggle-wrapper">
                         <label class="toggle-switch">
-                            <input id="status-sala" type="checkbox" bind:checked={novaSala.status} />
+                            <input
+                                id="status-sala"
+                                type="checkbox"
+                                bind:checked={novoEquipamento.status}
+                            />
                             <span class="toggle-track">
                                 <span class="toggle-thumb"></span>
                             </span>
                         </label>
-                        <span class="toggle-label">{novaSala.status ? "Ativo" : "Inativo"}</span>
+                        <span class="toggle-label"
+                            >{novoEquipamento.status
+                                ? "Ativo"
+                                : "Inativo"}</span
+                        >
                     </div>
                 </div>
 
                 {#if erro}
-                <p class="msg-erro">{erro}</p>
+                    <p class="msg-erro">{erro}</p>
                 {/if}
                 {#if sucesso}
-                <p class="msg-sucesso">{sucesso}</p>
+                    <p class="msg-sucesso">{sucesso}</p>
                 {/if}
 
                 <div class="bottom-action">
                     {#if editando}
-                    <button type="button" class="btn-secondary" on:click={resetForm}>
-                        <span class="material-symbols-outlined">close</span>
-                        Cancelar
-                    </button>
+                        <button
+                            type="button"
+                            class="btn-secondary"
+                            on:click={resetForm}
+                        >
+                            <span class="material-symbols-outlined">close</span>
+                            Cancelar
+                        </button>
                     {/if}
-                    <button type="submit" class="btn-primary" disabled={carregando}>
+                    <button
+                        type="submit"
+                        class="btn-primary"
+                        disabled={carregando}
+                    >
                         <span class="material-symbols-outlined">save</span>
                         {carregando
-                        ? "Salvando..."
-                        : editando
-                        ? "Atualizar"
-                        : "Salvar"}
+                            ? "Salvando..."
+                            : editando
+                              ? "Atualizar"
+                              : "Salvar"}
                     </button>
                 </div>
             </form>
@@ -162,10 +205,12 @@
         <div class="card table-card">
             <div class="table-header-title">
                 <div class="title-left">
-                    <span class="material-symbols-outlined text-blue">door_front</span>
-                    <h3>Salas Cadastradas</h3>
+                    <span class="material-symbols-outlined text-blue"
+                        >door_front</span
+                    >
+                    <h3>Equipamentos Cadastrados</h3>
                 </div>
-                <div class="badge">{salas.length} registros</div>
+                <div class="badge">{equipamentos.length} registros</div>
             </div>
 
             <div class="table-wrapper">
@@ -179,42 +224,55 @@
 
                 <div class="table-body">
                     {#if carregandoLista}
-                    <div class="estado-vazio">Carregando salas...</div>
-                    {:else if salas.length === 0}
-                    <div class="estado-vazio">
-                        Nenhuma sala cadastrada ainda.
-                    </div>
+                        <div class="estado-vazio">
+                            Carregando equipamentos...
+                        </div>
+                    {:else if equipamentos.length === 0}
+                        <div class="estado-vazio">
+                            Nenhum equipamento cadastrado ainda.
+                        </div>
                     {:else}
-                    {#each salas as s, index}
-                    <div class="table-row {index % 2 === 0
+                        {#each equipamentos as s, index}
+                            <div
+                                class="table-row {index % 2 === 0
                                     ? 'even'
-                                    : 'odd'}">
-                        <div class="td flex-2">
-                            <span class="material-symbols-outlined icon-tiny">meeting_room</span>
-                            <span class="text-truncate">{s.nome}</span>
-                        </div>
-                        <div class="td flex-1">
-                            <span class="badge-numero">{s.numero}</span>
-                        </div>
-                        <div class="td flex-2">
-                            <span class="text-truncate">{s.obs}</span>
-                        </div>
-                        <div class="td flex-1">
-                            <span class="badge-status {s.status
+                                    : 'odd'}"
+                            >
+                                <div class="td flex-2">
+                                    <span
+                                        class="material-symbols-outlined icon-tiny"
+                                        >meeting_room</span
+                                    >
+                                    <span class="text-truncate">{s.nome}</span>
+                                </div>
+                                <div class="td flex-1">
+                                    <span class="badge-numero">{s.numero}</span>
+                                </div>
+                                <div class="td flex-2">
+                                    <span class="text-truncate">{s.obs}</span>
+                                </div>
+                                <div class="td flex-1">
+                                    <span
+                                        class="badge-status {s.status
                                             ? 'ativo'
-                                            : 'inativo'}">
-                                {s.status ? "Ativo" : "Inativo"}
-                            </span>
-                        </div>
-                        <div class="td flex-1 action-cell">
-                            <button class="btn-action edit" on:click={()=> editarSala(s)}
-                                title="Editar"
-                                >
-                                <span class="material-symbols-outlined">edit</span>
-                            </button>
-                        </div>
-                    </div>
-                    {/each}
+                                            : 'inativo'}"
+                                    >
+                                        {s.status ? "Ativo" : "Inativo"}
+                                    </span>
+                                </div>
+                                <div class="td flex-1 action-cell">
+                                    <button
+                                        class="btn-action edit"
+                                        on:click={() => editarEquipamento(s)}
+                                        title="Editar"
+                                    >
+                                        <span class="material-symbols-outlined"
+                                            >edit</span
+                                        >
+                                    </button>
+                                </div>
+                            </div>
+                        {/each}
                     {/if}
                 </div>
             </div>
@@ -309,7 +367,7 @@
         transition: background 0.2s;
     }
 
-    .toggle-switch input:checked~.toggle-track {
+    .toggle-switch input:checked ~ .toggle-track {
         background: #2196f3;
     }
 
@@ -324,7 +382,7 @@
         transition: transform 0.2s;
     }
 
-    .toggle-switch input:checked~.toggle-track .toggle-thumb {
+    .toggle-switch input:checked ~ .toggle-track .toggle-thumb {
         transform: translateX(18px);
     }
 
@@ -704,4 +762,3 @@
         }
     }
 </style>
-*/

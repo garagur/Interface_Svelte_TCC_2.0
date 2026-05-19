@@ -58,7 +58,7 @@
         <span>Meus<br />Agendamentos</span>
       </button>
 
-      <button class="menu-card" on:click={() => navigate("RegisterRoomScreen")}>
+      <button class="menu-card" on:click={() => navigate("CadastroSalaScreen")}>
         <span class="material-symbols-outlined">add_location</span>
         <span>Cadastrar<br />Sala</span>
       </button>
