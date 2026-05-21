@@ -11,7 +11,7 @@ async function parseJson(response) {
 }
 
 /**
- * @param {{ nome: string, N_patrimonio: number, obs: string, status: boolean }} novoEquipamento
+ * @param {{ nome: string, N_patrimonio: string, obs: string, status: boolean }} novoEquipamento
  * @param {string} token
  * @returns {Promise<any>}
  */

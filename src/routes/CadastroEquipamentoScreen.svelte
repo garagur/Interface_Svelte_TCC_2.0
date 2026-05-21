@@ -45,9 +45,9 @@
         sucesso = "";
 
         if (
-            !novoEquipamento.nome ||
+            !novoEquipamento.nome.trim() ||
             !novoEquipamento.N_patrimonio ||
-            novoEquipamento.obs === ""
+            !novoEquipamento.obs.trim()
         ) {
             erro = "Preencha todos os campos do formulário.";
             return;
@@ -77,7 +77,7 @@
     function resetForm() {
         novoEquipamento = {
             nome: "",
-            N_patrimonio: null,
+            N_patrimonio: "",
             obs: "",
             status: true,
         };
@@ -108,7 +108,7 @@
         <div class="card form-card">
             <div class="card-header">
                 <span class="material-symbols-outlined icon-large">
-                    {editando ? "meeting_room" : "add_home"}
+                    {editando ? "edit" : "add_circle"}
                 </span>
             </div>
 
@@ -128,9 +128,9 @@
                     <label for="numero-sala">Número</label>
                     <input
                         id="numero-sala"
-                        type="number"
+                        type="text"
                         bind:value={novoEquipamento.N_patrimonio}
-                        placeholder="Ex: 101"
+                        placeholder="Ex: PAT-101"
                         required
                     />
                 </div>
@@ -246,7 +246,9 @@
                                     <span class="text-truncate">{s.nome}</span>
                                 </div>
                                 <div class="td flex-1">
-                                    <span class="badge-numero">{s.numero}</span>
+                                    <span class="badge-numero"
+                                        >{s.N_patrimonio}</span
+                                    >
                                 </div>
                                 <div class="td flex-2">
                                     <span class="text-truncate">{s.obs}</span>

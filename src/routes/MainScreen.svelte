@@ -65,7 +65,7 @@
 
       <button
         class="menu-card"
-        on:click={() => navigate("EquipmentRegistrationScreen")}
+        on:click={() => navigate("CadastroEquipamentoScreen")}
       >
         <span class="material-symbols-outlined">playlist_add</span>
         <span>Cadastrar<br />Equipamento</span>
