@@ -1,4 +1,4 @@
-import { SALA_ROUTES } from '../SalaServices/Sala.js'
+import { SALA_ROUTES } from './Sala.js'
 
 async function parseJson(response) {
     const text = await response.text()

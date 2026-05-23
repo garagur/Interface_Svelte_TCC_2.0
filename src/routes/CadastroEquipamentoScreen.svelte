@@ -2,6 +2,7 @@
     import { onMount } from "svelte";
     import { cadastrarEquipamento } from "../services/EquipamentoServices/CreateEquipamentoService.js";
     import { carregarEquipamentos } from "../services/EquipamentoServices/EquipamentoListService.js";
+    import { atualizarEquipamentos } from "../services/EquipamentoServices/EditEquipamentoService.js";
 
     export let onSair;
     export let token = "";
@@ -55,8 +56,17 @@
 
         carregando = true;
         try {
-            await cadastrarEquipamento(novoEquipamento, token);
-            sucesso = "Equipamento cadastrado com sucesso.";
+            if (editando && equipamentoEditandoId) {
+                await atualizarEquipamentos(
+                    equipamentoEditandoId,
+                    novoEquipamento,
+                    token,
+                );
+                sucesso = "Equipamento atualizado com sucesso.";
+            } else {
+                await cadastrarEquipamento(novoEquipamento, token);
+                sucesso = "Equipamento cadastrado com sucesso.";
+            }
             resetForm();
             await carregarLista();
         } catch (e) {
@@ -125,9 +135,9 @@
                 </div>
 
                 <div class="field">
-                    <label for="numero-sala">Número</label>
+                    <label for="numero-equipamento">Número</label>
                     <input
-                        id="numero-sala"
+                        id="numero-equipamento"
                         type="text"
                         bind:value={novoEquipamento.N_patrimonio}
                         placeholder="Ex: PAT-101"
@@ -136,18 +146,18 @@
                 </div>
 
                 <div class="field">
-                    <label for="obs-sala">Observação</label>
+                    <label for="obs-equipamento">Observação</label>
                     <input
-                        id="obs-sala"
+                        id="obs-equipamento"
                         type="text"
                         bind:value={novoEquipamento.obs}
-                        placeholder="Ex: Capacidade para 10 pessoas"
+                        placeholder="Ex: funciona apenas em 220V"
                         required
                     />
                 </div>
 
                 <div class="field field-toggle">
-                    <label for="status-sala">Status</label>
+                    <label for="status-equipamento">Status</label>
                     <div class="toggle-wrapper">
                         <label class="toggle-switch">
                             <input

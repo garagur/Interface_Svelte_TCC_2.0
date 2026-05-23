@@ -1,8 +1,8 @@
 <script>
     import { onMount } from "svelte";
     import { cadastrarSala } from "../services/SalaServices/CreateSalaService.js";
-    import { carregarSalas } from "../services/SalaServices/SalaListServices.js";
-
+    import { carregarSalas } from "../services/SalaServices/SalaListService.js";
+    import { atualizarSalas } from "../services/SalaServices/EditSalaService.js";
     export let onSair;
     export let token = "";
 
@@ -39,15 +39,20 @@
         erro = "";
         sucesso = "";
 
-        if (!novaSala.nome || !novaSala.numero || novaSala.obs === "") {
+        if (!novaSala.nome || !novaSala.numero || !novaSala.obs) {
             erro = "Preencha todos os campos do formulário.";
             return;
         }
 
         carregando = true;
         try {
-            await cadastrarSala(novaSala, token);
-            sucesso = "Sala cadastrada com sucesso.";
+            if (editando && salaEditandoId) {
+                await atualizarSalas(salaEditandoId, novaSala, token);
+                sucesso = "Sala atualizada com sucesso.";
+            } else {
+                await cadastrarSala(novaSala, token);
+                sucesso = "Sala cadastrada com sucesso.";
+            }
             resetForm();
             await carregarLista();
         } catch (e) {
