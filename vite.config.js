@@ -2,7 +2,6 @@ import { defineConfig } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 import { fileURLToPath } from 'node:url'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [svelte()],
   resolve: {
@@ -13,4 +12,12 @@ export default defineConfig({
       },
     ],
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      }
+    }
+  }
 })

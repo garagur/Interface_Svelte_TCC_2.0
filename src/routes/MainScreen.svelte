@@ -1,37 +1,50 @@
 <script>
   import { logoutUser } from "../services/UserServices/LogoutService.js";
-
+  import { carregarAgendamentosSalas } from "../services/AgendamentoServices/AgendamentoSala/AgendamentoSalaListService.js";
+  import { carregarAgendamentosEquipamentos } from "../services/AgendamentoServices/AgendamentoEquipamento/AgendamentoEquipamentoListService.js";
   export let matricula = "";
   export let token = "";
   export let aoSair;
   export let onNavigate;
 
-  const agendamentos = [
-    {
-      nome: "João Silva",
-      item: "Sala 101",
-      dataInicio: "28/04/2025 08:00",
-      dataFim: "28/04/2025 10:00",
-    },
-    {
-      nome: "Maria Souza",
-      item: "Projetor HD",
-      dataInicio: "28/04/2025 09:00",
-      dataFim: "28/04/2025 11:00",
-    },
-    {
-      nome: "Carlos Lima",
-      item: "Sala de Reunião",
-      dataInicio: "29/04/2025 14:00",
-      dataFim: "29/04/2025 16:00",
-    },
-    {
-      nome: "Ana Paula",
-      item: "Notebook Dell",
-      dataInicio: "30/04/2025 07:00",
-      dataFim: "30/04/2025 12:00",
-    },
-  ];
+  import { onMount } from "svelte";
+
+  let agendamentos = [];
+  let carregando = false;
+  let erro = "";
+
+  onMount(async () => {
+    carregando = true;
+    try {
+      const [salas, equipamentos] = await Promise.all([
+        carregarAgendamentosSalas(token),
+        carregarAgendamentosEquipamentos(token),
+      ]);
+
+      agendamentos = [
+        salas.map((s) => ({
+          id: s.id,
+          nome: s.nome || "",
+          item: `Sala ${s.numero || ""}`,
+          dataInicio: s.data_hora_inicio || "",
+          dataFim: s.data_hora_fim || "",
+          tipo: "sala",
+        })),
+        equipamentos.map((e) => ({
+          id: e.id,
+          nome: e.nome || "",
+          item: `Equipamento ${e.modelo || ""}`,
+          dataInicio: e.data_hora_inicio || "",
+          dataFim: e.data_hora_fim || "",
+          tipo: "equipamento",
+        })),
+      ];
+    } catch (e) {
+      erro = e?.message || "Erro ao carregar agendamentos.";
+    } finally {
+      carregando = false;
+    }
+  });
 
   async function navigate(path, params = null) {
     if (path === "Pop") {
@@ -106,48 +119,57 @@
       </div>
 
       <div class="table-body">
-        {#each agendamentos as item, index}
-          <div class="table-row {index % 2 === 0 ? 'even' : 'odd'}">
-            <div class="td flex-2">
-              <span class="material-symbols-outlined icon-tiny">person</span>
-              <span class="text-truncate">{item.nome}</span>
-            </div>
-
-            <button
-              class="td flex-2 item-clickable"
-              on:click={() => navigate("SchedulesByItemScreen", item)}
-            >
-              <span class="material-symbols-outlined icon-tiny"
-                >inventory_2</span
-              >
-              <span class="text-truncate text-link">{item.item}</span>
-            </button>
-
-            <div class="td flex-2">
-              <span class="material-symbols-outlined icon-tiny">schedule</span>
-              <span class="text-truncate">{item.dataInicio}</span>
-            </div>
-
-            <div class="td flex-2">
-              <span class="material-symbols-outlined icon-tiny">schedule</span>
-              <span class="text-truncate">{item.dataFim}</span>
-            </div>
-
-            <div class="td flex-1 action-cell">
+        {#if carregando}
+          <div class="estado-vazio">Carregando...</div>
+        {:else if erro}
+          <div class="estado-vazio">{erro}</div>
+        {:else if agendamentos.length === 0}
+          <div class="estado-vazio">Nenhum agendamento encontrado.</div>
+        {:else}
+          {#each agendamentos as item, index}
+            <div class="table-row {index % 2 === 0 ? 'even' : 'odd'}">
+              <div class="td flex-2">
+                <span class="material-symbols-outlined icon-tiny">person</span>
+                <span class="text-truncate">{item.nome}</span>
+              </div>
               <button
-                class="btn-info"
-                on:click={() => navigate("ScheduleDetailScreen", item)}
+                class="td flex-2 item-clickable"
+                on:click={() => navigate("SchedulesByItemScreen", item)}
               >
-                <span class="material-symbols-outlined">info</span>
+                <span class="material-symbols-outlined icon-tiny"
+                  >inventory_2</span
+                >
+                <span class="text-truncate text-link">{item.item}</span>
               </button>
+              <div class="td flex-2">
+                <span class="material-symbols-outlined icon-tiny">schedule</span
+                >
+                <span class="text-truncate">{item.dataInicio}</span>
+              </div>
+              <div class="td flex-2">
+                <span class="material-symbols-outlined icon-tiny">schedule</span
+                >
+                <span class="text-truncate">{item.dataFim}</span>
+              </div>
+              <div class="td flex-1 action-cell">
+                <button
+                  class="btn-info"
+                  on:click={() => navigate("ScheduleDetailScreen", item)}
+                >
+                  <span class="material-symbols-outlined">info</span>
+                </button>
+              </div>
             </div>
-          </div>
-        {/each}
+          {/each}
+        {/if}
       </div>
     </div>
 
     <div class="bottom-action">
-      <button class="btn-primary" on:click={() => navigate("ScheduleScreen")}>
+      <button
+        class="btn-primary"
+        on:click={() => navigate("AgendamentoScreen")}
+      >
         <span class="material-symbols-outlined">add_circle</span>
         Novo Agendamento
       </button>
@@ -264,18 +286,19 @@
     display: flex;
     flex-direction: column;
     flex: 1;
-    overflow: hidden;
-    /* Adicione estas 3 linhas abaixo: */
+    overflow: auto;
     width: 100%;
-    max-width: 1100px; /* Você pode aumentar ou diminuir esse valor como achar melhor */
-    margin: 0 auto; /* O 'auto' nas laterais garante que a tabela fique perfeitamente no centro */
+    max-width: 1100px;
+    margin: 0 auto;
   }
 
-  .table-header-title {
-    padding: 24px 24px 12px;
+  .table-wrapper {
+    margin: 0 24px;
+    flex: 1;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
   }
   .title-left {
     display: flex;

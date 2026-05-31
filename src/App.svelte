@@ -4,7 +4,7 @@
   import CadastroUserScreen from "./routes/UserConfigScreen.svelte";
   import CadastroSalaScreen from "./routes/CadastroSalaScreen.svelte";
   import CadastroEquipamentoScreen from "./routes/CadastroEquipamentoScreen.svelte";
-
+  import AgendamentoScreen from "./routes/AgendamentoScreen.svelte";
   let tela = "login";
   let token = "";
   let matricula = "";
@@ -40,4 +40,6 @@
   <CadastroSalaScreen {token} onSair={() => navegarPara("main")} />
 {:else if tela === "CadastroEquipamentoScreen"}
   <CadastroEquipamentoScreen {token} onSair={() => navegarPara("main")} />
+{:else if tela === "AgendamentoScreen"}
+  <AgendamentoScreen {token} {matricula} onSair={() => navegarPara("main")} />
 {/if}

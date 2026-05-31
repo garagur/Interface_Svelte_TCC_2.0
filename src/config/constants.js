@@ -1,1 +1,1 @@
-export const API_URL = 'http://localhost:8000/api/eafinware'
+export const API_URL = '/api/eafinware'
