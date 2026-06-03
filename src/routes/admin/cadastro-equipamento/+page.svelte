@@ -5,8 +5,9 @@
     import { carregarEquipamentos } from "$lib/services/EquipamentoServices/List_Equipamento_Service.js";
     import { atualizarEquipamentos } from "$lib/services/EquipamentoServices/Update_Equipamento_Service.js";
     import { goto } from "$app/navigation";
-
+    import "$lib/styles/admin-cadastro.css";
     let token = "";
+    let matriculaLogado = "";
 
     let novoEquipamento = {
         nome: "",
@@ -23,6 +24,9 @@
     let equipamentoEditandoId = null;
 
     onMount(async () => {
+        token = localStorage.getItem("token") || "";
+        matriculaLogado = localStorage.getItem("matricula") || "";
+
         if (!token) {
             erro = "Token não encontrado. Faça login novamente.";
             return;

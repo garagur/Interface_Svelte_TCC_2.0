@@ -138,6 +138,5 @@
 </div>
 
 <style>
-    @import "$lib/styles/admin-cadastro.css";
     @import "$lib/styles/agendamento.css";
 </style>

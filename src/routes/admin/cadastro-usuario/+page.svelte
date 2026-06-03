@@ -4,11 +4,10 @@
   import { cadastrarUsuario } from "$lib/services/UserServices/Create_User_Service.js";
   import { carregarUsuarios } from "$lib/services/UserServices/List_User_Service.js";
   import { atualizarUsuario } from "$lib/services/UserServices/Update_User_Service.js";
-  import { createEventDispatcher } from "svelte";
-
-  const dispatch = createEventDispatcher();
-  export let token = "";
-  export let matriculaLogado = "";
+  import { goto } from "$app/navigation";
+  import "$lib/styles/admin-cadastro-usuario.css";
+  let token = "";
+  let matriculaLogado = "";
 
   let novoUsuario = { nome: "", email: "", cargo: "", matricula: "" };
   let usuarios = [];
@@ -20,6 +19,9 @@
   let usuarioEditandoId = null;
 
   onMount(async () => {
+    token = localStorage.getItem("token") || "";
+    matriculaLogado = localStorage.getItem("matricula") || "";
+
     if (!token) {
       erro = "Token não encontrado. Faça login novamente.";
       return;
@@ -97,7 +99,7 @@
 <CadastroCard
   titulo="Portal de Agendamento"
   subtitulo="Cadastro de Servidor / Usuário"
-  onSair={() => dispatch("sair")}
+  onSair={() => goto("/main")}
   onSubmit={salvarUsuario}
   onCancelar={resetForm}
   {editando}

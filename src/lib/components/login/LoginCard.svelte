@@ -4,7 +4,6 @@
     export let erroLogin;
     export let carregando;
     export let onSubmit;
-    import "$lib/styles/login.css";
 </script>
 
 <div class="login-wrapper">
@@ -42,7 +41,3 @@
         </form>
     </div>
 </div>
-
-<style>
-    @import "$lib/styles/login.css";
-</style>

@@ -1,9 +1,5 @@
 import { AUTH_ROUTES } from '../../../config/routes/User_Endpoints.js'
 
-/**
- * @param {Response} response
- * @returns {Promise<any|null>}
- */
 async function parseJson(response) {
   const text = await response.text()
   if (!text) return null
@@ -14,19 +10,10 @@ async function parseJson(response) {
   }
 }
 
-/**
- * @param {any} dados
- * @returns {string|undefined}
- */
 function getTokenFromResponse(dados) {
   return dados?.token || dados?.access_token || dados?.data?.token || dados?.accessToken
 }
 
-/**
- * @param {string} matricula
- * @param {string} senha
- * @returns {Promise<any>}
- */
 export async function loginUser(matricula, senha) {
   if (!matricula || !senha) {
     throw new Error('Preencha a matrícula e a senha!')
@@ -38,13 +25,12 @@ export async function loginUser(matricula, senha) {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     },
-    body: JSON.stringify({
-      matricula,
-      password: senha,
-    }),
+    body: JSON.stringify({ matricula, password: senha }),
   })
 
   const dados = await parseJson(resposta)
+  console.log("resposta status:", resposta.status)
+  console.log("dados brutos:", dados) // adicione isso
 
   if (!resposta.ok) {
     throw new Error(dados?.message || dados?.error || 'Credenciais inválidas.')

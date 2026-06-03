@@ -19,16 +19,19 @@
     vertical-align: middle;
 }
 
-.scaffold {
+/* ── Estilos Protegidos pelo Escopo da Main ── */
+
+.escopo-main .scaffold {
     display: flex;
     flex-direction: column;
     height: 100vh;
+    width: 100%;
     font-family: Arial, sans-serif;
     background-color: #fafafa;
 }
 
 /* ── App Bar ── */
-.app-bar {
+.escopo-main .app-bar {
     background-color: var(--primary);
     color: var(--white);
     padding: 12px 24px;
@@ -38,31 +41,31 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.title-section {
+.escopo-main .title-section {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
 }
 
-.title-section h1 {
+.escopo-main .title-section h1 {
     margin: 0;
     font-size: 18px;
 }
 
-.title-section span {
+.escopo-main .title-section span {
     font-size: 11px;
     opacity: 0.9;
     margin-top: 2px;
 }
 
-.actions-section {
+.escopo-main .actions-section {
     flex: 1;
     display: flex;
     justify-content: flex-end;
 }
 
-.btn-icon {
+.escopo-main .btn-icon {
     background: none;
     border: none;
     color: white;
@@ -72,19 +75,19 @@
     transition: background 0.2s;
 }
 
-.btn-icon:hover {
+.escopo-main .btn-icon:hover {
     background: rgba(255, 255, 255, 0.1);
 }
 
 /* ── Menu de navegação ── */
-.nav-menu {
+.escopo-main .nav-menu {
     display: flex;
     flex-direction: row;
     justify-content: center;
     gap: 12px;
 }
 
-.menu-card {
+.escopo-main .menu-card {
     width: 84px;
     height: 84px;
     background-color: rgba(255, 255, 255, 0.12);
@@ -100,17 +103,17 @@
     flex-shrink: 0;
 }
 
-.menu-card:hover {
+.escopo-main .menu-card:hover {
     background-color: rgba(255, 255, 255, 0.25);
     transform: translateY(-2px);
 }
 
-.menu-card .material-symbols-outlined {
+.escopo-main .menu-card .material-symbols-outlined {
     font-size: 24px;
     margin-bottom: 4px;
 }
 
-.menu-card span:not(.material-symbols-outlined) {
+.escopo-main .menu-card span:not(.material-symbols-outlined) {
     font-size: 10px;
     font-weight: 600;
     text-align: center;
@@ -118,41 +121,40 @@
 }
 
 /* ── Body ── */
-.body-content {
+.escopo-main .body-content {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    flex: 1;
-    overflow: auto;
+    padding: 24px;
+    overflow: hidden;
     width: 100%;
-    max-width: 1100px;
-    margin: 0 auto;
 }
 
 /* ── Tabela ── */
-.table-header-title {
-    padding: 24px 24px 12px;
+.escopo-main .table-header-title {
+    padding: 12px 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.title-left {
+.escopo-main .title-left {
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-.text-primary {
+.escopo-main .text-primary {
     color: var(--primary);
 }
 
-.table-header-title h2 {
+.escopo-main .table-header-title h2 {
     margin: 0;
     font-size: 16px;
     color: var(--primary);
 }
 
-.badge {
+.escopo-main .badge {
     background-color: var(--blue-50);
     border: 1px solid var(--blue-light);
     color: var(--primary-dark);
@@ -162,54 +164,55 @@
     font-weight: bold;
 }
 
-.table-wrapper {
-    margin: 0 24px;
+.escopo-main .table-wrapper {
     flex: 1;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    min-height: 0;
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-.table-header {
+.escopo-main .table-header {
     background-color: var(--primary);
     color: var(--white);
     display: flex;
     border-radius: 12px 12px 0 0;
 }
 
-.table-header .th {
+.escopo-main .table-header .th {
     padding: 12px 8px;
     font-size: 12px;
     font-weight: bold;
     text-align: center;
 }
 
-.table-body {
+.escopo-main .table-body {
     flex: 1;
     overflow-y: auto;
-    border: 1px solid var(--blue-light);
-    border-top: none;
-    border-radius: 0 0 12px 12px;
 }
 
-.table-row {
+.escopo-main .table-row {
     display: flex;
     transition: background 0.2s;
 }
 
-.table-row:hover {
+.escopo-main .table-row:hover {
     background-color: #f1f8ff;
 }
 
-.table-row.even {
+.escopo-main .table-row.even {
     background-color: var(--white);
 }
 
-.table-row.odd {
+.escopo-main .table-row.odd {
     background-color: var(--blue-50);
 }
 
-.td {
+.escopo-main .td {
     padding: 12px 6px;
     display: flex;
     flex-direction: column;
@@ -219,48 +222,48 @@
     color: var(--text-dark);
 }
 
-.item-clickable {
+.escopo-main .item-clickable {
     background: none;
     border: none;
     cursor: pointer;
 }
 
-.text-link {
+.escopo-main .text-link {
     color: var(--primary-dark);
     font-weight: bold;
     text-decoration: underline;
 }
 
-.flex-2 {
+.escopo-main .flex-2 {
     flex: 2;
     width: 0;
 }
 
-.flex-1 {
+.escopo-main .flex-1 {
     flex: 1;
     width: 0;
 }
 
-.text-truncate {
+.escopo-main .text-truncate {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-.icon-tiny {
+.escopo-main .icon-tiny {
     font-size: 14px;
     color: rgb(49, 49, 49);
     margin-bottom: 2px;
 }
 
-.action-cell {
+.escopo-main .action-cell {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.btn-info {
+.escopo-main .btn-info {
     background: none;
     border: none;
     color: var(--primary);
@@ -270,11 +273,11 @@
     transition: background 0.2s;
 }
 
-.btn-info:hover {
+.escopo-main .btn-info:hover {
     background-color: var(--blue-50);
 }
 
-.estado-vazio {
+.escopo-main .estado-vazio {
     padding: 2rem;
     text-align: center;
     color: #94a3b8;
@@ -282,13 +285,14 @@
 }
 
 /* ── Bottom ── */
-.bottom-action {
-    padding: 24px;
+.escopo-main .bottom-action {
+    padding: 24px 0;
     display: flex;
     justify-content: center;
+    width: 100%;
 }
 
-.btn-primary {
+.escopo-main .btn-primary {
     background-color: rgb(51, 51, 51);
     color: var(--white);
     border: none;
@@ -302,8 +306,9 @@
     gap: 8px;
     cursor: pointer;
     transition: background 0.2s;
+    width: fit-content;
 }
 
-.btn-primary:hover {
+.escopo-main .btn-primary:hover {
     background-color: #111;
 }

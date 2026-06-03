@@ -1,9 +1,8 @@
 <script>
-    import "$lib/styles/main.css";
     export let titulo = "";
     export let matricula = "";
-    export let onSair;
-    export let onNovoAgendamento;
+    export let onSair = () => {};
+    export let onNovoAgendamento = () => {};
     export let totalRegistros = 0;
     export let carregando = false;
     export let erro = "";

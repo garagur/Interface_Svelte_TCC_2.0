@@ -6,8 +6,11 @@
   import { carregarAgendamentosSalas } from "$lib/services/AgendamentoServices/AgendamentoSala/List_Agendamento_Sala_Service.js";
   import { carregarAgendamentosEquipamentos } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/List_Agendamento_Equipamento_Service.js";
 
+  // O import do main.css FOI REMOVIDO daqui!
+
   let token = "";
   let matricula = "";
+  let cargo = "";
   let agendamentos = [];
   let carregando = false;
   let erro = "";
@@ -15,6 +18,7 @@
   onMount(async () => {
     token = localStorage.getItem("token") || "";
     matricula = localStorage.getItem("matricula") || "";
+    cargo = localStorage.getItem("cargo") || "";
 
     if (!token) {
       goto("/login");
@@ -56,6 +60,7 @@
     await logoutUser(token);
     localStorage.removeItem("token");
     localStorage.removeItem("matricula");
+    localStorage.removeItem("cargo");
     goto("/login");
   }
 </script>
@@ -74,21 +79,26 @@
       <span class="material-symbols-outlined">calendar_today</span>
       <span>Meus<br />Agendamentos</span>
     </button>
-    <button class="menu-card" on:click={() => goto("/admin/cadastro-sala")}>
-      <span class="material-symbols-outlined">add_location</span>
-      <span>Cadastrar<br />Sala</span>
-    </button>
-    <button
-      class="menu-card"
-      on:click={() => goto("/admin/cadastro-equipamento")}
-    >
-      <span class="material-symbols-outlined">playlist_add</span>
-      <span>Cadastrar<br />Equipamento</span>
-    </button>
-    <button class="menu-card" on:click={() => goto("/admin/cadastro-usuario")}>
-      <span class="material-symbols-outlined">person_add</span>
-      <span>Cadastrar<br />Usuário</span>
-    </button>
+    {#if cargo === "admin"}
+      <button class="menu-card" on:click={() => goto("/admin/cadastro-sala")}>
+        <span class="material-symbols-outlined">add_location</span>
+        <span>Cadastrar<br />Sala</span>
+      </button>
+      <button
+        class="menu-card"
+        on:click={() => goto("/admin/cadastro-equipamento")}
+      >
+        <span class="material-symbols-outlined">playlist_add</span>
+        <span>Cadastrar<br />Equipamento</span>
+      </button>
+      <button
+        class="menu-card"
+        on:click={() => goto("/admin/cadastro-usuario")}
+      >
+        <span class="material-symbols-outlined">person_add</span>
+        <span>Cadastrar<br />Usuário</span>
+      </button>
+    {/if}
   </svelte:fragment>
 
   <svelte:fragment slot="tabela-body">

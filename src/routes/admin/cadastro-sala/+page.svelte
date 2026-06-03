@@ -4,10 +4,10 @@
     import { cadastrarSala } from "$lib/services/SalaServices/Create_Sala_Service.js";
     import { carregarSalas } from "$lib/services/SalaServices/List_Sala_Service.js";
     import { atualizarSalas } from "$lib/services/SalaServices/Update_Sala_Service.js";
-    import { createEventDispatcher } from "svelte";
-
-    const dispatch = createEventDispatcher();
-    export let token = "";
+    import { goto } from "$app/navigation";
+    import "$lib/styles/admin-cadastro.css";
+    let token = "";
+    let matriculaLogado = "";
 
     let novaSala = { nome: "", numero: null, obs: "", status: true };
     let salas = [];
@@ -19,6 +19,9 @@
     let salaEditandoId = null;
 
     onMount(async () => {
+        token = localStorage.getItem("token") || "";
+        matriculaLogado = localStorage.getItem("matricula") || "";
+
         if (!token) {
             erro = "Token não encontrado. Faça login novamente.";
             return;
@@ -81,7 +84,7 @@
 <CadastroCard
     titulo="Portal de Agendamento"
     subtitulo="Cadastro de Salas"
-    onSair={() => dispatch("sair")}
+    onSair={() => goto("/main")}
     onSubmit={salvarSala}
     onCancelar={resetForm}
     {editando}
