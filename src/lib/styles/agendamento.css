@@ -1,0 +1,206 @@
+/* ── Itens selecionados ── */
+.selected-section {
+    background: var(--blue-50);
+    border: 1px solid var(--blue-light);
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.selected-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--blue-dark);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.badge-count {
+    background: var(--blue-primary);
+    color: #fff;
+    border-radius: 20px;
+    font-size: 10px;
+    padding: 1px 7px;
+    font-weight: 700;
+    margin-left: 2px;
+}
+
+.selected-empty {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    font-style: italic;
+    margin: 0;
+}
+
+.selected-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.selected-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 5px 8px;
+    font-size: 0.8rem;
+    color: var(--text-dark);
+    animation: pop 0.15s ease;
+}
+
+@keyframes pop {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.selected-nome {
+    flex: 1;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tipo-icon {
+    color: var(--blue-primary);
+}
+
+.btn-remove {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 4px;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    transition: color 0.15s;
+}
+
+.btn-remove:hover {
+    color: var(--danger);
+}
+
+.btn-remove .material-symbols-outlined {
+    font-size: 16px;
+}
+
+/* ── Filtros ── */
+.filter-bar {
+    padding: 0 24px 14px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.search-input {
+    flex: 1;
+    min-width: 140px;
+    padding: 7px 12px;
+    border: 1px solid var(--border-input);
+    border-radius: 8px;
+    font-size: 13px;
+    background: var(--bg-input);
+    color: #1e293b;
+    transition: border-color 0.2s;
+    outline: none;
+}
+
+.search-input:focus {
+    border-color: var(--blue-primary);
+}
+
+.filter-btns {
+    display: flex;
+    gap: 6px;
+}
+
+.filter-btn {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border-input);
+    background: var(--bg-input);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #64748b;
+    transition: all 0.15s;
+}
+
+.filter-btn:hover {
+    border-color: var(--blue-primary);
+    color: var(--blue-primary);
+}
+
+.filter-btn.active {
+    background: var(--blue-primary);
+    color: #fff;
+    border-color: var(--blue-primary);
+}
+
+/* ── Badges exclusivos ── */
+.badge-tipo {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 11px;
+}
+
+.badge-tipo.sala {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.badge-tipo.equipamento {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+/* ── Estados de linha ── */
+.table-row.row-selected {
+    background-color: #dbeafe !important;
+}
+
+.table-row.row-disabled {
+    opacity: 0.5;
+}
+
+/* ── Botões de ação exclusivos ── */
+.btn-action.add {
+    color: #16a34a;
+    background-color: #dcfce7;
+}
+
+.btn-action.add:hover {
+    background-color: #bbf7d0;
+}
+
+.btn-action.remove {
+    color: #b91c1c;
+    background-color: #fee2e2;
+}
+
+.btn-action.remove:hover {
+    background-color: #fecaca;
+}
+
+.btn-action:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}

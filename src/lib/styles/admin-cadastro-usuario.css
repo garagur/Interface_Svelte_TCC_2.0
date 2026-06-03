@@ -1,0 +1,16 @@
+.badge-cargo {
+    background: #dbeafe;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: bold;
+    color: #1d4ed8;
+    font-size: 11px;
+}
+
+.badge-matricula {
+    background: #e2e8f0;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: bold;
+    color: #475569;
+}
