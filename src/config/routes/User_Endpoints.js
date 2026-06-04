@@ -1,10 +1,10 @@
 import { API_URL } from '../constants.js'
 
 export const AUTH_ROUTES = {
+  sendOtp: `${API_URL}/auth/send-otp`,
   login: `${API_URL}/auth/login`,
   logout: `${API_URL}/auth/logout`,
   me: `${API_URL}/auth/me`,
-  updatePassword: `${API_URL}/auth/password`,
 }
 
 export const USER_ROUTES = {

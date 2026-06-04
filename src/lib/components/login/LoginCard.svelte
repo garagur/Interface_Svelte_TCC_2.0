@@ -1,43 +1,61 @@
 <script>
-    export let loginMatricula;
-    export let loginSenha;
-    export let erroLogin;
+    export let email;
+    export let otp;
+    export let erro;
     export let carregando;
-    export let onSubmit;
+    export let etapa;
+    export let onSubmitEmail;
+    export let onSubmitOtp;
 </script>
 
 <div class="login-wrapper">
     <div class="card">
         <h2>Acesso ao Sistema</h2>
-        <form on:submit|preventDefault={onSubmit}>
-            <div class="field">
-                <label for="m">Matrícula</label>
-                <input
-                    id="m"
-                    type="text"
-                    bind:value={loginMatricula}
-                    placeholder="000000"
-                    required
-                />
-            </div>
-            <div class="field">
-                <label for="s">Senha</label>
-                <input
-                    id="s"
-                    type="password"
-                    bind:value={loginSenha}
-                    placeholder="******"
-                    required
-                />
-            </div>
 
-            {#if erroLogin}
-                <p class="erro">{erroLogin}</p>
-            {/if}
+        {#if etapa === 1}
+            <form on:submit|preventDefault={onSubmitEmail}>
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input
+                        id="email"
+                        type="email"
+                        bind:value={email}
+                        placeholder="seu@email.com"
+                        required
+                    />
+                </div>
 
-            <button type="submit" class="btn-main" disabled={carregando}>
-                {carregando ? "Entrando..." : "Entrar"}
-            </button>
-        </form>
+                {#if erro}
+                    <p class="erro">{erro}</p>
+                {/if}
+
+                <button type="submit" class="btn-main" disabled={carregando}>
+                    {carregando ? "Verificando..." : "Verificar usuário"}
+                </button>
+            </form>
+        {:else}
+            <p class="info">Código enviado para <strong>{email}</strong></p>
+            <form on:submit|preventDefault={onSubmitOtp}>
+                <div class="field">
+                    <label for="otp">Código de acesso</label>
+                    <input
+                        id="otp"
+                        type="text"
+                        bind:value={otp}
+                        placeholder="000000"
+                        maxlength="6"
+                        required
+                    />
+                </div>
+
+                {#if erro}
+                    <p class="erro">{erro}</p>
+                {/if}
+
+                <button type="submit" class="btn-main" disabled={carregando}>
+                    {carregando ? "Entrando..." : "Entrar"}
+                </button>
+            </form>
+        {/if}
     </div>
 </div>

@@ -1,25 +1,41 @@
 <script>
   import LoginCard from "$lib/components/login/LoginCard.svelte";
-  import { loginUser } from "$lib/services/UserServices/Login_User_Service.js";
+  import {
+    sendOtp,
+    loginUser,
+  } from "$lib/services/UserServices/Login_User_Service.js";
   import { goto } from "$app/navigation";
   import "$lib/styles/login.css";
 
-  let loginMatricula = "";
-  let loginSenha = "";
-  let erroLogin = "";
+  let email = "";
+  let otp = "";
+  let erro = "";
   let carregando = false;
+  let etapa = 1;
 
-  async function handleSubmit() {
-    erroLogin = "";
+  async function handleSubmitEmail() {
+    erro = "";
     carregando = true;
     try {
-      const data = await loginUser(loginMatricula, loginSenha);
+      await sendOtp(email);
+      etapa = 2;
+    } catch (e) {
+      erro = e.message;
+    } finally {
+      carregando = false;
+    }
+  }
+
+  async function handleSubmitOtp() {
+    erro = "";
+    carregando = true;
+    try {
+      const data = await loginUser(email, otp);
       localStorage.setItem("token", data.token);
-      localStorage.setItem("matricula", data.user?.matricula || "");
       localStorage.setItem("cargo", data.user?.cargo || "");
       goto("/main");
     } catch (e) {
-      erroLogin = e.message;
+      erro = e.message;
     } finally {
       carregando = false;
     }
@@ -38,9 +54,11 @@
 </svelte:head>
 
 <LoginCard
-  bind:loginMatricula
-  bind:loginSenha
-  {erroLogin}
+  bind:email
+  bind:otp
+  {erro}
   {carregando}
-  onSubmit={handleSubmit}
+  {etapa}
+  onSubmitEmail={handleSubmitEmail}
+  onSubmitOtp={handleSubmitOtp}
 />

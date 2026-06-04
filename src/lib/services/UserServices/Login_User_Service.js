@@ -10,13 +10,32 @@ async function parseJson(response) {
   }
 }
 
-function getTokenFromResponse(dados) {
-  return dados?.token || dados?.access_token || dados?.data?.token || dados?.accessToken
+export async function sendOtp(email) {
+  if (!email) {
+    throw new Error('Preencha o email!')
+  }
+
+  const resposta = await fetch(AUTH_ROUTES.sendOtp, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify({ email }),
+  })
+
+  const dados = await parseJson(resposta)
+
+  if (!resposta.ok) {
+    throw new Error(dados?.message || 'Email não encontrado.')
+  }
+
+  return dados
 }
 
-export async function loginUser(matricula, senha) {
-  if (!matricula || !senha) {
-    throw new Error('Preencha a matrícula e a senha!')
+export async function loginUser(email, otp) {
+  if (!email || !otp) {
+    throw new Error('Preencha o código enviado ao seu email!')
   }
 
   const resposta = await fetch(AUTH_ROUTES.login, {
@@ -25,20 +44,18 @@ export async function loginUser(matricula, senha) {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     },
-    body: JSON.stringify({ matricula, password: senha }),
+    body: JSON.stringify({ email, password: otp }),
   })
 
   const dados = await parseJson(resposta)
-  console.log("resposta status:", resposta.status)
-  console.log("dados brutos:", dados) // adicione isso
 
   if (!resposta.ok) {
-    throw new Error(dados?.message || dados?.error || 'Credenciais inválidas.')
+    throw new Error(dados?.message || 'Código inválido.')
   }
 
   return {
     ...dados,
-    token: getTokenFromResponse(dados),
-    user: dados?.user || dados?.data?.user || dados?.data?.userData,
+    token: dados?.token || dados?.access_token,
+    user: dados?.user || dados?.data?.user,
   }
 }
