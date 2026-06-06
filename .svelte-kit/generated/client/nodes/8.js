@@ -1,1 +1,1 @@
-export { default as component } from "../../../../src/routes/agendamento/+page.svelte";
+export { default as component } from "../../../../src/routes/admin/cadastro-turma/+page.svelte";

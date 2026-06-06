@@ -71,12 +71,10 @@
     flex: 1;
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
+    align-items: stretch;
     padding: 24px;
     gap: 24px;
     width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
     overflow: hidden;
 }
 
@@ -96,10 +94,8 @@
 
 .table-card {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    padding-bottom: 24px;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .card-header {

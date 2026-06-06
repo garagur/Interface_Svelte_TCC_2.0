@@ -81,8 +81,19 @@
     </button>
     {#if cargo === "admin"}
       <button class="menu-card" on:click={() => goto("/admin/cadastro-sala")}>
-        <span class="material-symbols-outlined">add_location</span>
+        <span class="material-symbols-outlined">meeting_room</span>
         <span>Cadastrar<br />Sala</span>
+      </button>
+      <button class="menu-card" on:click={() => goto("/admin/cadastro-turma")}>
+        <span class="material-symbols-outlined">groups</span>
+        <span>Cadastrar<br />Turma</span>
+      </button>
+      <button
+        class="menu-card"
+        on:click={() => goto("/admin/cadastro-horario")}
+      >
+        <span class="material-symbols-outlined">calendar_month</span>
+        <span>Cadastrar<br />Horário</span>
       </button>
       <button
         class="menu-card"
