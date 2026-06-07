@@ -5,7 +5,6 @@
   import { carregarUsuarios } from "$lib/services/UserServices/List_User_Service.js";
   import { atualizarUsuario } from "$lib/services/UserServices/Update_User_Service.js";
   import { goto } from "$app/navigation";
-  import "$lib/styles/admin-cadastro-usuario.css";
   let token = "";
   let matriculaLogado = "";
 
@@ -204,8 +203,3 @@
     {/each}
   </svelte:fragment>
 </CadastroCard>
-
-<style>
-  @import "$lib/styles/admin-cadastro.css";
-  @import "$lib/styles/admin-cadastro-usuario.css";
-</style>

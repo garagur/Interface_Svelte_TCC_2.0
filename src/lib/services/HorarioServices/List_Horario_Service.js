@@ -33,17 +33,18 @@ export async function carregarHorarios(token) {
         throw new Error(dados?.message || dados?.error || 'Erro ao carregar horários.')
     }
 
-    const lista = Array.isArray(dados) ? dados : dados?.data || []
+    const lista = Array.isArray(dados) ? dados : dados?.blocos || dados?.data || []
 
     // @ts-ignore
     return lista.map(s => ({
         id: s.id,
-        turma_id: s.turma_id || '',
-        sala_id: s.sala_id || '',
-        professor_id: s.professor_id || '',
+        turma_id: s.turma?.id || '',
+        sala_id: s.sala?.id || '',
+        professor_id: s.professor?.id || '',
         dia_semana: s.dia_semana || '',
         disciplina: s.disciplina || '',
         hora_inicio: s.hora_inicio || '',
         hora_fim: s.hora_fim || '',
+        professor: s.professor || null,
     }))
 }

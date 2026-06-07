@@ -6,12 +6,13 @@
     import { deletarHorario } from "$lib/services/HorarioServices/Deleted_Horario_Service.js";
     import { carregarTurmas } from "$lib/services/TurmaServices/List_Turma_Service.js";
     import { carregarSalas } from "$lib/services/SalaServices/List_Sala_Service.js";
+    import { carregarUsuarios } from "$lib/services/UserServices/List_User_Service.js";
     import { goto } from "$app/navigation";
-    import "$lib/styles/horario.css";
 
     let token = "";
     let turmas = [];
     let salas = [];
+    let professores = [];
     let blocos = [];
     let turma_id = null;
 
@@ -20,7 +21,7 @@
         hora_inicio: "",
         hora_fim: "",
         disciplina: "",
-        professor_id: "",
+        professor_id: null,
         sala_id: null,
     };
 
@@ -49,6 +50,7 @@
             carregarLista(),
             carregarListaTurmas(),
             carregarListaSalas(),
+            carregarListaProfessores(),
         ]);
     });
 
@@ -68,6 +70,15 @@
         }
     }
 
+    async function carregarListaProfessores() {
+        try {
+            const usuarios = await carregarUsuarios(token);
+            professores = usuarios.filter((u) => u.cargo === "educador");
+        } catch (e) {
+            erro = e?.message || "Erro ao carregar professores.";
+        }
+    }
+
     async function carregarLista() {
         carregandoLista = true;
         try {
@@ -78,17 +89,6 @@
             carregandoLista = false;
         }
     }
-
-    function blocosOrdenados(dia) {
-        return blocos
-            .filter(
-                (b) =>
-                    b.dia_semana === dia &&
-                    (!turma_id || b.turma_id == turma_id),
-            )
-            .sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio));
-    }
-
     async function adicionarBloco() {
         erro = "";
         sucesso = "";
@@ -103,11 +103,15 @@
             return;
         }
 
+        if (!novoBloco.professor_id) {
+            erro = "Selecione um professor.";
+            return;
+        }
+
         if (
             !novoBloco.hora_inicio ||
             !novoBloco.hora_fim ||
-            !novoBloco.disciplina ||
-            !novoBloco.professor_id
+            !novoBloco.disciplina
         ) {
             erro = "Preencha todos os campos do bloco.";
             return;
@@ -127,7 +131,7 @@
                 hora_inicio: "",
                 hora_fim: "",
                 disciplina: "",
-                professor_id: "",
+                professor_id: null,
                 sala_id: null,
             };
             await carregarLista();
@@ -152,10 +156,11 @@
 <HorarioCard
     {turmas}
     {salas}
+    {professores}
+    {blocos}
     bind:turma_id
     bind:novoBloco
     {dias}
-    {blocosOrdenados}
     {carregando}
     {carregandoLista}
     {erro}

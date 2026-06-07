@@ -1,1 +1,1 @@
-export { default as component } from "../../../../src/routes/admin/cadastro-equipamento/+page.svelte";
+export { default as component } from "../../../../src/routes/agendamento/+layout.svelte";

@@ -1,1 +1,2 @@
-export { default as component } from "../../../../src/routes/admin/cadastro-turma/+page.svelte";
+import * as universal from "../../../../src/routes/+page.js";
+export { universal };

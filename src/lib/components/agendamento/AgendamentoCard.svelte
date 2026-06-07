@@ -136,7 +136,3 @@
         </div>
     </main>
 </div>
-
-<style>
-    @import "$lib/styles/agendamento.css";
-</style>

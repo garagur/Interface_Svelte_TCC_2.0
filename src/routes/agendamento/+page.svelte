@@ -4,7 +4,6 @@
     import AgendamentoCard from "$lib/components/agendamento/AgendamentoCard.svelte";
     import { carregarSalas } from "$lib/services/SalaServices/List_Sala_Service.js";
     import { carregarEquipamentos } from "$lib/services/EquipamentoServices/List_Equipamento_Service.js";
-    import "$lib/styles/agendamento.css";
     let token = "";
     let matricula = "";
 

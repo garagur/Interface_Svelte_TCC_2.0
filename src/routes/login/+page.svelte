@@ -5,7 +5,6 @@
     loginUser,
   } from "$lib/services/UserServices/Login_User_Service.js";
   import { goto } from "$app/navigation";
-  import "$lib/styles/login.css";
 
   let email = "";
   let otp = "";

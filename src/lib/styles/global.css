@@ -1,0 +1,38 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+:root {
+    --blue-primary: #2196f3;
+    --blue-dark: #1976d2;
+    --blue-light: #bbdefb;
+    --blue-50: #e3f2fd;
+    --primary: #4b4b4b;
+    --primary-dark: #2c2c2c;
+    --white: #ffffff;
+    --text-dark: #424242;
+    --bg-input: #f8fafc;
+    --border-input: #cbd5e1;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    font-feature-settings: 'liga';
+    display: inline-flex;
+    vertical-align: middle;
+}
+
+s

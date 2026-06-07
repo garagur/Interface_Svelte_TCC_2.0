@@ -1,20 +1,3 @@
-:root {
-    --blue-primary: #2196f3;
-    --blue-dark: #1976d2;
-    --blue-light: #bbdefb;
-    --blue-50: #e3f2fd;
-    --white: #ffffff;
-    --text-dark: #424242;
-    --bg-input: #f8fafc;
-    --border-input: #cbd5e1;
-    --danger: #ef4444;
-    --warning: #f59e0b;
-}
-
-* {
-    box-sizing: border-box;
-}
-
 .scaffold {
     display: flex;
     flex-direction: column;

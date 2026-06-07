@@ -1,10 +1,11 @@
 <script>
     export let turmas = [];
     export let salas = [];
-    export let turma_id;
+    export let professores = [];
+    export let blocos = [];
+    export let turma_id = null;
     export let novoBloco;
     export let dias = [];
-    export let blocosOrdenados;
     export let carregando = false;
     export let carregandoLista = false;
     export let erro = "";
@@ -24,6 +25,16 @@
     };
 
     const diasFimDeSemana = ["sabado", "domingo"];
+
+    function blocosOrdenados(dia) {
+        return blocos
+            .filter(
+                (b) =>
+                    b.dia_semana === dia &&
+                    (!turma_id || b.turma_id == turma_id),
+            )
+            .sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio));
+    }
 </script>
 
 <div class="scaffold">
@@ -38,7 +49,6 @@
     </header>
 
     <main class="horario-content">
-        <!-- TOPO: seleção de turma -->
         <div class="card turma-select-card">
             <label for="turma">Turma</label>
             <select id="turma" bind:value={turma_id}>
@@ -49,7 +59,6 @@
             </select>
         </div>
 
-        <!-- FORMULÁRIO de novo bloco -->
         <div class="card form-bloco-card">
             <h3>
                 <span class="material-symbols-outlined">add_circle</span>
@@ -106,12 +115,12 @@
 
                 <div class="field">
                     <label for="professor">Professor</label>
-                    <input
-                        id="professor"
-                        type="text"
-                        bind:value={novoBloco.professor_id}
-                        placeholder="Ex: João Silva"
-                    />
+                    <select id="professor" bind:value={novoBloco.professor_id}>
+                        <option value={null}>Selecione um professor</option>
+                        {#each professores as p}
+                            <option value={p.id}>{p.nome}</option>
+                        {/each}
+                    </select>
                 </div>
             </div>
 
@@ -128,63 +137,65 @@
             </button>
         </div>
 
-        <!-- GRADE SEMANAL -->
-        <div class="card grade-card">
-            <h3>
-                <span class="material-symbols-outlined">calendar_month</span>
-                Grade Semanal
-            </h3>
+        {#if turma_id}
+            <div class="card grade-card">
+                <h3>
+                    <span class="material-symbols-outlined">calendar_month</span
+                    >
+                    Grade Semanal
+                </h3>
 
-            {#if carregandoLista}
-                <p class="estado-vazio">Carregando horários...</p>
-            {:else}
-                <div class="grade-wrapper">
-                    {#each dias as dia}
-                        <div
-                            class="dia-coluna {diasFimDeSemana.includes(dia)
-                                ? 'fds'
-                                : ''}"
-                        >
-                            <div class="dia-header">{diasLabels[dia]}</div>
-                            <div class="dia-blocos">
-                                {#each blocosOrdenados(dia) as bloco}
-                                    <div class="bloco-card">
-                                        <div class="bloco-horario">
-                                            {bloco.hora_inicio} - {bloco.hora_fim}
-                                        </div>
-                                        <div class="bloco-disciplina">
-                                            {bloco.disciplina}
-                                        </div>
-                                        <div class="bloco-professor">
-                                            <span
-                                                class="material-symbols-outlined icon-tiny"
-                                                >person</span
-                                            >
-                                            {bloco.professor?.name ??
-                                                bloco.professor_id}
-                                        </div>
-                                        <div class="bloco-actions">
-                                            <button
-                                                class="btn-action delete"
-                                                on:click={() =>
-                                                    onRemover(bloco.id)}
-                                                title="Remover"
-                                            >
+                {#if carregandoLista}
+                    <p class="estado-vazio">Carregando horários...</p>
+                {:else}
+                    <div class="grade-wrapper">
+                        {#each dias as dia}
+                            <div
+                                class="dia-coluna {diasFimDeSemana.includes(dia)
+                                    ? 'fds'
+                                    : ''}"
+                            >
+                                <div class="dia-header">{diasLabels[dia]}</div>
+                                <div class="dia-blocos">
+                                    {#each blocosOrdenados(dia) as bloco}
+                                        <div class="bloco-card">
+                                            <div class="bloco-horario">
+                                                {bloco.hora_inicio} - {bloco.hora_fim}
+                                            </div>
+                                            <div class="bloco-disciplina">
+                                                {bloco.disciplina}
+                                            </div>
+                                            <div class="bloco-professor">
                                                 <span
-                                                    class="material-symbols-outlined"
-                                                    >delete</span
+                                                    class="material-symbols-outlined icon-tiny"
+                                                    >person</span
                                                 >
-                                            </button>
+                                                {bloco.professor?.name ??
+                                                    bloco.professor_id}
+                                            </div>
+                                            <div class="bloco-actions">
+                                                <button
+                                                    class="btn-action delete"
+                                                    on:click={() =>
+                                                        onRemover(bloco.id)}
+                                                    title="Remover"
+                                                >
+                                                    <span
+                                                        class="material-symbols-outlined"
+                                                        >delete</span
+                                                    >
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                {:else}
-                                    <div class="bloco-vazio">—</div>
-                                {/each}
+                                    {:else}
+                                        <div class="bloco-vazio">—</div>
+                                    {/each}
+                                </div>
                             </div>
-                        </div>
-                    {/each}
-                </div>
-            {/if}
-        </div>
+                        {/each}
+                    </div>
+                {/if}
+            </div>
+        {/if}
     </main>
 </div>

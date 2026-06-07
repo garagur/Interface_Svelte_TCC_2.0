@@ -6,8 +6,6 @@
   import { carregarAgendamentosSalas } from "$lib/services/AgendamentoServices/AgendamentoSala/List_Agendamento_Sala_Service.js";
   import { carregarAgendamentosEquipamentos } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/List_Agendamento_Equipamento_Service.js";
 
-  // O import do main.css FOI REMOVIDO daqui!
-
   let token = "";
   let matricula = "";
   let cargo = "";
@@ -34,19 +32,19 @@
       agendamentos = [
         ...salas.map((s) => ({
           id: s.id,
-          nome: s.nome || "",
-          item: `Sala ${s.numero || ""}`,
-          dataInicio: s.data_hora_inicio || "",
-          dataFim: s.data_hora_fim || "",
           tipo: "sala",
+          data_hora_inicio: s.data_hora_inicio,
+          data_hora_fim: s.data_hora_fim,
+          obs: s.obs,
+          referencia_id: s.sala_id,
         })),
         ...equipamentos.map((e) => ({
           id: e.id,
-          nome: e.nome || "",
-          item: `Equipamento ${e.modelo || ""}`,
-          dataInicio: e.data_hora_inicio || "",
-          dataFim: e.data_hora_fim || "",
           tipo: "equipamento",
+          data_hora_inicio: e.data_hora_inicio,
+          data_hora_fim: e.data_hora_fim,
+          obs: e.obs,
+          referencia_id: e.equipamento_id,
         })),
       ];
     } catch (e) {
@@ -68,78 +66,10 @@
 <MainCard
   titulo="Portal de Agendamento"
   {matricula}
+  {cargo}
   onSair={handleSair}
   onNovoAgendamento={() => goto("/agendamento")}
-  totalRegistros={agendamentos.length}
+  {agendamentos}
   {carregando}
   {erro}
->
-  <svelte:fragment slot="menu">
-    <button class="menu-card" on:click={() => goto("/agendamento")}>
-      <span class="material-symbols-outlined">calendar_today</span>
-      <span>Meus<br />Agendamentos</span>
-    </button>
-    {#if cargo === "admin"}
-      <button class="menu-card" on:click={() => goto("/admin/cadastro-sala")}>
-        <span class="material-symbols-outlined">meeting_room</span>
-        <span>Cadastrar<br />Sala</span>
-      </button>
-      <button class="menu-card" on:click={() => goto("/admin/cadastro-turma")}>
-        <span class="material-symbols-outlined">groups</span>
-        <span>Cadastrar<br />Turma</span>
-      </button>
-      <button
-        class="menu-card"
-        on:click={() => goto("/admin/cadastro-horario")}
-      >
-        <span class="material-symbols-outlined">calendar_month</span>
-        <span>Cadastrar<br />Horário</span>
-      </button>
-      <button
-        class="menu-card"
-        on:click={() => goto("/admin/cadastro-equipamento")}
-      >
-        <span class="material-symbols-outlined">playlist_add</span>
-        <span>Cadastrar<br />Equipamento</span>
-      </button>
-      <button
-        class="menu-card"
-        on:click={() => goto("/admin/cadastro-usuario")}
-      >
-        <span class="material-symbols-outlined">person_add</span>
-        <span>Cadastrar<br />Usuário</span>
-      </button>
-    {/if}
-  </svelte:fragment>
-
-  <svelte:fragment slot="tabela-body">
-    {#each agendamentos as item, index}
-      <div class="table-row {index % 2 === 0 ? 'even' : 'odd'}">
-        <div class="td flex-2">
-          <span class="material-symbols-outlined icon-tiny">person</span>
-          <span class="text-truncate">{item.nome}</span>
-        </div>
-        <button
-          class="td flex-2 item-clickable"
-          on:click={() => goto("/agendamento")}
-        >
-          <span class="material-symbols-outlined icon-tiny">inventory_2</span>
-          <span class="text-truncate text-link">{item.item}</span>
-        </button>
-        <div class="td flex-2">
-          <span class="material-symbols-outlined icon-tiny">schedule</span>
-          <span class="text-truncate">{item.dataInicio}</span>
-        </div>
-        <div class="td flex-2">
-          <span class="material-symbols-outlined icon-tiny">schedule</span>
-          <span class="text-truncate">{item.dataFim}</span>
-        </div>
-        <div class="td flex-1 action-cell">
-          <button class="btn-info" on:click={() => goto("/agendamento")}>
-            <span class="material-symbols-outlined">info</span>
-          </button>
-        </div>
-      </div>
-    {/each}
-  </svelte:fragment>
-</MainCard>
+/>

@@ -5,7 +5,6 @@
     import { carregarSalas } from "$lib/services/SalaServices/List_Sala_Service.js";
     import { atualizarSalas } from "$lib/services/SalaServices/Update_Sala_Service.js";
     import { goto } from "$app/navigation";
-    import "$lib/styles/admin-cadastro.css";
     let token = "";
     let matriculaLogado = "";
 

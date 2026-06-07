@@ -5,7 +5,6 @@
     import { carregarTurmas } from "$lib/services/TurmaServices/List_Turma_Service.js";
     import { atualizarTurma } from "$lib/services/TurmaServices/Update_Turma_Service.js";
     import { goto } from "$app/navigation";
-    import "$lib/styles/admin-cadastro.css";
 
     let token = "";
     let novaTurma = { nome: "", ano_letivo: null };

@@ -33,7 +33,7 @@ export async function carregarTurmas(token) {
         throw new Error(dados?.message || dados?.error || 'Erro ao carregar turmas.')
     }
 
-    const lista = Array.isArray(dados) ? dados : dados?.data || []
+    const lista = Array.isArray(dados) ? dados : dados?.turmas || dados?.data || []
 
     // @ts-ignore
     return lista.map(s => ({
