@@ -40,6 +40,13 @@
         "domingo",
     ];
 
+    // Reage à mudança de turma_id
+    $: if (turma_id) {
+        carregarLista(turma_id);
+    } else {
+        blocos = [];
+    }
+
     onMount(async () => {
         token = localStorage.getItem("token") || "";
         if (!token) {
@@ -47,7 +54,6 @@
             return;
         }
         await Promise.all([
-            carregarLista(),
             carregarListaTurmas(),
             carregarListaSalas(),
             carregarListaProfessores(),
@@ -79,16 +85,18 @@
         }
     }
 
-    async function carregarLista() {
+    async function carregarLista(id = null) {
         carregandoLista = true;
+        erro = "";
         try {
-            blocos = await carregarHorarios(token);
+            blocos = await carregarHorarios(token, id);
         } catch (e) {
             erro = e?.message || "Erro ao carregar horários.";
         } finally {
             carregandoLista = false;
         }
     }
+
     async function adicionarBloco() {
         erro = "";
         sucesso = "";
@@ -134,7 +142,7 @@
                 professor_id: null,
                 sala_id: null,
             };
-            await carregarLista();
+            await carregarLista(turma_id);
         } catch (e) {
             erro = e?.message || "Erro ao adicionar bloco.";
         } finally {
@@ -146,7 +154,7 @@
         erro = "";
         try {
             await deletarHorario(id, token);
-            await carregarLista();
+            await carregarLista(turma_id);
         } catch (e) {
             erro = e?.message || "Erro ao remover bloco.";
         }

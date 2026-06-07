@@ -1,206 +1,381 @@
-/* ── Itens selecionados ── */
-.selected-section {
-    background: var(--blue-50);
-    border: 1px solid var(--blue-light);
-    border-radius: 12px;
-    padding: 12px;
+/* ── Base ── */
+.escopo-agendamento .scaffold {
     display: flex;
     flex-direction: column;
+    height: 100vh;
+    width: 100%;
+    font-family: Arial, sans-serif;
+    background-color: #fafafa;
+}
+
+.escopo-agendamento .app-bar {
+    background-color: var(--primary);
+    color: var(--white);
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.escopo-agendamento .title-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.escopo-agendamento .title-section h1 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.escopo-agendamento .title-section span {
+    font-size: 11px;
+    opacity: 0.9;
+    margin-top: 2px;
+}
+
+.escopo-agendamento .btn-icon {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.escopo-agendamento .btn-icon:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ── Layout ── */
+.escopo-agendamento .body-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    gap: 16px;
+    overflow-y: auto;
+}
+
+.escopo-agendamento .sala-select-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+}
+
+.escopo-agendamento .sala-select-card label {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text-dark);
+    white-space: nowrap;
+}
+
+.escopo-agendamento .sala-select-card select {
+    flex: 1;
+    max-width: 360px;
+    padding: 8px 12px;
+    border: 1px solid var(--border-input);
+    border-radius: 8px;
+    font-size: 14px;
+    background: var(--bg-input);
+    color: var(--text-dark);
+    outline: none;
+    cursor: pointer;
+}
+
+.escopo-agendamento .conteudo-principal {
+    flex: 1;
+    display: flex;
+    gap: 16px;
+    min-height: 0;
+}
+
+/* ── Cards ── */
+.escopo-agendamento .card {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 20px;
+}
+
+.escopo-agendamento .form-card {
+    width: 280px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+}
+
+.escopo-agendamento .calendario-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+}
+
+/* ── Formulário ── */
+.escopo-agendamento .card-header {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 4px;
+}
+
+.escopo-agendamento .icon-large {
+    font-size: 36px;
+    color: var(--blue-primary);
+}
+
+.escopo-agendamento form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.escopo-agendamento .field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.escopo-agendamento .field label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.escopo-agendamento .field input {
+    padding: 8px 10px;
+    border: 1px solid var(--border-input);
+    border-radius: 8px;
+    font-size: 13px;
+    background: var(--bg-input);
+    color: var(--text-dark);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.escopo-agendamento .field input:focus {
+    border-color: var(--blue-primary);
+}
+
+.escopo-agendamento .bottom-action {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.escopo-agendamento .btn-primary {
+    flex: 1;
+    background-color: var(--blue-primary);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 13px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.escopo-agendamento .btn-primary:hover:not(:disabled) {
+    background-color: var(--blue-dark);
+}
+
+.escopo-agendamento .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.escopo-agendamento .btn-secondary {
+    flex: 1;
+    background-color: #f1f5f9;
+    color: var(--text-dark);
+    border: 1px solid var(--border-input);
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 13px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.escopo-agendamento .btn-secondary:hover {
+    background-color: #e2e8f0;
+}
+
+/* ── Mensagens ── */
+.escopo-agendamento .msg-erro {
+    color: var(--danger);
+    font-size: 12px;
+    margin: 0;
+}
+
+.escopo-agendamento .msg-sucesso {
+    color: #16a34a;
+    font-size: 12px;
+    margin: 0;
+}
+
+/* ── Calendário ── */
+.escopo-agendamento .grade-header-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.escopo-agendamento .grade-header-title h3 {
+    margin: 0;
+    font-size: 15px;
+    color: var(--primary);
+}
+
+.escopo-agendamento .title-left {
+    display: flex;
+    align-items: center;
     gap: 8px;
 }
 
-.selected-label {
-    font-size: 0.8rem;
+.escopo-agendamento .text-primary {
+    color: var(--blue-primary);
+}
+
+.escopo-agendamento .badge {
+    background-color: var(--blue-50);
+    border: 1px solid var(--blue-light);
+    color: var(--blue-dark);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.escopo-agendamento .grade-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.escopo-agendamento .grade-cabecalho {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 4px;
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 1;
+    padding-bottom: 4px;
+}
+
+.escopo-agendamento .cabecalho-dia {
+    text-align: center;
+    font-size: 11px;
     font-weight: 700;
     color: var(--blue-dark);
-    display: flex;
-    align-items: center;
-    gap: 4px;
+    padding: 6px 0;
+    background: var(--blue-50);
+    border-radius: 6px;
 }
 
-.badge-count {
-    background: var(--blue-primary);
-    color: #fff;
-    border-radius: 20px;
-    font-size: 10px;
-    padding: 1px 7px;
-    font-weight: 700;
-    margin-left: 2px;
-}
-
-.selected-empty {
-    font-size: 0.8rem;
-    color: #94a3b8;
-    font-style: italic;
-    margin: 0;
-}
-
-.selected-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+.escopo-agendamento .grade-semanas {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    padding-bottom: 12px;
 }
 
-.selected-item {
+.escopo-agendamento .semana-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    min-height: 72px;
+}
+
+.escopo-agendamento .dia-celula {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-height: 72px;
+}
+
+.escopo-agendamento .dia-celula.dia-hoje {
+    border-color: var(--blue-primary);
+    border-width: 2px;
+}
+
+.escopo-agendamento .dia-celula.dia-vazio {
+    background: #f8fafc;
+    border-color: transparent;
+}
+
+.escopo-agendamento .dia-numero {
+    font-size: 11px;
+    font-weight: 600;
+    color: #94a3b8;
+    align-self: flex-end;
+}
+
+.escopo-agendamento .dia-numero.numero-hoje {
+    background: var(--blue-primary);
+    color: #fff;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
     display: flex;
     align-items: center;
-    gap: 6px;
-    background: #fff;
-    border-radius: 8px;
-    padding: 5px 8px;
-    font-size: 0.8rem;
-    color: var(--text-dark);
-    animation: pop 0.15s ease;
+    justify-content: center;
+    font-size: 10px;
 }
 
-@keyframes pop {
-    from {
-        transform: scale(0.9);
-        opacity: 0;
-    }
-
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
+.escopo-agendamento .ag-bloco {
+    border-radius: 6px;
+    padding: 3px 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
 }
 
-.selected-nome {
-    flex: 1;
-    font-weight: 500;
+.escopo-agendamento .ag-bloco.sala {
+    background: #dbeafe;
+    border-left: 3px solid #1d4ed8;
+}
+
+.escopo-agendamento .ag-hora {
+    font-size: 10px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.escopo-agendamento .ag-tipo-label {
+    font-size: 10px;
+    color: #64748b;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.tipo-icon {
-    color: var(--blue-primary);
-}
-
-.btn-remove {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 2px;
-    border-radius: 4px;
+.escopo-agendamento .estado-vazio {
+    padding: 2rem;
+    text-align: center;
     color: #94a3b8;
-    display: flex;
-    align-items: center;
-    transition: color 0.15s;
-}
-
-.btn-remove:hover {
-    color: var(--danger);
-}
-
-.btn-remove .material-symbols-outlined {
-    font-size: 16px;
-}
-
-/* ── Filtros ── */
-.filter-bar {
-    padding: 0 24px 14px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.search-input {
-    flex: 1;
-    min-width: 140px;
-    padding: 7px 12px;
-    border: 1px solid var(--border-input);
-    border-radius: 8px;
-    font-size: 13px;
-    background: var(--bg-input);
-    color: #1e293b;
-    transition: border-color 0.2s;
-    outline: none;
-}
-
-.search-input:focus {
-    border-color: var(--blue-primary);
-}
-
-.filter-btns {
-    display: flex;
-    gap: 6px;
-}
-
-.filter-btn {
-    padding: 6px 14px;
-    border-radius: 8px;
-    border: 1.5px solid var(--border-input);
-    background: var(--bg-input);
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    color: #64748b;
-    transition: all 0.15s;
-}
-
-.filter-btn:hover {
-    border-color: var(--blue-primary);
-    color: var(--blue-primary);
-}
-
-.filter-btn.active {
-    background: var(--blue-primary);
-    color: #fff;
-    border-color: var(--blue-primary);
-}
-
-/* ── Badges exclusivos ── */
-.badge-tipo {
-    padding: 3px 8px;
-    border-radius: 6px;
-    font-weight: bold;
-    font-size: 11px;
-}
-
-.badge-tipo.sala {
-    background: #dbeafe;
-    color: #1d4ed8;
-}
-
-.badge-tipo.equipamento {
-    background: #fef3c7;
-    color: #b45309;
-}
-
-/* ── Estados de linha ── */
-.table-row.row-selected {
-    background-color: #dbeafe !important;
-}
-
-.table-row.row-disabled {
-    opacity: 0.5;
-}
-
-/* ── Botões de ação exclusivos ── */
-.btn-action.add {
-    color: #16a34a;
-    background-color: #dcfce7;
-}
-
-.btn-action.add:hover {
-    background-color: #bbf7d0;
-}
-
-.btn-action.remove {
-    color: #b91c1c;
-    background-color: #fee2e2;
-}
-
-.btn-action.remove:hover {
-    background-color: #fecaca;
-}
-
-.btn-action:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
+    font-size: 0.9rem;
 }

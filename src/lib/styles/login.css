@@ -1,4 +1,4 @@
-.login-wrapper {
+.escopo-login .login-wrapper {
     min-height: 100vh;
     width: 100%;
     display: flex;
@@ -9,7 +9,7 @@
     background-attachment: fixed;
 }
 
-.card {
+.escopo-login .card {
     background: #ffffff;
     padding: 2.5rem;
     border-radius: 24px;
@@ -18,31 +18,31 @@
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
-.card h2 {
+.escopo-login .card h2 {
     color: rgb(51, 51, 51);
     text-align: center;
     margin-bottom: 1.5rem;
 }
 
-.card form {
+.escopo-login .card form {
     display: flex;
     flex-direction: column;
     gap: 1.2rem;
 }
 
-.field {
+.escopo-login .field {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-.field label {
+.escopo-login .field label {
     font-weight: 600;
     font-size: 0.9rem;
     color: #64748b;
 }
 
-.field input {
+.escopo-login .field input {
     padding: 0.75rem;
     background: #f8fafc;
     border: 1px solid #cbd5e1;
@@ -50,13 +50,13 @@
     border-radius: 8px;
 }
 
-.field input:focus {
+.escopo-login .field input:focus {
     outline: none;
     border-color: #464646;
     background: #fff;
 }
 
-.btn-main {
+.escopo-login .btn-main {
     background: #1f1f1f;
     color: white;
     border: none;
@@ -67,18 +67,18 @@
     transition: background 0.2s;
 }
 
-.btn-main:hover {
+.escopo-login .btn-main:hover {
     background: rgb(54, 54, 54);
 }
 
-.erro {
+.escopo-login .erro {
     color: #dc2626;
     margin: 0;
     font-size: 0.9rem;
     text-align: center;
 }
 
-.info {
+.escopo-login .info {
     font-size: 0.9rem;
     color: #64748b;
     text-align: center;

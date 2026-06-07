@@ -12,14 +12,19 @@ async function parseJson(response) {
 
 /**
  * @param {string} token
+ * @param {number|null} sala_id
  * @returns {Promise<any[]>}
  */
-export async function carregarAgendamentosSalas(token) {
+export async function carregarAgendamentosSalas(token, sala_id = null) {
     if (!token) {
         throw new Error('Token de autenticação não encontrado. Faça login novamente.')
     }
 
-    const resp = await fetch(AGENDAMENTOSALA_ROUTE.listar, {
+    const url = sala_id
+        ? `${AGENDAMENTOSALA_ROUTE.listar}?sala_id=${sala_id}`
+        : AGENDAMENTOSALA_ROUTE.listar
+
+    const resp = await fetch(url, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -30,14 +35,12 @@ export async function carregarAgendamentosSalas(token) {
     const dados = await parseJson(resp)
 
     if (!resp.ok) {
-        throw new Error(dados?.message || dados?.error || 'Erro ao carregar salas.')
+        throw new Error(dados?.message || dados?.error || 'Erro ao carregar agendamentos.')
     }
 
     const lista = Array.isArray(dados) ? dados : dados?.data || []
 
-    // @ts-ignore
     return lista.map(s => ({
-
         id: s.id,
         user_id: s.user_id || '',
         sala_id: s.sala_id || '',

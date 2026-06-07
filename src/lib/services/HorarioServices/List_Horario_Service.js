@@ -12,14 +12,19 @@ async function parseJson(response) {
 
 /**
  * @param {string} token
+ * @param {number|null} turma_id
  * @returns {Promise<any[]>}
  */
-export async function carregarHorarios(token) {
+export async function carregarHorarios(token, turma_id = null) {
     if (!token) {
         throw new Error('Token de autenticação não encontrado. Faça login novamente.')
     }
 
-    const resp = await fetch(HORARIO_ROUTES.listar, {
+    const url = turma_id
+        ? `${HORARIO_ROUTES.listar}?turma_id=${turma_id}`
+        : HORARIO_ROUTES.listar
+
+    const resp = await fetch(url, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',

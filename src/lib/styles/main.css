@@ -105,10 +105,13 @@
     display: flex;
     flex-direction: column;
     padding: 24px;
+    gap: 8px;
+    /* 👈 adiciona espaço entre os filhos */
     overflow: hidden;
     width: 100%;
     min-height: 0;
 }
+
 
 /* ── Tabela ── */
 .escopo-main .table-header-title {
@@ -154,6 +157,7 @@
     border-radius: 12px;
     border: 1px solid #e0e0e0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    margin-bottom: 8px;
 }
 
 .escopo-main .table-header {
@@ -312,6 +316,7 @@
     flex: 1;
     overflow-y: auto;
     min-height: 0;
+    padding: 0 2px 8px 2px;
 }
 
 .escopo-main .grade-cabecalho {
@@ -340,6 +345,7 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+    padding-bottom: 16px;
 }
 
 .escopo-main .semana-row {
