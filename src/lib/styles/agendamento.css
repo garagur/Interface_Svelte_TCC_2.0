@@ -95,7 +95,7 @@
 
 /* ── Cards ── */
 .escopo-agendamento .card {
-    background: #fff;
+    background: var(--white);
     border-radius: 16px;
     border: 1px solid #e0e0e0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -128,7 +128,7 @@
 
 .escopo-agendamento .icon-large {
     font-size: 36px;
-    color: var(--blue-primary);
+    color: var(--primary);
 }
 
 .escopo-agendamento form {
@@ -161,7 +161,7 @@
 }
 
 .escopo-agendamento .field input:focus {
-    border-color: var(--blue-primary);
+    border-color: var(--primary);
 }
 
 .escopo-agendamento .bottom-action {
@@ -172,8 +172,8 @@
 
 .escopo-agendamento .btn-primary {
     flex: 1;
-    background-color: var(--blue-primary);
-    color: #fff;
+    background-color: var(--confirm);
+    color: var(--white);
     border: none;
     border-radius: 10px;
     padding: 10px;
@@ -188,7 +188,7 @@
 }
 
 .escopo-agendamento .btn-primary:hover:not(:disabled) {
-    background-color: var(--blue-dark);
+    background-color: var(--confirm-dark);
 }
 
 .escopo-agendamento .btn-primary:disabled {
@@ -198,9 +198,9 @@
 
 .escopo-agendamento .btn-secondary {
     flex: 1;
-    background-color: #f1f5f9;
-    color: var(--text-dark);
-    border: 1px solid var(--border-input);
+    background-color: var(--cancel);
+    color: var(--white);
+    border: 1px solid var(--cancel-dark);
     border-radius: 10px;
     padding: 10px;
     font-size: 13px;
@@ -214,18 +214,18 @@
 }
 
 .escopo-agendamento .btn-secondary:hover {
-    background-color: #e2e8f0;
+    background-color: var(--cancel-dark);
 }
 
 /* ── Mensagens ── */
 .escopo-agendamento .msg-erro {
-    color: var(--danger);
+    color: var(--cancel);
     font-size: 12px;
     margin: 0;
 }
 
 .escopo-agendamento .msg-sucesso {
-    color: #16a34a;
+    color: var(--confirm);
     font-size: 12px;
     margin: 0;
 }
@@ -251,13 +251,13 @@
 }
 
 .escopo-agendamento .text-primary {
-    color: var(--blue-primary);
+    color: var(--primary);
 }
 
 .escopo-agendamento .badge {
-    background-color: var(--blue-50);
-    border: 1px solid var(--blue-light);
-    color: var(--blue-dark);
+    background-color: var(--gray-50);
+    border: 1px solid var(--primary-light);
+    color: var(--primary-dark);
     padding: 4px 10px;
     border-radius: 12px;
     font-size: 11px;
@@ -278,7 +278,7 @@
     margin-bottom: 4px;
     position: sticky;
     top: 0;
-    background: #fff;
+    background: var(--white);
     z-index: 1;
     padding-bottom: 4px;
 }
@@ -287,9 +287,9 @@
     text-align: center;
     font-size: 11px;
     font-weight: 700;
-    color: var(--blue-dark);
+    color: var(--primary-dark);
     padding: 6px 0;
-    background: var(--blue-50);
+    background: var(--gray-50);
     border-radius: 6px;
 }
 
@@ -308,7 +308,7 @@
 }
 
 .escopo-agendamento .dia-celula {
-    background: #fff;
+    background: var(--white);
     border: 1px solid #e0e0e0;
     border-radius: 8px;
     padding: 6px;
@@ -319,25 +319,25 @@
 }
 
 .escopo-agendamento .dia-celula.dia-hoje {
-    border-color: var(--blue-primary);
+    border-color: var(--primary);
     border-width: 2px;
 }
 
 .escopo-agendamento .dia-celula.dia-vazio {
-    background: #f8fafc;
+    background: var(--bg-input);
     border-color: transparent;
 }
 
 .escopo-agendamento .dia-numero {
     font-size: 11px;
     font-weight: 600;
-    color: #94a3b8;
+    color: var(--text-muted);
     align-self: flex-end;
 }
 
 .escopo-agendamento .dia-numero.numero-hoje {
-    background: var(--blue-primary);
-    color: #fff;
+    background: var(--primary);
+    color: var(--white);
     border-radius: 50%;
     width: 18px;
     height: 18px;
@@ -356,19 +356,19 @@
 }
 
 .escopo-agendamento .ag-bloco.sala {
-    background: #dbeafe;
-    border-left: 3px solid #1d4ed8;
+    background: var(--gray-50);
+    border-left: 3px solid var(--primary);
 }
 
 .escopo-agendamento .ag-hora {
     font-size: 10px;
     font-weight: 700;
-    color: #1e293b;
+    color: var(--primary-dark);
 }
 
 .escopo-agendamento .ag-tipo-label {
     font-size: 10px;
-    color: #64748b;
+    color: var(--text-muted);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -377,14 +377,14 @@
 .escopo-agendamento .estado-vazio {
     padding: 2rem;
     text-align: center;
-    color: #94a3b8;
+    color: var(--text-muted);
     font-size: 0.9rem;
 }
 
 /* ── Aulas Fixas — conteúdo do slot da GradeSemanal ── */
 .escopo-agendamento .bloco-card {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
+    background: var(--bg-input);
+    border: 1px solid var(--primary-light);
     border-radius: 8px;
     padding: 0.6rem;
     font-size: 0.8rem;
@@ -395,12 +395,12 @@
 
 .escopo-agendamento .bloco-horario {
     font-weight: 700;
-    color: #1e293b;
+    color: var(--primary-dark);
     font-size: 0.75rem;
 }
 
 .escopo-agendamento .bloco-disciplina {
-    color: #334155;
+    color: var(--text-dark);
     font-weight: 600;
 }
 
@@ -408,7 +408,7 @@
     display: flex;
     align-items: center;
     gap: 0.2rem;
-    color: #64748b;
+    color: var(--text-muted);
     font-size: 0.75rem;
 }
 
@@ -416,6 +416,6 @@
     display: flex;
     align-items: center;
     gap: 0.2rem;
-    color: #64748b;
+    color: var(--text-muted);
     font-size: 0.75rem;
 }

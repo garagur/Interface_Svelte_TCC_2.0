@@ -10,24 +10,25 @@
     justify-content: space-between;
     align-items: center;
     padding: 1rem 2rem;
-    background: #1f1f1f;
-    color: white;
+    background: var(--primary);
+    color: var(--white);
 }
 
 .escopo-horario .title-section h1 {
+    color: var(--white);
     margin: 0;
     font-size: 1.2rem;
 }
 
 .escopo-horario .title-section span {
     font-size: 0.85rem;
-    color: #aaa;
+    color: #a8a8a8;
 }
 
 .escopo-horario .btn-icon {
     background: transparent;
     border: none;
-    color: white;
+    color: var(--white);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -41,7 +42,7 @@
 }
 
 .escopo-horario .card {
-    background: #ffffff;
+    background: var(--white);
     border-radius: 16px;
     padding: 1.5rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -55,16 +56,16 @@
 
 .escopo-horario .turma-select-card label {
     font-weight: 600;
-    color: #64748b;
+    color: var(--text-dark);
     white-space: nowrap;
 }
 
 .escopo-horario select {
     padding: 0.6rem 0.75rem;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--border-input);
     border-radius: 8px;
-    background: #f8fafc;
-    color: #1e293b;
+    background: var(--bg-input);
+    color: var(--text-dark);
     font-size: 0.95rem;
     width: 100%;
     max-width: 400px;
@@ -75,7 +76,7 @@
     align-items: center;
     gap: 0.5rem;
     margin-bottom: 1rem;
-    color: #333;
+    color: var(--text-dark);
 }
 
 .escopo-horario .form-bloco-fields {
@@ -96,30 +97,30 @@
 .escopo-horario label {
     font-weight: 600;
     font-size: 0.85rem;
-    color: #64748b;
+    color: var(--text-muted);
 }
 
 .escopo-horario input {
     padding: 0.65rem 0.75rem;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--border-input);
     border-radius: 8px;
-    background: #f8fafc;
-    color: #1e293b;
+    background: var(--bg-input);
+    color: var(--text-dark);
     font-size: 0.9rem;
 }
 
 .escopo-horario input:focus {
     outline: none;
-    border-color: #464646;
-    background: #fff;
+    border-color: var(--primary);
+    background: var(--white);
 }
 
 .escopo-horario .btn-primary {
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    background: #1f1f1f;
-    color: white;
+    background: var(--confirm);
+    color: var(--white);
     border: none;
     padding: 0.7rem 1.2rem;
     border-radius: 10px;
@@ -129,7 +130,7 @@
 }
 
 .escopo-horario .btn-primary:hover {
-    background: #3a3a3a;
+    background: var(--confirm-dark);
 }
 
 .escopo-horario .btn-primary:disabled {
@@ -138,13 +139,13 @@
 }
 
 .escopo-horario .msg-erro {
-    color: #dc2626;
+    color: var(--cancel);
     font-size: 0.9rem;
     margin: 0.5rem 0;
 }
 
 .escopo-horario .msg-sucesso {
-    color: #16a34a;
+    color: var(--confirm);
     font-size: 0.9rem;
     margin: 0.5rem 0;
 }
@@ -157,13 +158,13 @@
     align-items: center;
     gap: 0.5rem;
     margin-bottom: 1rem;
-    color: #333;
+    color: var(--text-dark);
 }
 
 /* BLOCO — conteúdo específico do slot usado pelo HorarioCard */
 .escopo-horario .bloco-card {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
+    background: var(--bg-input);
+    border: 1px solid var(--primary-light);
     border-radius: 8px;
     padding: 0.6rem;
     font-size: 0.8rem;
@@ -174,12 +175,12 @@
 
 .escopo-horario .bloco-horario {
     font-weight: 700;
-    color: #1e293b;
+    color: var(--primary-dark);
     font-size: 0.75rem;
 }
 
 .escopo-horario .bloco-disciplina {
-    color: #334155;
+    color: var(--text-dark);
     font-weight: 600;
 }
 
@@ -187,7 +188,7 @@
     display: flex;
     align-items: center;
     gap: 0.2rem;
-    color: #64748b;
+    color: var(--text-muted);
     font-size: 0.75rem;
 }
 
@@ -207,11 +208,11 @@
 }
 
 .escopo-horario .btn-action.delete {
-    color: #dc2626;
+    color: var(--cancel);
 }
 
 .escopo-horario .btn-action.delete:hover {
-    background: #fee2e2;
+    background: var(--cancel-light);
 }
 
 .escopo-horario .icon-tiny {

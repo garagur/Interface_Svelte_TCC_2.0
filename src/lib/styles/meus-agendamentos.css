@@ -1,19 +1,18 @@
-/* ─── Layout base ─────────────────────────────────────────────────── */
 .meus-agendamentos .scaffold {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background: #f1f5f9;
+    font-family: "Inter", Arial, sans-serif;
+    background: var(--gray-50);
 }
 
-/* ─── App bar ─────────────────────────────────────────────────────── */
 .meus-agendamentos .app-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 24px;
     height: 64px;
-    background: var(--primary-dark);
+    background: var(--primary);
     color: var(--white);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
     position: sticky;
@@ -30,7 +29,7 @@
 
 .meus-agendamentos .title-section span {
     font-size: 0.75rem;
-    color: #b0bec5;
+    color: var(--border-input);
 }
 
 .meus-agendamentos .btn-icon {
@@ -50,7 +49,6 @@
     background: rgba(255, 255, 255, 0.1);
 }
 
-/* ─── Conteúdo principal ──────────────────────────────────────────── */
 .meus-agendamentos .page-content {
     display: flex;
     flex-direction: column;
@@ -61,7 +59,6 @@
     width: 100%;
 }
 
-/* ─── Card genérico ───────────────────────────────────────────────── */
 .meus-agendamentos .card {
     background: var(--white);
     border-radius: 12px;
@@ -75,11 +72,11 @@
     gap: 10px;
     margin-bottom: 18px;
     padding-bottom: 14px;
-    border-bottom: 1px solid #e8edf2;
+    border-bottom: 1px solid var(--gray-50);
 }
 
 .meus-agendamentos .card-header .material-symbols-outlined {
-    color: var(--blue-primary);
+    color: var(--primary);
     font-size: 22px;
 }
 
@@ -90,7 +87,6 @@
     color: var(--text-dark);
 }
 
-/* ─── Grade semanal ───────────────────────────────────────────────── */
 .meus-agendamentos .grade-wrapper {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -112,7 +108,7 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--white);
-    background: var(--blue-primary);
+    background: var(--primary);
     border-radius: 6px;
     padding: 6px 4px;
 }
@@ -123,11 +119,10 @@
     gap: 6px;
 }
 
-/* ─── Bloco de aula ───────────────────────────────────────────────── */
 .meus-agendamentos .bloco-aula {
-    background: var(--blue-50);
-    border: 1px solid var(--blue-light);
-    border-left: 3px solid var(--blue-primary);
+    background: var(--gray-50);
+    border: 1px solid var(--primary-light);
+    border-left: 3px solid var(--primary);
     border-radius: 8px;
     padding: 10px 12px;
     display: flex;
@@ -138,7 +133,7 @@
 .meus-agendamentos .bloco-horario {
     font-size: 0.7rem;
     font-weight: 700;
-    color: var(--blue-dark);
+    color: var(--primary-dark);
     letter-spacing: 0.02em;
 }
 
@@ -154,17 +149,17 @@
     align-items: center;
     gap: 4px;
     font-size: 0.7rem;
-    color: #78909c;
+    color: var(--text-muted);
 }
 
 .meus-agendamentos .bloco-meta .material-symbols-outlined {
     font-size: 13px;
-    color: #90a4ae;
+    color: var(--text-muted);
 }
 
 .meus-agendamentos .bloco-vazio {
     text-align: center;
-    color: #b0bec5;
+    color: var(--text-muted);
     font-size: 0.8rem;
     padding: 12px 0;
 }
@@ -180,19 +175,19 @@
     display: flex;
     align-items: stretch;
     gap: 0;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--primary-light);
     border-radius: 10px;
     overflow: hidden;
     transition: box-shadow 0.2s;
 }
 
 .meus-agendamentos .agendamento-item:hover {
-    box-shadow: 0 3px 10px rgba(33, 150, 243, 0.12);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
 }
 
 .meus-agendamentos .agendamento-faixa {
     width: 4px;
-    background: var(--blue-primary);
+    background: var(--primary);
     flex-shrink: 0;
 }
 
@@ -210,7 +205,7 @@
     gap: 6px;
     font-size: 0.8rem;
     font-weight: 700;
-    color: var(--blue-dark);
+    color: var(--primary-dark);
 }
 
 .meus-agendamentos .agendamento-data-hora .material-symbols-outlined {
@@ -228,12 +223,12 @@
 
 .meus-agendamentos .agendamento-sala .material-symbols-outlined {
     font-size: 15px;
-    color: #90a4ae;
+    color: var(--text-muted);
 }
 
 .meus-agendamentos .agendamento-obs {
     font-size: 0.75rem;
-    color: #78909c;
+    color: var(--text-muted);
     font-style: italic;
     margin-top: 2px;
 }
@@ -255,27 +250,25 @@
 }
 
 .meus-agendamentos .badge-status.futuro {
-    background: #e8f5e9;
-    color: #2e7d32;
+    background: var(--confirm-light);
+    color: var(--confirm-dark);
 }
 
 .meus-agendamentos .badge-status.passado {
-    background: #f5f5f5;
-    color: #9e9e9e;
+    background: var(--gray-50);
+    color: var(--text-muted);
 }
 
-/* ─── Estado vazio / carregando ───────────────────────────────────── */
 .meus-agendamentos .estado-vazio {
     text-align: center;
-    color: #b0bec5;
+    color: var(--text-muted);
     font-size: 0.85rem;
     padding: 32px 0;
 }
 
-/* ─── Erro ────────────────────────────────────────────────────────── */
 .meus-agendamentos .msg-erro {
-    background: #fff5f5;
-    color: var(--danger);
+    background: var(--cancel-light);
+    color: var(--cancel);
     border: 1px solid #fecaca;
     border-radius: 8px;
     padding: 10px 14px;

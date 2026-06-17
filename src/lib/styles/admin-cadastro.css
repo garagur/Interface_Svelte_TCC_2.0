@@ -7,7 +7,8 @@
 }
 
 .app-bar {
-    background-color: var(--white);
+    background-color: var(--primary);
+    color: var(--white);
     padding: 12px 24px;
     display: flex;
     justify-content: space-between;
@@ -24,19 +25,19 @@
 .title-section h1 {
     margin: 0;
     font-size: 18px;
-    color: var(--blue-primary);
+    color: var(--white);
 }
 
 .title-section span {
     font-size: 11px;
-    color: #64748b;
+    color: #a8a8a8;
     margin-top: 2px;
 }
 
 .btn-icon {
     background: none;
     border: none;
-    color: var(--blue-primary);
+    color: var(--white);
     cursor: pointer;
     padding: 8px;
     border-radius: 50%;
@@ -47,7 +48,7 @@
 }
 
 .btn-icon:hover {
-    background: #cdcdcd;
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .body-content {
@@ -62,7 +63,7 @@
 }
 
 .card {
-    background: #ffffff;
+    background: var(--white);
     border-radius: 24px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
 }
@@ -90,7 +91,7 @@
 
 .icon-large {
     font-size: 32px;
-    color: var(--blue-primary);
+    color: var(--primary);
     margin-bottom: 4px;
 }
 
@@ -109,14 +110,14 @@ form {
 label {
     font-weight: 600;
     font-size: 0.85rem;
-    color: #64748b;
+    color: var(--text-muted);
 }
 
 input {
     padding: 0.65rem;
     background: var(--bg-input);
     border: 1px solid var(--border-input);
-    color: #1e293b;
+    color: var(--text-dark);
     border-radius: 8px;
     font-size: 0.9rem;
     transition: border-color 0.2s;
@@ -124,16 +125,16 @@ input {
 }
 
 input:focus {
-    border-color: var(--blue-primary);
+    border-color: var(--primary);
     outline: none;
-    background: #fff;
+    background: var(--white);
 }
 
 select {
     padding: 0.65rem;
     background-color: var(--bg-input);
     border: 1px solid var(--border-input);
-    color: #1e293b;
+    color: var(--text-dark);
     border-radius: 8px;
     font-size: 0.9rem;
     width: 100%;
@@ -147,9 +148,9 @@ select {
 }
 
 select:focus {
-    border-color: var(--blue-primary);
+    border-color: var(--primary);
     outline: none;
-    background-color: #fff;
+    background-color: var(--white);
 }
 
 .bottom-action {
@@ -161,7 +162,7 @@ select:focus {
 
 .btn-primary {
     flex: 1;
-    background-color: var(--blue-primary);
+    background-color: var(--confirm);
     color: var(--white);
     border: none;
     border-radius: 12px;
@@ -177,19 +178,19 @@ select:focus {
 }
 
 .btn-primary:hover {
-    background-color: var(--blue-dark);
+    background-color: var(--confirm-dark);
 }
 
 .btn-primary:disabled {
-    background: #7dd3fc;
+    background: var(--primary);
     cursor: not-allowed;
 }
 
 .btn-secondary {
     flex: 1;
-    background-color: #f1f5f9;
-    color: #64748b;
-    border: 1px solid #cbd5e1;
+    background-color: var(--cancel);
+    color: var(--white);
+    border: 1px solid var(--cancel-dark);
     border-radius: 12px;
     padding: 14px;
     font-size: 15px;
@@ -203,18 +204,18 @@ select:focus {
 }
 
 .btn-secondary:hover {
-    background-color: #e2e8f0;
+    background-color: var(--cancel-dark);
 }
 
 .msg-erro {
-    color: #dc2626;
+    color: var(--cancel);
     font-size: 0.85rem;
     text-align: center;
     margin: 0;
 }
 
 .msg-sucesso {
-    color: #16a34a;
+    color: var(--confirm);
     font-size: 0.85rem;
     text-align: center;
     margin: 0;
@@ -223,7 +224,7 @@ select:focus {
 .estado-vazio {
     padding: 2rem;
     text-align: center;
-    color: #94a3b8;
+    color: var(--text-muted);
     font-size: 0.9rem;
 }
 
@@ -241,19 +242,19 @@ select:focus {
 }
 
 .text-blue {
-    color: var(--blue-primary);
+    color: var(--primary);
 }
 
 .table-header-title h3 {
     margin: 0;
     font-size: 18px;
-    color: var(--blue-primary);
+    color: var(--primary);
 }
 
 .badge {
-    background-color: var(--blue-50);
-    border: 1px solid var(--blue-light);
-    color: var(--blue-dark);
+    background-color: var(--gray-50);
+    border: 1px solid var(--primary-light);
+    color: var(--primary-dark);
     padding: 4px 10px;
     border-radius: 12px;
     font-size: 11px;
@@ -264,14 +265,14 @@ select:focus {
     margin: 0 24px;
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--blue-light);
+    border: 1px solid var(--primary-light);
     border-radius: 12px;
     flex: 1;
     overflow: hidden;
 }
 
 .table-header {
-    background-color: var(--blue-primary);
+    background-color: var(--primary);
     color: var(--white);
     display: flex;
     flex-shrink: 0;
@@ -287,13 +288,13 @@ select:focus {
 .table-body {
     flex: 1;
     overflow-y: auto;
-    background: white;
+    background: var(--white);
 }
 
 .table-row {
     display: flex;
     transition: background 0.2s;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--gray-50);
 }
 
 .table-row:last-child {
@@ -301,7 +302,7 @@ select:focus {
 }
 
 .table-row:hover {
-    background-color: #f1f8ff;
+    background-color: var(--gray-50);
 }
 
 .table-row.even {
@@ -309,7 +310,7 @@ select:focus {
 }
 
 .table-row.odd {
-    background-color: var(--blue-50);
+    background-color: var(--gray-50);
 }
 
 .td {
@@ -343,7 +344,7 @@ select:focus {
 
 .icon-tiny {
     font-size: 14px;
-    color: #42a5f5;
+    color: var(--text-muted);
 }
 
 .action-cell {
@@ -368,7 +369,7 @@ select:focus {
 
 .btn-action.edit {
     color: var(--warning);
-    background-color: #fef3c7;
+    background-color: var(--warning-light);
 }
 
 .btn-action.edit:hover {
@@ -376,8 +377,8 @@ select:focus {
 }
 
 .btn-action.delete {
-    color: var(--danger);
-    background-color: #fee2e2;
+    color: var(--cancel);
+    background-color: var(--cancel-light);
 }
 
 .btn-action.delete:hover {
@@ -412,14 +413,14 @@ select:focus {
 .toggle-track {
     position: absolute;
     inset: 0;
-    background: #cbd5e1;
+    background: var(--border-input);
     border-radius: 24px;
     cursor: pointer;
     transition: background 0.2s;
 }
 
 .toggle-switch input:checked~.toggle-track {
-    background: #2196f3;
+    background: var(--confirm);
 }
 
 .toggle-thumb {
@@ -428,7 +429,7 @@ select:focus {
     height: 18px;
     left: 3px;
     top: 3px;
-    background: white;
+    background: var(--white);
     border-radius: 50%;
     transition: transform 0.2s;
 }
@@ -439,16 +440,16 @@ select:focus {
 
 .toggle-label {
     font-size: 0.85rem;
-    color: #64748b;
+    color: var(--text-muted);
     font-weight: 600;
 }
 
 .badge-numero {
-    background: #dbeafe;
+    background: var(--gray-50);
     padding: 4px 8px;
     border-radius: 6px;
     font-weight: bold;
-    color: #1d4ed8;
+    color: var(--primary);
     font-size: 11px;
 }
 
@@ -460,13 +461,13 @@ select:focus {
 }
 
 .badge-status.ativo {
-    background: #dcfce7;
-    color: #15803d;
+    background: var(--confirm-light);
+    color: var(--confirm-dark);
 }
 
 .badge-status.inativo {
-    background: #fee2e2;
-    color: #b91c1c;
+    background: var(--cancel-light);
+    color: var(--cancel-dark);
 }
 
 @media (max-width: 900px) {

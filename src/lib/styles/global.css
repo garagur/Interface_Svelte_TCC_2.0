@@ -5,18 +5,36 @@
 }
 
 :root {
-    --blue-primary: #2196f3;
-    --blue-dark: #1976d2;
-    --blue-light: #bbdefb;
-    --blue-50: #e3f2fd;
+    /* Interface padrão: cinza e branco */
     --primary: #4b4b4b;
     --primary-dark: #2c2c2c;
+    --primary-light: #e2e8f0;
+    --gray-50: #f1f5f9;
     --white: #ffffff;
     --text-dark: #424242;
+    --text-muted: #64748b;
     --bg-input: #f8fafc;
     --border-input: #cbd5e1;
-    --danger: #ef4444;
+
+    /* Ações: confirmar (verde) / cancelar (vermelho) */
+    --confirm: #16a34a;
+    --confirm-dark: #15803d;
+    --confirm-light: #dcfce7;
+    --cancel: #ef4444;
+    --cancel-dark: #b91c1c;
+    --cancel-light: #fee2e2;
+
+    /* Estados auxiliares */
     --warning: #f59e0b;
+    --warning-light: #fef3c7;
+
+    /* Padronização de tamanhos e sombras */
+    --card-radius: 12px;
+    --card-padding: 16px;
+    --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --btn-radius: 10px;
+    --btn-radius-sm: 8px;
+    --appbar-height: 64px;
 }
 
 html,
