@@ -218,7 +218,10 @@
         {/if}
 
         <div class="bottom-action">
-            <button class="btn-primary" on:click={onNovoAgendamento}>
+            <button
+                class="btn-primary btn-novo-agendamento"
+                on:click={onNovoAgendamento}
+            >
                 <span class="material-symbols-outlined">add_circle</span>
                 Novo Agendamento
             </button>

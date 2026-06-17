@@ -29,9 +29,11 @@
     --warning-light: #fef3c7;
 
     /* Padronização de tamanhos e sombras */
-    --card-radius: 12px;
-    --card-padding: 16px;
-    --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --card-radius: 16px;
+    --card-padding: 20px;
+    --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --card-shadow-elevated: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --card-radius-compact: 12px;
     --btn-radius: 10px;
     --btn-radius-sm: 8px;
     --appbar-height: 64px;

@@ -1,0 +1,1 @@
+import{$ as e,C as t,L as n,g as r,x as i}from"../chunks/DE-_jF_j.js";import"../chunks/CuyqONxg.js";import"../chunks/De-hIoYu.js";var a=t(`<div class="escopo-login"><!></div>`);function o(t,o){var s=a();r(n(s),o,`default`,{},null),e(s),i(t,s)}export{o as component};

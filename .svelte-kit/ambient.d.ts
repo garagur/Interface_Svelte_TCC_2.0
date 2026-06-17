@@ -44,6 +44,7 @@ declare module '$env/static/private' {
 	export const LC_TIME: string;
 	export const npm_config_user_agent: string;
 	export const FONTCONFIG_PATH: string;
+	export const GIT_EDITOR: string;
 	export const GIO_MODULE_DIR: string;
 	export const XDG_SESSION_TYPE: string;
 	export const GIT_ASKPASS: string;
@@ -51,6 +52,7 @@ declare module '$env/static/private' {
 	export const npm_node_execpath: string;
 	export const GDK_BACKEND_VSCODE_SNAP_ORIG: string;
 	export const SHLVL: string;
+	export const COPILOT_AGENT: string;
 	export const npm_config_noproxy: string;
 	export const HOME: string;
 	export const CHROME_DESKTOP: string;
@@ -95,6 +97,7 @@ declare module '$env/static/private' {
 	export const npm_config_cache: string;
 	export const GNOME_DESKTOP_SESSION_ID: string;
 	export const FC_FONTATIONS: string;
+	export const HISTCONTROL: string;
 	export const npm_config_node_gyp: string;
 	export const PATH: string;
 	export const GTK_EXE_PREFIX: string;
@@ -139,10 +142,12 @@ declare module '$env/static/private' {
 	export const GJS_DEBUG_OUTPUT: string;
 	export const LC_IDENTIFICATION: string;
 	export const VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
+	export const GIT_PAGER: string;
 	export const QT_IM_MODULE: string;
 	export const npm_config_globalconfig: string;
 	export const npm_config_init_module: string;
 	export const PWD: string;
+	export const GIT_MERGE_AUTOEDIT: string;
 	export const npm_config_globalignorefile: string;
 	export const npm_execpath: string;
 	export const XDG_CONFIG_DIRS: string;
@@ -249,6 +254,7 @@ declare module '$env/dynamic/private' {
 		LC_TIME: string;
 		npm_config_user_agent: string;
 		FONTCONFIG_PATH: string;
+		GIT_EDITOR: string;
 		GIO_MODULE_DIR: string;
 		XDG_SESSION_TYPE: string;
 		GIT_ASKPASS: string;
@@ -256,6 +262,7 @@ declare module '$env/dynamic/private' {
 		npm_node_execpath: string;
 		GDK_BACKEND_VSCODE_SNAP_ORIG: string;
 		SHLVL: string;
+		COPILOT_AGENT: string;
 		npm_config_noproxy: string;
 		HOME: string;
 		CHROME_DESKTOP: string;
@@ -300,6 +307,7 @@ declare module '$env/dynamic/private' {
 		npm_config_cache: string;
 		GNOME_DESKTOP_SESSION_ID: string;
 		FC_FONTATIONS: string;
+		HISTCONTROL: string;
 		npm_config_node_gyp: string;
 		PATH: string;
 		GTK_EXE_PREFIX: string;
@@ -344,10 +352,12 @@ declare module '$env/dynamic/private' {
 		GJS_DEBUG_OUTPUT: string;
 		LC_IDENTIFICATION: string;
 		VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
+		GIT_PAGER: string;
 		QT_IM_MODULE: string;
 		npm_config_globalconfig: string;
 		npm_config_init_module: string;
 		PWD: string;
+		GIT_MERGE_AUTOEDIT: string;
 		npm_config_globalignorefile: string;
 		npm_execpath: string;
 		XDG_CONFIG_DIRS: string;

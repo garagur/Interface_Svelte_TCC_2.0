@@ -1,4 +1,8 @@
-.badge-cargo {
+/* ═══════════════════════════════════════════════════════════════
+   ESCOPO ADMIN CADASTRO USUARIO - Badges específicas
+   ═══════════════════════════════════════════════════════════════ */
+
+.escopo-admin-cadastro .badge-cargo {
     background: #dbeafe;
     padding: 4px 8px;
     border-radius: 6px;
@@ -7,10 +11,11 @@
     font-size: 11px;
 }
 
-.badge-matricula {
+.escopo-admin-cadastro .badge-matricula {
     background: #e2e8f0;
     padding: 4px 8px;
     border-radius: 6px;
     font-weight: bold;
     color: #646464;
+    font-size: 11px;
 }

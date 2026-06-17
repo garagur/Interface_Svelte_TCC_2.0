@@ -1,0 +1,126 @@
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENTES BASE - Estilos reutilizáveis em todas as páginas
+   Estes estilos são aplicados globalmente e não causam vazamento
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Formulários base */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* Inputs com estilo consistente */
+input {
+    padding: 0.65rem;
+    background: var(--bg-input);
+    border: 1px solid var(--border-input);
+    color: var(--text-dark);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+    width: 100%;
+}
+
+input:focus {
+    border-color: var(--primary);
+    outline: none;
+    background: var(--white);
+}
+
+/* Selects com estilo consistente */
+select {
+    padding: 0.65rem;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-input);
+    color: var(--text-dark);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    width: 100%;
+    font-family: inherit;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+    padding-right: 2.5rem;
+}
+
+select:focus {
+    border-color: var(--primary);
+    outline: none;
+    background-color: var(--white);
+}
+
+/* Botões padrão */
+.btn-primary {
+    flex: 1;
+    background-color: var(--confirm);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: var(--confirm-dark);
+}
+
+.btn-primary:disabled {
+    background: var(--primary);
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    flex: 1;
+    background-color: var(--cancel);
+    color: var(--white);
+    border: 1px solid var(--cancel-dark);
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+    background-color: var(--cancel-dark);
+}
+
+.btn-secondary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.bottom-action {
+    margin-top: 1rem;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
