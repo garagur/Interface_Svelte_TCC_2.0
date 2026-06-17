@@ -5,6 +5,7 @@
     import { carregarSalas } from "$lib/services/SalaServices/List_Sala_Service.js";
     import { cadastrarAgendamento } from "$lib/services/AgendamentoServices/AgendamentoSala/Create_Agendamento_Sala_Service.js";
     import { carregarAgendamentosSalas } from "$lib/services/AgendamentoServices/AgendamentoSala/List_Agendamento_Sala_Service.js";
+    import { carregarHorariosSala } from "$lib/services/HorarioServices/List_Horario_Service.js";
 
     let token = "";
 
@@ -21,6 +22,10 @@
     // ── Agendamentos do calendário ──
     let agendamentos = [];
     let carregandoLista = false;
+
+    // ── Aulas fixas (grade semanal) ──
+    let blocosFixos = [];
+    let carregandoBlocos = false;
 
     // ── UI state ──
     let carregando = false;
@@ -39,8 +44,10 @@
     // Reage à mudança de sala
     $: if (sala_id) {
         carregarAgendamentos(sala_id);
+        carregarBlocosFixos(sala_id);
     } else {
         agendamentos = [];
+        blocosFixos = [];
     }
 
     async function carregarListaSalas() {
@@ -60,6 +67,17 @@
             erro = e?.message || "Erro ao carregar agendamentos.";
         } finally {
             carregandoLista = false;
+        }
+    }
+
+    async function carregarBlocosFixos(id) {
+        carregandoBlocos = true;
+        try {
+            blocosFixos = await carregarHorariosSala(token, id);
+        } catch (e) {
+            erro = e?.message || "Erro ao carregar aulas fixas.";
+        } finally {
+            carregandoBlocos = false;
         }
     }
 
@@ -117,7 +135,9 @@
     {salas}
     bind:sala_id
     {agendamentos}
+    {blocosFixos}
     {carregandoLista}
+    {carregandoBlocos}
     {carregando}
     {erro}
     {sucesso}

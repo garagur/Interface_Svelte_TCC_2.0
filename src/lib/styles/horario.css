@@ -149,7 +149,9 @@
     margin: 0.5rem 0;
 }
 
-/* GRADE */
+/* GRADE — apenas o card que envolve a GradeSemanal; a estrutura interna
+   da grade (colunas, cabeçalho de dia, etc.) agora vive no próprio
+   componente GradeSemanal.svelte */
 .escopo-horario .grade-card h3 {
     display: flex;
     align-items: center;
@@ -158,48 +160,7 @@
     color: #333;
 }
 
-.escopo-horario .grade-wrapper {
-    display: flex;
-    gap: 0.75rem;
-    overflow-x: auto;
-}
-
-.escopo-horario .dia-coluna {
-    flex: 1;
-    min-width: 120px;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.escopo-horario .dia-coluna.fds {
-    background: #f1f1f1;
-    border-radius: 10px;
-    padding: 0.5rem;
-    opacity: 0.75;
-}
-
-.escopo-horario .dia-header {
-    font-weight: 700;
-    font-size: 0.85rem;
-    color: #475569;
-    text-align: center;
-    padding: 0.4rem;
-    background: #e2e8f0;
-    border-radius: 6px;
-}
-
-.escopo-horario .dia-coluna.fds .dia-header {
-    background: #cbd5e1;
-    color: #64748b;
-}
-
-.escopo-horario .dia-blocos {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
+/* BLOCO — conteúdo específico do slot usado pelo HorarioCard */
 .escopo-horario .bloco-card {
     background: #f8fafc;
     border: 1px solid #e2e8f0;
@@ -251,19 +212,6 @@
 
 .escopo-horario .btn-action.delete:hover {
     background: #fee2e2;
-}
-
-.escopo-horario .bloco-vazio {
-    text-align: center;
-    color: #cbd5e1;
-    font-size: 1.2rem;
-    padding: 1rem 0;
-}
-
-.escopo-horario .estado-vazio {
-    text-align: center;
-    color: #94a3b8;
-    padding: 2rem;
 }
 
 .escopo-horario .icon-tiny {

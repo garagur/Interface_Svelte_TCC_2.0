@@ -2,7 +2,7 @@
 .escopo-agendamento .scaffold {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    min-height: 100vh;
     width: 100%;
     font-family: Arial, sans-serif;
     background-color: #fafafa;
@@ -49,14 +49,14 @@
     background: rgba(255, 255, 255, 0.1);
 }
 
-/* ── Layout ── */
+
 .escopo-agendamento .body-content {
     flex: 1;
     display: flex;
     flex-direction: column;
     padding: 24px;
     gap: 16px;
-    overflow-y: auto;
+
 }
 
 .escopo-agendamento .sala-select-card {
@@ -264,6 +264,7 @@
     font-weight: bold;
 }
 
+
 .escopo-agendamento .grade-wrapper {
     flex: 1;
     overflow-y: auto;
@@ -378,4 +379,43 @@
     text-align: center;
     color: #94a3b8;
     font-size: 0.9rem;
+}
+
+/* ── Aulas Fixas — conteúdo do slot da GradeSemanal ── */
+.escopo-agendamento .bloco-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.6rem;
+    font-size: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.escopo-agendamento .bloco-horario {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 0.75rem;
+}
+
+.escopo-agendamento .bloco-disciplina {
+    color: #334155;
+    font-weight: 600;
+}
+
+.escopo-agendamento .bloco-professor {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    color: #64748b;
+    font-size: 0.75rem;
+}
+
+.escopo-agendamento .bloco-turma {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    color: #64748b;
+    font-size: 0.75rem;
 }

@@ -1,4 +1,6 @@
 <script>
+    import GradeSemanal from "$lib/components/SemanalGrade/GradeSemanal.svelte";
+
     export let turmas = [];
     export let salas = [];
     export let professores = [];
@@ -13,28 +15,6 @@
     export let onAdicionar;
     export let onRemover;
     export let onSair;
-
-    const diasLabels = {
-        segunda: "Segunda",
-        terca: "Terça",
-        quarta: "Quarta",
-        quinta: "Quinta",
-        sexta: "Sexta",
-        sabado: "Sábado",
-        domingo: "Domingo",
-    };
-
-    const diasFimDeSemana = ["sabado", "domingo"];
-
-    function blocosOrdenados(dia) {
-        return blocos
-            .filter(
-                (b) =>
-                    b.dia_semana === dia &&
-                    (!turma_id || b.turma_id == turma_id),
-            )
-            .sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio));
-    }
 </script>
 
 <div class="scaffold">
@@ -70,7 +50,7 @@
                     <label for="dia">Dia da Semana</label>
                     <select id="dia" bind:value={novoBloco.dia_semana}>
                         {#each dias as dia}
-                            <option value={dia}>{diasLabels[dia]}</option>
+                            <option value={dia}>{dia}</option>
                         {/each}
                     </select>
                 </div>
@@ -145,56 +125,39 @@
                     Grade Semanal
                 </h3>
 
-                {#if carregandoLista}
-                    <p class="estado-vazio">Carregando horários...</p>
-                {:else}
-                    <div class="grade-wrapper">
-                        {#each dias as dia}
-                            <div
-                                class="dia-coluna {diasFimDeSemana.includes(dia)
-                                    ? 'fds'
-                                    : ''}"
+                <GradeSemanal
+                    {dias}
+                    {blocos}
+                    {carregandoLista}
+                    filtrarPor={{ campo: "turma_id", valor: turma_id }}
+                    let:bloco
+                >
+                    <div class="bloco-card">
+                        <div class="bloco-horario">
+                            {bloco.hora_inicio} - {bloco.hora_fim}
+                        </div>
+                        <div class="bloco-disciplina">
+                            {bloco.disciplina}
+                        </div>
+                        <div class="bloco-professor">
+                            <span class="material-symbols-outlined icon-tiny"
+                                >person</span
                             >
-                                <div class="dia-header">{diasLabels[dia]}</div>
-                                <div class="dia-blocos">
-                                    {#each blocosOrdenados(dia) as bloco}
-                                        <div class="bloco-card">
-                                            <div class="bloco-horario">
-                                                {bloco.hora_inicio} - {bloco.hora_fim}
-                                            </div>
-                                            <div class="bloco-disciplina">
-                                                {bloco.disciplina}
-                                            </div>
-                                            <div class="bloco-professor">
-                                                <span
-                                                    class="material-symbols-outlined icon-tiny"
-                                                    >person</span
-                                                >
-                                                {bloco.professor?.name ??
-                                                    bloco.professor_id}
-                                            </div>
-                                            <div class="bloco-actions">
-                                                <button
-                                                    class="btn-action delete"
-                                                    on:click={() =>
-                                                        onRemover(bloco.id)}
-                                                    title="Remover"
-                                                >
-                                                    <span
-                                                        class="material-symbols-outlined"
-                                                        >delete</span
-                                                    >
-                                                </button>
-                                            </div>
-                                        </div>
-                                    {:else}
-                                        <div class="bloco-vazio">—</div>
-                                    {/each}
-                                </div>
-                            </div>
-                        {/each}
+                            {bloco.professor?.name ?? bloco.professor_id}
+                        </div>
+                        <div class="bloco-actions">
+                            <button
+                                class="btn-action delete"
+                                on:click={() => onRemover(bloco.id)}
+                                title="Remover"
+                            >
+                                <span class="material-symbols-outlined"
+                                    >delete</span
+                                >
+                            </button>
+                        </div>
                     </div>
-                {/if}
+                </GradeSemanal>
             </div>
         {/if}
     </main>

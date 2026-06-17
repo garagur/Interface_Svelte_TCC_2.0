@@ -1,4 +1,4 @@
-import { HORARIO_ROUTES } from '../../../config/routes/Horario.Endpoits.js'
+import { HORARIO_ROUTES } from '../../../config/routes/Horario_Endpoits.js'
 
 /**
  * @param {number} id

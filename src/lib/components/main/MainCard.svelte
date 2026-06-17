@@ -86,9 +86,12 @@
         </div>
 
         <nav class="nav-menu">
-            <button class="menu-card" on:click={() => goto("/agendamento")}>
+            <button
+                class="menu-card"
+                on:click={() => goto("/meusagendamentos")}
+            >
                 <span class="material-symbols-outlined">calendar_today</span>
-                <span>Novo<br />Agendamento</span>
+                <span>Meus<br />Agendamentos</span>
             </button>
             {#if cargo === "admin"}
                 <button
@@ -96,14 +99,14 @@
                     on:click={() => goto("/admin/cadastro-sala")}
                 >
                     <span class="material-symbols-outlined">meeting_room</span>
-                    <span>Cadastrar<br />Sala</span>
+                    <span>Gerenciar<br />Salas</span>
                 </button>
                 <button
                     class="menu-card"
                     on:click={() => goto("/admin/cadastro-turma")}
                 >
                     <span class="material-symbols-outlined">groups</span>
-                    <span>Cadastrar<br />Turma</span>
+                    <span>Gerenciar<br />Turmas</span>
                 </button>
                 <button
                     class="menu-card"
@@ -111,21 +114,21 @@
                 >
                     <span class="material-symbols-outlined">calendar_month</span
                     >
-                    <span>Cadastrar<br />Horário</span>
+                    <span>Gerenciar<br />Horários</span>
                 </button>
                 <button
                     class="menu-card"
                     on:click={() => goto("/admin/cadastro-equipamento")}
                 >
                     <span class="material-symbols-outlined">playlist_add</span>
-                    <span>Cadastrar<br />Equipamento</span>
+                    <span>Gerenciar<br />Equipamentos</span>
                 </button>
                 <button
                     class="menu-card"
                     on:click={() => goto("/admin/cadastro-usuario")}
                 >
                     <span class="material-symbols-outlined">person_add</span>
-                    <span>Cadastrar<br />Usuário</span>
+                    <span>Gerenciar<br />Usuários</span>
                 </button>
             {/if}
         </nav>

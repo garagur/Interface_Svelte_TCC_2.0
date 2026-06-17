@@ -44,7 +44,7 @@ export async function loginUser(email, otp) {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     },
-    body: JSON.stringify({ email, password: otp }),
+    body: JSON.stringify({ email, password: otp, platform: 'web' }),
   })
 
   const dados = await parseJson(resposta)

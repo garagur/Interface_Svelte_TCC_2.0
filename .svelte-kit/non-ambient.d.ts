@@ -29,7 +29,7 @@ declare module "$app/types" {
 	type MatcherParam<M> = M extends (param : string) => param is (infer U extends string) ? U : string;
 
 	export interface AppTypes {
-		RouteId(): "/" | "/admin" | "/admin/cadastro-equipamento" | "/admin/cadastro-horario" | "/admin/cadastro-sala" | "/admin/cadastro-turma" | "/admin/cadastro-usuario" | "/agendamento" | "/login" | "/main";
+		RouteId(): "/" | "/admin" | "/admin/cadastro-equipamento" | "/admin/cadastro-horario" | "/admin/cadastro-sala" | "/admin/cadastro-turma" | "/admin/cadastro-usuario" | "/agendamento" | "/login" | "/main" | "/meusagendamentos";
 		RouteParams(): {
 			
 		};
@@ -43,9 +43,10 @@ declare module "$app/types" {
 			"/admin/cadastro-usuario": Record<string, never>;
 			"/agendamento": Record<string, never>;
 			"/login": Record<string, never>;
-			"/main": Record<string, never>
+			"/main": Record<string, never>;
+			"/meusagendamentos": Record<string, never>
 		};
-		Pathname(): "/" | "/admin/cadastro-equipamento" | "/admin/cadastro-horario" | "/admin/cadastro-sala" | "/admin/cadastro-turma" | "/admin/cadastro-usuario" | "/agendamento" | "/login" | "/main";
+		Pathname(): "/" | "/admin/cadastro-equipamento" | "/admin/cadastro-horario" | "/admin/cadastro-sala" | "/admin/cadastro-turma" | "/admin/cadastro-usuario" | "/agendamento" | "/login" | "/main" | "/meusagendamentos";
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
 		Asset(): string & {};
 	}

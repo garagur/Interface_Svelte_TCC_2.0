@@ -1,8 +1,12 @@
 <script>
+    import GradeSemanal from "$lib/components/SemanalGrade/GradeSemanal.svelte";
+
     export let salas = [];
     export let sala_id = null;
     export let agendamentos = [];
+    export let blocosFixos = [];
     export let carregandoLista = false;
+    export let carregandoBlocos = false;
     export let carregando = false;
     export let erro = "";
     export let sucesso = "";
@@ -14,6 +18,16 @@
     export let onSubmit;
     export let onLimpar;
     export let onSair;
+
+    const dias = [
+        "segunda",
+        "terca",
+        "quarta",
+        "quinta",
+        "sexta",
+        "sabado",
+        "domingo",
+    ];
 
     // Gera os próximos 60 dias a partir de hoje
     function gerarDias60() {
@@ -87,6 +101,53 @@
                     {/each}
                 </select>
             </div>
+
+            {#if sala_id}
+                <!-- Grade semanal de aulas fixas da sala -->
+                <div class="card grade-card">
+                    <div class="grade-header-title">
+                        <div class="title-left">
+                            <span
+                                class="material-symbols-outlined text-primary"
+                            >
+                                event_repeat
+                            </span>
+                            <h3>Aulas Fixas — Grade Semanal</h3>
+                        </div>
+                    </div>
+
+                    <GradeSemanal
+                        {dias}
+                        blocos={blocosFixos}
+                        carregandoLista={carregandoBlocos}
+                        filtrarPor={{ campo: "sala_id", valor: sala_id }}
+                        let:bloco
+                    >
+                        <div class="bloco-card">
+                            <div class="bloco-horario">
+                                {bloco.hora_inicio} - {bloco.hora_fim}
+                            </div>
+                            <div class="bloco-disciplina">
+                                {bloco.disciplina}
+                            </div>
+                            <div class="bloco-professor">
+                                <span
+                                    class="material-symbols-outlined icon-tiny"
+                                    >person</span
+                                >
+                                {bloco.professor?.name ?? bloco.professor_id}
+                            </div>
+                            <div class="bloco-turma">
+                                <span
+                                    class="material-symbols-outlined icon-tiny"
+                                    >groups</span
+                                >
+                                {bloco.turma_nome}
+                            </div>
+                        </div>
+                    </GradeSemanal>
+                </div>
+            {/if}
 
             <!-- Formulário + Calendário lado a lado -->
             <div class="conteudo-principal">

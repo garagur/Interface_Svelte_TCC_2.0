@@ -32,6 +32,7 @@
       const data = await loginUser(email, otp);
       localStorage.setItem("token", data.token);
       localStorage.setItem("cargo", data.user?.cargo || "");
+      localStorage.setItem("user_id", data.user?.id || "");
       goto("/main");
     } catch (e) {
       erro = e.message;

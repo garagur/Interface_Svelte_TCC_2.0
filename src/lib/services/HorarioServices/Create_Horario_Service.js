@@ -1,4 +1,4 @@
-import { HORARIO_ROUTES } from '../../../config/routes/Horario.Endpoits.js'
+import { HORARIO_ROUTES } from '../../../config/routes/Horario_Endpoits.js'
 
 async function parseJson(response) {
     const text = await response.text()
