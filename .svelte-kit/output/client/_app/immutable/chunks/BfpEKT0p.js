@@ -1,1 +1,0 @@
-import{t as e}from"./DqBnSabs.js";var t={sendOtp:`${e}/auth/send-otp`,login:`${e}/auth/login`,logout:`${e}/auth/logout`,me:`${e}/auth/me`},n={cadastro:`${e}/users`,listar:`${e}/users`,buscar:t=>`${e}/users/${t}`,atualizar:t=>`${e}/users/${t}`};export{n,t};

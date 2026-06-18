@@ -1,6 +1,6 @@
 <script>
     import GradeSemanal from "$lib/components/SemanalGrade/GradeSemanal.svelte";
-
+    import BlocoCard from "$lib/components/Card/BlocoHorarioCard.svelte";
     export let turmas = [];
     export let salas = [];
     export let professores = [];
@@ -130,33 +130,10 @@
                     {blocos}
                     {carregandoLista}
                     filtrarPor={{ campo: "turma_id", valor: turma_id }}
-                    let:bloco
                 >
-                    <div class="bloco-card">
-                        <div class="bloco-horario">
-                            {bloco.hora_inicio} - {bloco.hora_fim}
-                        </div>
-                        <div class="bloco-disciplina">
-                            {bloco.disciplina}
-                        </div>
-                        <div class="bloco-professor">
-                            <span class="material-symbols-outlined icon-tiny"
-                                >person</span
-                            >
-                            {bloco.professor?.name ?? bloco.professor_id}
-                        </div>
-                        <div class="bloco-actions">
-                            <button
-                                class="btn-action delete"
-                                on:click={() => onRemover(bloco.id)}
-                                title="Remover"
-                            >
-                                <span class="material-symbols-outlined"
-                                    >delete</span
-                                >
-                            </button>
-                        </div>
-                    </div>
+                    <svelte:fragment let:bloco>
+                        <BlocoCard {bloco} {onRemover} />
+                    </svelte:fragment>
                 </GradeSemanal>
             </div>
         {/if}

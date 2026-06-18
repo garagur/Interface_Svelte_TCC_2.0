@@ -1,5 +1,7 @@
 <script>
     import GradeSemanal from "$lib/components/SemanalGrade/GradeSemanal.svelte";
+    import BlocoCard from "$lib/components/Card/BlocoHorarioCard.svelte";
+    import CalendarioAgendamentos from "$lib/components/MesGrade/GradeMensal.svelte"; // <-- IMPORTAÇÃO DO COMPONENTE
 
     export let salas = [];
     export let sala_id = null;
@@ -29,53 +31,7 @@
         "domingo",
     ];
 
-    // Gera os próximos 60 dias a partir de hoje
-    function gerarDias60() {
-        const dias = [];
-        const base = new Date();
-        base.setHours(0, 0, 0, 0);
-        for (let i = 0; i < 60; i++) {
-            const d = new Date(base);
-            d.setDate(base.getDate() + i);
-            dias.push(d);
-        }
-        return dias;
-    }
-
-    // Agrupa os dias em semanas (linhas do calendário)
-    function gerarSemanas(dias) {
-        const semanas = [];
-        // Preenche dias vazios antes do primeiro dia
-        const primeiro = dias[0].getDay(); // 0=Dom
-        const prefixo = Array(primeiro).fill(null);
-        const todos = [...prefixo, ...dias];
-        for (let i = 0; i < todos.length; i += 7) {
-            semanas.push(todos.slice(i, i + 7));
-        }
-        return semanas;
-    }
-
-    function agendamentosDoDia(data) {
-        if (!data) return [];
-        const str = data.toISOString().slice(0, 10);
-        return agendamentos.filter(
-            (a) => a.data_hora_inicio?.slice(0, 10) === str,
-        );
-    }
-
-    function formatarHora(dtStr) {
-        if (!dtStr) return "";
-        return dtStr.slice(11, 16); // "HH:MM"
-    }
-
-    function ehHoje(data) {
-        if (!data) return false;
-        return data.toISOString().slice(0, 10) === hojeStr;
-    }
-
-    const cabecalho = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-    $: dias60 = gerarDias60();
-    $: semanas = gerarSemanas(dias60);
+    // Lógicas de gerar dias e semanas foram removidas daqui pois o componente novo já cuida disso internamente!
 </script>
 
 <div class="escopo-agendamento">
@@ -91,7 +47,6 @@
         </header>
 
         <main class="body-content">
-            <!-- Seleção de sala -->
             <div class="card sala-select-card">
                 <label for="sala-select">Sala</label>
                 <select id="sala-select" bind:value={sala_id}>
@@ -103,7 +58,6 @@
             </div>
 
             {#if sala_id}
-                <!-- Grade semanal de aulas fixas da sala -->
                 <div class="card grade-card">
                     <div class="grade-header-title">
                         <div class="title-left">
@@ -121,37 +75,15 @@
                         blocos={blocosFixos}
                         carregandoLista={carregandoBlocos}
                         filtrarPor={{ campo: "sala_id", valor: sala_id }}
-                        let:bloco
                     >
-                        <div class="bloco-card">
-                            <div class="bloco-horario">
-                                {bloco.hora_inicio} - {bloco.hora_fim}
-                            </div>
-                            <div class="bloco-disciplina">
-                                {bloco.disciplina}
-                            </div>
-                            <div class="bloco-professor">
-                                <span
-                                    class="material-symbols-outlined icon-tiny"
-                                    >person</span
-                                >
-                                {bloco.professor?.name ?? bloco.professor_id}
-                            </div>
-                            <div class="bloco-turma">
-                                <span
-                                    class="material-symbols-outlined icon-tiny"
-                                    >groups</span
-                                >
-                                {bloco.turma_nome}
-                            </div>
-                        </div>
+                        <svelte:fragment let:bloco>
+                            <BlocoCard {bloco} mostrarTurma={true} />
+                        </svelte:fragment>
                     </GradeSemanal>
                 </div>
             {/if}
 
-            <!-- Formulário + Calendário lado a lado -->
             <div class="conteudo-principal">
-                <!-- Formulário -->
                 <div class="card form-card">
                     <div class="card-header">
                         <span class="material-symbols-outlined icon-large">
@@ -226,7 +158,6 @@
                     </form>
                 </div>
 
-                <!-- Calendário -->
                 <div class="card calendario-card">
                     <div class="grade-header-title">
                         <div class="title-left">
@@ -246,65 +177,18 @@
                         <p class="estado-vazio">
                             Selecione uma sala para ver os agendamentos.
                         </p>
-                    {:else if carregandoLista}
-                        <p class="estado-vazio">Carregando agendamentos...</p>
                     {:else}
-                        <div class="grade-wrapper">
-                            <div class="grade-cabecalho">
-                                {#each cabecalho as dia}
-                                    <div class="cabecalho-dia">{dia}</div>
-                                {/each}
-                            </div>
-                            <div class="grade-semanas">
-                                {#each semanas as semana}
-                                    <div class="semana-row">
-                                        {#each semana as dia}
-                                            <div
-                                                class="dia-celula {dia &&
-                                                ehHoje(dia)
-                                                    ? 'dia-hoje'
-                                                    : ''} {!dia
-                                                    ? 'dia-vazio'
-                                                    : ''}"
-                                            >
-                                                {#if dia}
-                                                    <span
-                                                        class="dia-numero {ehHoje(
-                                                            dia,
-                                                        )
-                                                            ? 'numero-hoje'
-                                                            : ''}"
-                                                    >
-                                                        {dia.getDate()}
-                                                    </span>
-                                                    {#each agendamentosDoDia(dia) as ag}
-                                                        <div
-                                                            class="ag-bloco sala"
-                                                        >
-                                                            <span
-                                                                class="ag-hora"
-                                                            >
-                                                                {formatarHora(
-                                                                    ag.data_hora_inicio,
-                                                                )} - {formatarHora(
-                                                                    ag.data_hora_fim,
-                                                                )}
-                                                            </span>
-                                                            {#if ag.obs}
-                                                                <span
-                                                                    class="ag-tipo-label"
-                                                                    >{ag.obs}</span
-                                                                >
-                                                            {/if}
-                                                        </div>
-                                                    {/each}
-                                                {/if}
-                                            </div>
-                                        {/each}
-                                    </div>
-                                {/each}
-                            </div>
-                        </div>
+                        <CalendarioAgendamentos
+                            {agendamentos}
+                            {hojeStr}
+                            {carregandoLista}
+                        >
+                            <svelte:fragment let:ag>
+                                {#if ag.obs}
+                                    <span class="ag-tipo-label">{ag.obs}</span>
+                                {/if}
+                            </svelte:fragment>
+                        </CalendarioAgendamentos>
                     {/if}
                 </div>
             </div>

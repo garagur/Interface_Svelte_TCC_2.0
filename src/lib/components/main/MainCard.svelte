@@ -1,6 +1,6 @@
 <script>
     import { goto } from "$app/navigation";
-
+    import CalendarioAgendamentos from "$lib/components/MesGrade/GradeMensal.svelte";
     export let titulo = "";
     export let matricula = "";
     export let cargo = "";
@@ -150,72 +150,24 @@
             </div>
             <div class="badge">{totalRegistros} registros</div>
         </div>
-
-        {#if carregando}
-            <div class="estado-vazio">Carregando...</div>
-        {:else if erro}
-            <div class="estado-vazio">{erro}</div>
-        {:else}
-            <div class="grade-wrapper">
-                <!-- Cabeçalho fixo dos dias da semana -->
-                <div class="grade-cabecalho">
-                    {#each DIAS_SEMANA as dia}
-                        <div class="cabecalho-dia">{dia}</div>
-                    {/each}
-                </div>
-
-                <!-- Semanas -->
-                <div class="grade-semanas">
-                    {#each semanas as semana}
-                        <div class="semana-row">
-                            {#each semana as dia}
-                                {@const chave = formatarChave(dia)}
-                                {@const isHoje = chave === hoje()}
-                                {@const ags = agendamentosPorData[chave] || []}
-                                <div
-                                    class="dia-celula {isHoje
-                                        ? 'dia-hoje'
-                                        : ''}"
-                                >
-                                    <span
-                                        class="dia-numero {isHoje
-                                            ? 'numero-hoje'
-                                            : ''}">{dia.getDate()}</span
-                                    >
-                                    {#each ags as ag}
-                                        <div class="ag-bloco {ag.tipo}">
-                                            <span class="ag-hora">
-                                                {extrairHora(
-                                                    ag.data_hora_inicio,
-                                                )} - {extrairHora(
-                                                    ag.data_hora_fim,
-                                                )}
-                                            </span>
-                                            <span class="ag-tipo-label">
-                                                {ag.tipo === "sala"
-                                                    ? "Sala"
-                                                    : "Equipamento"}
-                                            </span>
-                                            <button
-                                                class="btn-info-ag"
-                                                on:click={() =>
-                                                    irParaDetalhes(ag)}
-                                                title="Ver detalhes"
-                                            >
-                                                <span
-                                                    class="material-symbols-outlined"
-                                                    >info</span
-                                                >
-                                            </button>
-                                        </div>
-                                    {/each}
-                                </div>
-                            {/each}
-                        </div>
-                    {/each}
-                </div>
-            </div>
-        {/if}
+        <CalendarioAgendamentos
+            {agendamentos}
+            hojeStr={hoje()}
+            carregandoLista={carregando}
+        >
+            <svelte:fragment let:ag>
+                <span class="ag-tipo-label">
+                    {ag.tipo === "sala" ? "Sala" : "Equipamento"}
+                </span>
+                <button
+                    class="btn-info-ag"
+                    on:click={() => irParaDetalhes(ag)}
+                    title="Ver detalhes"
+                >
+                    <span class="material-symbols-outlined">info</span>
+                </button>
+            </svelte:fragment>
+        </CalendarioAgendamentos>
 
         <div class="bottom-action">
             <button
