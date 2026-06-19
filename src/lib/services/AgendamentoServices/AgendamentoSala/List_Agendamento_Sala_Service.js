@@ -43,7 +43,9 @@ export async function carregarAgendamentosSalas(token, sala_id = null) {
     return lista.map(s => ({
         id: s.id,
         user_id: s.user_id || '',
+        usuario_nome: s.usuario_nome || '',
         sala_id: s.sala_id || '',
+        sala_nome: s.sala_nome || '',
         data_hora_inicio: s.data_hora_inicio || '',
         data_hora_fim: s.data_hora_fim || '',
         obs: s.obs || '',

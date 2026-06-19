@@ -2,7 +2,8 @@
     import GradeSemanal from "$lib/components/SemanalGrade/GradeSemanal.svelte";
     import BlocoCard from "$lib/components/Card/BlocoHorarioCard.svelte";
     import CalendarioAgendamentos from "$lib/components/MesGrade/GradeMensal.svelte"; // <-- IMPORTAÇÃO DO COMPONENTE
-
+    import AgendamentoBloco from "$lib/components/Card/BlocoAgendamentoCard.svelte";
+    import { onMount } from "svelte";
     export let salas = [];
     export let sala_id = null;
     export let agendamentos = [];
@@ -20,7 +21,7 @@
     export let onSubmit;
     export let onLimpar;
     export let onSair;
-
+    let usuarioId = null;
     const dias = [
         "segunda",
         "terca",
@@ -30,8 +31,9 @@
         "sabado",
         "domingo",
     ];
-
-    // Lógicas de gerar dias e semanas foram removidas daqui pois o componente novo já cuida disso internamente!
+    onMount(() => {
+        usuarioId = localStorage.getItem("usuario_id");
+    });
 </script>
 
 <div class="escopo-agendamento">
@@ -184,9 +186,7 @@
                             {carregandoLista}
                         >
                             <svelte:fragment let:ag>
-                                {#if ag.obs}
-                                    <span class="ag-tipo-label">{ag.obs}</span>
-                                {/if}
+                                <AgendamentoBloco {ag} {usuarioId} />
                             </svelte:fragment>
                         </CalendarioAgendamentos>
                     {/if}

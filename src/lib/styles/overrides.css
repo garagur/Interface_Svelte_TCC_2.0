@@ -1,12 +1,3 @@
-/* ═══════════════════════════════════════════════════════════════
-   OVERRIDES POR ESCOPO - Customizações específicas de cada página
-   Sobrescreve componentes base apenas dentro do escopo apropriado
-   ═══════════════════════════════════════════════════════════════ */
-
-/* ─────────────────────────────────────────────────────────────
-   AGENDAMENTO - Inputs e selects mais compactos
-   ───────────────────────────────────────────────────────────── */
-
 .escopo-agendamento input {
     padding: 0.5rem 0.625rem;
     font-size: 0.8125rem;
@@ -16,10 +7,6 @@
     padding: 0.5rem 0.625rem;
     font-size: 0.875rem;
 }
-
-/* ─────────────────────────────────────────────────────────────
-   HORÁRIO - Cards com sombra elevada
-   ───────────────────────────────────────────────────────────── */
 
 .escopo-horario input {
     padding: 0.65rem 0.75rem;
@@ -31,13 +18,6 @@
     font-size: 0.875rem;
 }
 
-/* ─────────────────────────────────────────────────────────────
-   MEUS AGENDAMENTOS - Sem mudanças específicas, usa base
-   ───────────────────────────────────────────────────────────── */
-
-/* ─────────────────────────────────────────────────────────────
-   LOGIN - Input/select com tamanho diferente
-   ───────────────────────────────────────────────────────────── */
 
 .escopo-login input {
     padding: 0.75rem;
@@ -47,14 +27,6 @@
     border-color: #464646;
     background: #fff;
 }
-
-/* ─────────────────────────────────────────────────────────────
-   ADMIN CADASTRO - Usa base sem alterações especiais
-   ───────────────────────────────────────────────────────────── */
-
-/* ─────────────────────────────────────────────────────────────
-   BOTÃO NOVO AGENDAMENTO - Tamanho reduzido
-   ───────────────────────────────────────────────────────────── */
 
 .btn-novo-agendamento {
     flex: none !important;

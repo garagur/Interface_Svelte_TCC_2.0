@@ -1,6 +1,8 @@
 <script>
     import { goto } from "$app/navigation";
     import CalendarioAgendamentos from "$lib/components/MesGrade/GradeMensal.svelte";
+    import AgendamentoBloco from "$lib/components/Card/BlocoAgendamentoCard.svelte";
+    import { onMount } from "svelte";
     export let titulo = "";
     export let matricula = "";
     export let cargo = "";
@@ -9,71 +11,18 @@
     export let agendamentos = [];
     export let carregando = false;
     export let erro = "";
-
+    let usuarioId = null;
     const DIAS_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-
-    // Domingo da semana atual
-    function inicioDaGrade() {
-        const hoje = new Date();
-        const diaSemana = hoje.getDay(); // 0 = domingo
-        const domingo = new Date(hoje);
-        domingo.setDate(hoje.getDate() - diaSemana);
-        domingo.setHours(0, 0, 0, 0);
-        return domingo;
-    }
-
-    // Gera array com 60 dias a partir do domingo inicial
-    function gerarDias() {
-        const inicio = inicioDaGrade();
-        return Array.from({ length: 60 }, (_, i) => {
-            const d = new Date(inicio);
-            d.setDate(inicio.getDate() + i);
-            return d;
-        });
-    }
-
-    // Extrai só a data (YYYY-MM-DD) de um datetime
-    function extrairData(datetime) {
-        if (!datetime) return "";
-        return datetime.slice(0, 10);
-    }
-
-    // Extrai hora (HH:MM) de um datetime
-    function extrairHora(datetime) {
-        if (!datetime) return "";
-        return datetime.slice(11, 16);
-    }
-
-    // Formata data para chave YYYY-MM-DD
-    function formatarChave(date) {
-        return date.toISOString().slice(0, 10);
-    }
-
-    // Agrupa agendamentos por data
-    $: agendamentosPorData = agendamentos.reduce((acc, ag) => {
-        const chave = extrairData(ag.data_hora_inicio);
-        if (!acc[chave]) acc[chave] = [];
-        acc[chave].push(ag);
-        return acc;
-    }, {});
-
-    $: dias = gerarDias();
-
-    // Agrupa dias em semanas (arrays de 7)
-    $: semanas = dias.reduce((acc, dia, i) => {
-        const semana = Math.floor(i / 7);
-        if (!acc[semana]) acc[semana] = [];
-        acc[semana].push(dia);
-        return acc;
-    }, []);
 
     function irParaDetalhes(ag) {
         goto(`/agendamento/${ag.tipo}/${ag.id}`);
     }
-
     function hoje() {
         return new Date().toISOString().slice(0, 10);
     }
+    onMount(() => {
+        usuarioId = localStorage.getItem("usuario_id");
+    });
 
     $: totalRegistros = agendamentos.length;
 </script>
@@ -156,16 +105,11 @@
             carregandoLista={carregando}
         >
             <svelte:fragment let:ag>
-                <span class="ag-tipo-label">
-                    {ag.tipo === "sala" ? "Sala" : "Equipamento"}
-                </span>
-                <button
-                    class="btn-info-ag"
-                    on:click={() => irParaDetalhes(ag)}
-                    title="Ver detalhes"
-                >
-                    <span class="material-symbols-outlined">info</span>
-                </button>
+                <AgendamentoBloco
+                    {ag}
+                    {usuarioId}
+                    onDetalhes={irParaDetalhes}
+                />
             </svelte:fragment>
         </CalendarioAgendamentos>
 

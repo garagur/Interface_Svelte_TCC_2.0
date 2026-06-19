@@ -42,7 +42,6 @@
     </header>
 
     <main class="body-content">
-        <!-- ESQUERDA: Formulário -->
         <div class="card form-card">
             <div class="card-header">
                 <span class="material-symbols-outlined icon-large"

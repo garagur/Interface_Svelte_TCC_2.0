@@ -3,7 +3,6 @@
     export let carregandoLista = false;
     export let hojeStr = "";
 
-    // Gera os próximos 60 dias a partir do domingo da semana atual
     function gerarDias() {
         const hoje = new Date();
         const diaSemana = hoje.getDay();

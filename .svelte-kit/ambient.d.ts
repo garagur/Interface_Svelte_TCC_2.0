@@ -55,7 +55,6 @@ declare module '$env/static/private' {
 	export const HOME: string;
 	export const CHROME_DESKTOP: string;
 	export const LOCPATH_VSCODE_SNAP_ORIG: string;
-	export const OLDPWD: string;
 	export const TERM_PROGRAM_VERSION: string;
 	export const DESKTOP_SESSION: string;
 	export const GTK_PATH: string;
@@ -132,7 +131,6 @@ declare module '$env/static/private' {
 	export const npm_package_version: string;
 	export const npm_lifecycle_event: string;
 	export const QT_ACCESSIBILITY: string;
-	export const NO_AT_BRIDGE: string;
 	export const GDMSESSION: string;
 	export const LESSCLOSE: string;
 	export const GTK_PATH_VSCODE_SNAP_ORIG: string;
@@ -158,7 +156,6 @@ declare module '$env/static/private' {
 	export const LC_PAPER: string;
 	export const QT_IM_MODULES: string;
 	export const MEMORY_PRESSURE_WRITE: string;
-	export const NVM_RC_VERSION: string;
 	export const INIT_CWD: string;
 	export const EDITOR: string;
 	export const NODE_ENV: string;
@@ -265,7 +262,6 @@ declare module '$env/dynamic/private' {
 		HOME: string;
 		CHROME_DESKTOP: string;
 		LOCPATH_VSCODE_SNAP_ORIG: string;
-		OLDPWD: string;
 		TERM_PROGRAM_VERSION: string;
 		DESKTOP_SESSION: string;
 		GTK_PATH: string;
@@ -342,7 +338,6 @@ declare module '$env/dynamic/private' {
 		npm_package_version: string;
 		npm_lifecycle_event: string;
 		QT_ACCESSIBILITY: string;
-		NO_AT_BRIDGE: string;
 		GDMSESSION: string;
 		LESSCLOSE: string;
 		GTK_PATH_VSCODE_SNAP_ORIG: string;
@@ -368,7 +363,6 @@ declare module '$env/dynamic/private' {
 		LC_PAPER: string;
 		QT_IM_MODULES: string;
 		MEMORY_PRESSURE_WRITE: string;
-		NVM_RC_VERSION: string;
 		INIT_CWD: string;
 		EDITOR: string;
 		NODE_ENV: string;
