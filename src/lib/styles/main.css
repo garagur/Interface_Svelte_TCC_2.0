@@ -364,6 +364,8 @@
     flex-direction: column;
     gap: 4px;
     min-height: 80px;
+    overflow: hidden;
+
 }
 
 .escopo-main .dia-celula.dia-hoje {
@@ -392,10 +394,14 @@
 
 .escopo-main .ag-bloco {
     border-radius: 6px;
-    padding: 4px 6px;
+    padding: 0;
     display: flex;
     flex-direction: column;
     gap: 2px;
+    min-width: 0;
+    overflow: hidden;
+    background: transparent;
+    border-left: none;
 }
 
 .escopo-main .ag-bloco.sala {

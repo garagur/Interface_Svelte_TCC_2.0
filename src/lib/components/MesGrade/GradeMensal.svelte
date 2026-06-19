@@ -88,10 +88,6 @@
                                 </span>
                                 {#each ags as ag}
                                     <div class="ag-bloco {ag.tipo ?? 'sala'}">
-                                        <span class="ag-hora">
-                                            {extrairHora(ag.data_hora_inicio)} -
-                                            {extrairHora(ag.data_hora_fim)}
-                                        </span>
                                         <slot {ag} />
                                     </div>
                                 {/each}

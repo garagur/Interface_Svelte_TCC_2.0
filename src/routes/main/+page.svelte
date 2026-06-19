@@ -31,20 +31,12 @@
       ]);
       agendamentos = [
         ...salas.map((s) => ({
-          id: s.id,
+          ...s,
           tipo: "sala",
-          data_hora_inicio: s.data_hora_inicio,
-          data_hora_fim: s.data_hora_fim,
-          obs: s.obs,
-          referencia_id: s.sala_id,
         })),
         ...equipamentos.map((e) => ({
-          id: e.id,
+          ...e,
           tipo: "equipamento",
-          data_hora_inicio: e.data_hora_inicio,
-          data_hora_fim: e.data_hora_fim,
-          obs: e.obs,
-          referencia_id: e.equipamento_id,
         })),
       ];
     } catch (e) {

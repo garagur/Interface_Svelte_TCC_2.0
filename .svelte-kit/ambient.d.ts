@@ -91,6 +91,7 @@ declare module '$env/static/private' {
 	export const npm_config_npm_version: string;
 	export const XDG_CONFIG_DIRS_VSCODE_SNAP_ORIG: string;
 	export const MEMORY_PRESSURE_WATCH: string;
+	export const CLAUDE_CODE_SSE_PORT: string;
 	export const XDG_SESSION_CLASS: string;
 	export const XDG_DATA_DIRS_VSCODE_SNAP_ORIG: string;
 	export const USERNAME: string;
@@ -298,6 +299,7 @@ declare module '$env/dynamic/private' {
 		npm_config_npm_version: string;
 		XDG_CONFIG_DIRS_VSCODE_SNAP_ORIG: string;
 		MEMORY_PRESSURE_WATCH: string;
+		CLAUDE_CODE_SSE_PORT: string;
 		XDG_SESSION_CLASS: string;
 		XDG_DATA_DIRS_VSCODE_SNAP_ORIG: string;
 		USERNAME: string;

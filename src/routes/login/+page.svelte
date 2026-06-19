@@ -33,6 +33,7 @@
       localStorage.setItem("token", data.token);
       localStorage.setItem("cargo", data.user?.cargo || "");
       localStorage.setItem("user_id", data.user?.id || "");
+      localStorage.setItem("matricula", data.user?.matricula || "");
       goto("/main");
     } catch (e) {
       erro = e.message;

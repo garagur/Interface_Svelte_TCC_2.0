@@ -32,7 +32,7 @@
         "domingo",
     ];
     onMount(() => {
-        usuarioId = localStorage.getItem("usuario_id");
+        usuarioId = localStorage.getItem("user_id");
     });
 </script>
 
@@ -86,6 +86,45 @@
             {/if}
 
             <div class="conteudo-principal">
+                <!-- Calendário em cima, largura total -->
+                <div class="card calendario-card">
+                    <div class="grade-header-title">
+                        <div class="title-left">
+                            <span
+                                class="material-symbols-outlined text-primary"
+                            >
+                                calendar_month
+                            </span>
+                            <h3>Agendamentos — próximos 60 dias</h3>
+                        </div>
+                        <span class="badge"
+                            >{agendamentos.length} registros</span
+                        >
+                    </div>
+
+                    {#if !sala_id}
+                        <p class="estado-vazio">
+                            Selecione uma sala para ver os agendamentos.
+                        </p>
+                    {:else}
+                        <CalendarioAgendamentos
+                            {agendamentos}
+                            {hojeStr}
+                            {carregandoLista}
+                        >
+                            <svelte:fragment let:ag>
+                                <AgendamentoBloco
+                                    {ag}
+                                    {usuarioId}
+                                    onDeletar={() => {}}
+                                    onDetalhes={() => {}}
+                                />
+                            </svelte:fragment>
+                        </CalendarioAgendamentos>
+                    {/if}
+                </div>
+
+                <!-- Formulário embaixo, campos em linha -->
                 <div class="card form-card">
                     <div class="card-header">
                         <span class="material-symbols-outlined icon-large">
@@ -94,42 +133,44 @@
                     </div>
 
                     <form on:submit|preventDefault={onSubmit}>
-                        <div class="field">
-                            <label for="data-agendamento">Data</label>
-                            <input
-                                id="data-agendamento"
-                                type="date"
-                                bind:value={dataAgendamento}
-                                min={hojeStr}
-                                required
-                            />
-                        </div>
-                        <div class="field">
-                            <label for="hora-inicio">Hora de Início</label>
-                            <input
-                                id="hora-inicio"
-                                type="time"
-                                bind:value={horaInicio}
-                                required
-                            />
-                        </div>
-                        <div class="field">
-                            <label for="hora-fim">Hora de Fim</label>
-                            <input
-                                id="hora-fim"
-                                type="time"
-                                bind:value={horaFim}
-                                required
-                            />
-                        </div>
-                        <div class="field">
-                            <label for="obs">Observação</label>
-                            <input
-                                id="obs"
-                                type="text"
-                                bind:value={obs}
-                                placeholder="Ex: Aula de reposição"
-                            />
+                        <div class="form-fields">
+                            <div class="field">
+                                <label for="data-agendamento">Data</label>
+                                <input
+                                    id="data-agendamento"
+                                    type="date"
+                                    bind:value={dataAgendamento}
+                                    min={hojeStr}
+                                    required
+                                />
+                            </div>
+                            <div class="field">
+                                <label for="hora-inicio">Hora de Início</label>
+                                <input
+                                    id="hora-inicio"
+                                    type="time"
+                                    bind:value={horaInicio}
+                                    required
+                                />
+                            </div>
+                            <div class="field">
+                                <label for="hora-fim">Hora de Fim</label>
+                                <input
+                                    id="hora-fim"
+                                    type="time"
+                                    bind:value={horaFim}
+                                    required
+                                />
+                            </div>
+                            <div class="field">
+                                <label for="obs">Observação</label>
+                                <input
+                                    id="obs"
+                                    type="text"
+                                    bind:value={obs}
+                                    placeholder="Ex: Aula de reposição"
+                                />
+                            </div>
                         </div>
 
                         {#if erro}<p class="msg-erro">{erro}</p>{/if}
@@ -158,38 +199,6 @@
                             </button>
                         </div>
                     </form>
-                </div>
-
-                <div class="card calendario-card">
-                    <div class="grade-header-title">
-                        <div class="title-left">
-                            <span
-                                class="material-symbols-outlined text-primary"
-                            >
-                                calendar_month
-                            </span>
-                            <h3>Agendamentos — próximos 60 dias</h3>
-                        </div>
-                        <span class="badge"
-                            >{agendamentos.length} registros</span
-                        >
-                    </div>
-
-                    {#if !sala_id}
-                        <p class="estado-vazio">
-                            Selecione uma sala para ver os agendamentos.
-                        </p>
-                    {:else}
-                        <CalendarioAgendamentos
-                            {agendamentos}
-                            {hojeStr}
-                            {carregandoLista}
-                        >
-                            <svelte:fragment let:ag>
-                                <AgendamentoBloco {ag} {usuarioId} />
-                            </svelte:fragment>
-                        </CalendarioAgendamentos>
-                    {/if}
                 </div>
             </div>
         </main>

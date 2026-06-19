@@ -40,14 +40,19 @@ export async function carregarAgendamentosSalas(token, sala_id = null) {
 
     const lista = Array.isArray(dados) ? dados : dados?.data || []
 
-    return lista.map(s => ({
-        id: s.id,
-        user_id: s.user_id || '',
-        usuario_nome: s.usuario_nome || '',
-        sala_id: s.sala_id || '',
-        sala_nome: s.sala_nome || '',
-        data_hora_inicio: s.data_hora_inicio || '',
-        data_hora_fim: s.data_hora_fim || '',
-        obs: s.obs || '',
-    }))
+    return lista.map(s => {
+        const item = {
+            id: s.id,
+            user_id: s.user_id || '',
+            usuario_nome: s.user?.name || '',
+            sala_id: s.sala_id || '',
+            sala_nome: s.sala?.nome || '',
+            data_hora_inicio: s.data_hora_inicio || '',
+            data_hora_fim: s.data_hora_fim || '',
+            obs: s.obs || '',
+            tipo: 'sala',
+        }
+        console.log('agendamento mapeado:', item)
+        return item
+    })
 }

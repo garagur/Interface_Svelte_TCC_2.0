@@ -21,7 +21,7 @@
         return new Date().toISOString().slice(0, 10);
     }
     onMount(() => {
-        usuarioId = localStorage.getItem("usuario_id");
+        usuarioId = localStorage.getItem("user_id");
     });
 
     $: totalRegistros = agendamentos.length;
@@ -109,6 +109,7 @@
                     {ag}
                     {usuarioId}
                     onDetalhes={irParaDetalhes}
+                    onDeletar={() => {}}
                 />
             </svelte:fragment>
         </CalendarioAgendamentos>
