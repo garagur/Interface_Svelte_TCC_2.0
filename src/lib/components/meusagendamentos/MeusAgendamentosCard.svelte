@@ -1,26 +1,25 @@
 <script>
+    import GradeSemanal from "$lib/components/SemanalGrade/GradeSemanal.svelte";
+    import BlocoCard from "$lib/components/Card/BlocoHorarioCard.svelte";
+
     export let blocos = [];
     export let agendamentos = [];
     export let carregandoBlocos = false;
     export let carregandoAgendamentos = false;
     export let erro = "";
     export let onSair;
+    /** @type {((ag: any) => void) | null} */
+    export let onDeletar = null;
 
-    const dias = ["segunda", "terca", "quarta", "quinta", "sexta"];
-
-    const diasLabels = {
-        segunda: "Segunda",
-        terca: "Terça",
-        quarta: "Quarta",
-        quinta: "Quinta",
-        sexta: "Sexta",
-    };
-
-    function blocosOrdenados(dia) {
-        return blocos
-            .filter((b) => b.dia_semana === dia)
-            .sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio));
-    }
+    const dias = [
+        "segunda",
+        "terca",
+        "quarta",
+        "quinta",
+        "sexta",
+        "sabado",
+        "domingo",
+    ];
 
     function formatarDataHora(iso) {
         if (!iso) return "—";
@@ -70,57 +69,24 @@
             <p class="msg-erro">{erro}</p>
         {/if}
 
-        <!-- ── Grade de Aulas ── -->
         <div class="card">
             <div class="card-header">
                 <span class="material-symbols-outlined">calendar_month</span>
                 <h3>Minha Grade de Aulas</h3>
             </div>
 
-            {#if carregandoBlocos}
-                <p class="estado-vazio">Carregando grade...</p>
-            {:else if blocos.length === 0}
+            {#if blocos.length === 0 && !carregandoBlocos}
                 <p class="estado-vazio">Nenhuma aula cadastrada para você.</p>
             {:else}
-                <div class="grade-wrapper">
-                    {#each dias as dia}
-                        <div class="dia-coluna">
-                            <div class="dia-header">{diasLabels[dia]}</div>
-                            <div class="dia-blocos">
-                                {#each blocosOrdenados(dia) as bloco}
-                                    <div class="bloco-aula">
-                                        <span class="bloco-horario">
-                                            {bloco.hora_inicio} – {bloco.hora_fim}
-                                        </span>
-                                        <span class="bloco-disciplina">
-                                            {bloco.disciplina}
-                                        </span>
-                                        <div class="bloco-meta">
-                                            <span
-                                                class="material-symbols-outlined"
-                                                >meeting_room</span
-                                            >
-                                            {bloco.sala_nome ||
-                                                bloco.sala_id ||
-                                                "—"}
-                                        </div>
-                                        <div class="bloco-meta">
-                                            <span
-                                                class="material-symbols-outlined"
-                                                >group</span
-                                            >
-                                            {bloco.turma_nome ||
-                                                bloco.turma_id ||
-                                                "—"}
-                                        </div>
-                                    </div>
-                                {:else}
-                                    <div class="bloco-vazio">—</div>
-                                {/each}
-                            </div>
-                        </div>
-                    {/each}
-                </div>
+                <GradeSemanal
+                    {dias}
+                    {blocos}
+                    carregandoLista={carregandoBlocos}
+                >
+                    <svelte:fragment let:bloco>
+                        <BlocoCard {bloco} mostrarTurma={true} />
+                    </svelte:fragment>
+                </GradeSemanal>
             {/if}
         </div>
 
@@ -175,6 +141,17 @@
                                         ? "Agendado"
                                         : "Concluído"}
                                 </span>
+                                {#if isFuturo(ag.data_hora_inicio) && onDeletar}
+                                    <button
+                                        class="btn-deletar-ag"
+                                        on:click={() => onDeletar(ag)}
+                                        title="Deletar agendamento"
+                                    >
+                                        <span class="material-symbols-outlined"
+                                            >delete</span
+                                        >
+                                    </button>
+                                {/if}
                             </div>
                         </div>
                     {/each}

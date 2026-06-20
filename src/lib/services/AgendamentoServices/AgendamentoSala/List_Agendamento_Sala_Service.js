@@ -15,6 +15,8 @@ async function parseJson(response) {
  * @param {number|null} sala_id
  * @returns {Promise<any[]>}
  */
+
+
 export async function carregarAgendamentosSalas(token, sala_id = null) {
     if (!token) {
         throw new Error('Token de autenticação não encontrado. Faça login novamente.')

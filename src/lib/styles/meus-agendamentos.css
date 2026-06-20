@@ -54,7 +54,7 @@
     flex-direction: column;
     gap: 24px;
     padding: 28px 24px;
-    max-width: 960px;
+    max-width: 1400px;
     margin: 0 auto;
     width: 100%;
 }
@@ -87,88 +87,26 @@
     color: var(--text-dark);
 }
 
-.meus-agendamentos .grade-wrapper {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-    overflow-x: auto;
-}
-
-.meus-agendamentos .dia-coluna {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    min-width: 140px;
-}
-
-.meus-agendamentos .dia-header {
-    text-align: center;
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--white);
-    background: var(--primary);
-    border-radius: 6px;
-    padding: 6px 4px;
-}
-
-.meus-agendamentos .dia-blocos {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.meus-agendamentos .bloco-aula {
-    background: var(--gray-50);
-    border: 1px solid var(--primary-light);
-    border-left: 3px solid var(--primary);
-    border-radius: 8px;
-    padding: 10px 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.meus-agendamentos .bloco-horario {
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: var(--primary-dark);
-    letter-spacing: 0.02em;
-}
-
-.meus-agendamentos .bloco-disciplina {
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--text-dark);
-    line-height: 1.3;
-}
-
-.meus-agendamentos .bloco-meta {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.7rem;
-    color: var(--text-muted);
-}
-
-.meus-agendamentos .bloco-meta .material-symbols-outlined {
-    font-size: 13px;
-    color: var(--text-muted);
-}
-
-.meus-agendamentos .bloco-vazio {
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 0.8rem;
-    padding: 12px 0;
-}
-
-/* ─── Lista de agendamentos ───────────────────────────────────────── */
 .meus-agendamentos .agendamentos-lista {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.meus-agendamentos .btn-deletar-ag {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #ef4444;
+    padding: 4px;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.meus-agendamentos .btn-deletar-ag:hover {
+    color: #b91c1c;
 }
 
 .meus-agendamentos .agendamento-item {
@@ -237,6 +175,7 @@
 .meus-agendamentos .agendamento-status {
     display: flex;
     align-items: center;
+    gap: 6px;
     padding: 0 16px;
 }
 

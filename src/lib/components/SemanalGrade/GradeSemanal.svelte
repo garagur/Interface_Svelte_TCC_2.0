@@ -52,11 +52,10 @@
 
 <style>
     .grade-wrapper {
-        display: flex;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
         gap: 0.75rem;
-        overflow-x: auto;
     }
-
     .dia-coluna {
         flex: 1;
         min-width: 120px;
