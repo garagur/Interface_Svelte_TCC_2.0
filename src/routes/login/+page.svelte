@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from "svelte";
   import LoginCard from "$lib/components/login/LoginCard.svelte";
   import {
     sendOtp,
@@ -9,8 +10,16 @@
   let email = "";
   let otp = "";
   let erro = "";
+  let avisoSessao = "";
   let carregando = false;
   let etapa = 1;
+
+  onMount(() => {
+    const sessao = new URL(window.location.href).searchParams.get("sessao");
+    if (sessao === "expirada") {
+      avisoSessao = "Sua sessão foi desconectada, Faça login novamente.";
+    }
+  });
 
   async function handleSubmitEmail() {
     erro = "";
@@ -58,6 +67,7 @@
   bind:email
   bind:otp
   {erro}
+  {avisoSessao}
   {carregando}
   {etapa}
   onSubmitEmail={handleSubmitEmail}

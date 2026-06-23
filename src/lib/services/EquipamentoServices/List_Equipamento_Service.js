@@ -1,3 +1,4 @@
+import { apiFetch } from '../../../config/api.js'
 import { EQUIPAMENTO_ROUTES } from '../../../config/routes/Equipamento_Endpoints.js'
 async function parseJson(response) {
     const text = await response.text()
@@ -18,16 +19,15 @@ export async function carregarEquipamentos(token) {
         throw new Error('Token de autenticação não encontrado. Faça login novamente.')
     }
 
-    const resp = await fetch(EQUIPAMENTO_ROUTES.listar, {
+    const resp = await apiFetch(EQUIPAMENTO_ROUTES.listar, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
         },
     })
 
     const dados = await parseJson(resp)
-
+    if (!resp) return [];
     if (!resp.ok) {
         throw new Error(dados?.message || dados?.error || 'Erro ao carregar equipamentos.')
     }

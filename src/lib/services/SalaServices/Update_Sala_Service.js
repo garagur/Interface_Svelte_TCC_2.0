@@ -1,3 +1,4 @@
+import { apiFetch } from '../../../config/api.js'
 import { SALA_ROUTES } from '../../../config/routes/Sala_Endpoints.js'
 
 async function parseJson(response) {
@@ -25,12 +26,11 @@ export async function atualizarSalas(id, dadosSala, token) {
         throw new Error('Dados da sala incompletos.')
     }
 
-    const resp = await fetch(SALA_ROUTES.atualizar(id), {
+    const resp = await apiFetch(SALA_ROUTES.atualizar(id), {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
             nome: dadosSala.nome,
@@ -39,7 +39,7 @@ export async function atualizarSalas(id, dadosSala, token) {
             status: dadosSala.status,
         })
     })
-
+    if (!resp) return;
     const dados = await parseJson(resp)
 
     if (!resp.ok) {

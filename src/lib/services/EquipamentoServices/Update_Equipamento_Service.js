@@ -1,3 +1,4 @@
+import { apiFetch } from '../../../config/api.js'
 import { EQUIPAMENTO_ROUTES } from '../../../config/routes/Equipamento_Endpoints.js'
 
 async function parseJson(response) {
@@ -25,12 +26,11 @@ export async function atualizarEquipamentos(id, dadosEquipamento, token) {
         throw new Error('Dados do equipamento incompletos.')
     }
 
-    const resp = await fetch(EQUIPAMENTO_ROUTES.atualizar(id), {
+    const resp = await apiFetch(EQUIPAMENTO_ROUTES.atualizar(id), {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
             nome: dadosEquipamento.nome,
@@ -39,7 +39,7 @@ export async function atualizarEquipamentos(id, dadosEquipamento, token) {
             status: dadosEquipamento.status,
         })
     })
-
+    if (!resp) return;
     const dados = await parseJson(resp)
 
     if (!resp.ok) {

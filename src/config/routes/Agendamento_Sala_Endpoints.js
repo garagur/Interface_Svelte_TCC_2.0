@@ -1,8 +1,7 @@
-import { API_URL } from '../constants.js'
 
 export const AGENDAMENTOSALA_ROUTE = {
-    listar: `${API_URL}/agendamento-salas`,
-    buscar: (id) => `${API_URL}/agendamento-salas/${id}`,
-    cadastrar: `${API_URL}/agendamento-salas`,
-    deletar: (id) => `${API_URL}/agendamento-salas/${id}`,
+    listar: '/agendamento-salas',
+    buscar: (id) => `/agendamento-salas/${id}`,
+    cadastrar: '/agendamento-salas',
+    deletar: (id) => `/agendamento-salas/${id}`,
 }

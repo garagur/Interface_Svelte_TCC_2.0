@@ -1,3 +1,4 @@
+import { apiFetch } from '../../../config/api.js'
 import { AUTH_ROUTES } from '../../../config/routes/User_Endpoints.js'
 
 /**
@@ -8,7 +9,7 @@ export async function logoutUser(token) {
   if (!token) return
 
   try {
-    await fetch(AUTH_ROUTES.logout, {
+    await apiFetch(AUTH_ROUTES.logout, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',

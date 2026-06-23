@@ -1,3 +1,4 @@
+import { apiFetch } from '../../../config/api.js'
 import { TURMA_ROUTES } from '../../../config/routes/Turma_Endpoints.js'
 
 async function parseJson(response) {
@@ -24,19 +25,18 @@ export async function cadastrarTurma(novaTurma, token) {
         throw new Error('Dados da turma incompletos.')
     }
 
-    const resp = await fetch(TURMA_ROUTES.cadastrar, {
+    const resp = await apiFetch(TURMA_ROUTES.cadastrar, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
             nome: novaTurma.nome,
             ano_letivo: novaTurma.ano_letivo,
         }),
     })
-
+    if (!resp) return;
     const dados = await parseJson(resp)
 
     if (!resp.ok) {

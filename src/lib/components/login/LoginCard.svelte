@@ -6,6 +6,7 @@
     export let etapa;
     export let onSubmitEmail;
     export let onSubmitOtp;
+    export let avisoSessao = "";
 </script>
 
 <div class="login-wrapper">
@@ -25,8 +26,8 @@
                     />
                 </div>
 
-                {#if erro}
-                    <p class="erro">{erro}</p>
+                {#if avisoSessao}
+                    <p class="aviso-sessao">{avisoSessao}</p>
                 {/if}
 
                 <button type="submit" class="btn-main" disabled={carregando}>

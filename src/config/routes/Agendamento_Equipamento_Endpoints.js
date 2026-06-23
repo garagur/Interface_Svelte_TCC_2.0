@@ -1,8 +1,7 @@
-import { API_URL } from '../constants.js'
-
+// Agendamento_Equipamento_Endpoints.js
 export const AGENDAMENTOEQUIPAMENTO_ROUTE = {
-    listar: `${API_URL}/agendamento-equipamentos`,
-    buscar: (id) => `${API_URL}/agendamento-equipamentos/${id}`,
-    cadastrar: `${API_URL}/agendamento-equipamentos`,
-    deletaar: (id) => `${API_URL}/agendamento-equipamentos/${id}`,
+    listar: '/agendamento-equipamentos',
+    buscar: (id) => `/agendamento-equipamentos/${id}`,
+    cadastrar: '/agendamento-equipamentos',
+    deletaar: (id) => `/agendamento-equipamentos/${id}`,
 }

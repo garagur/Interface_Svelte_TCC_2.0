@@ -1,5 +1,5 @@
 import { AGENDAMENTOSALA_ROUTE } from '../../../../config/routes/Agendamento_Sala_Endpoints.js'
-
+import { apiFetch } from '../../../../config/api.js';
 async function parseJson(response) {
     const text = await response.text()
     if (!text) return null
@@ -18,12 +18,11 @@ export async function cadastrarAgendamento(novoAgendamentoSala, token) {
     if (!isFuturo(novoAgendamentoSala.data_hora_inicio)) {
         throw new Error('Não é possível agendar para um horário que já passou.')
     }
-    const resp = await fetch(AGENDAMENTOSALA_ROUTE.cadastrar, {
+    const resp = await apiFetch(AGENDAMENTOSALA_ROUTE.cadastrar, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
             sala_id: novoAgendamentoSala.sala_id,
@@ -32,7 +31,7 @@ export async function cadastrarAgendamento(novoAgendamentoSala, token) {
             obs: novoAgendamentoSala.obs,
         }),
     })
-
+    if (!resp) return;
     const dados = await parseJson(resp)
 
     if (!resp.ok) {

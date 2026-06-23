@@ -1,3 +1,4 @@
+import { apiFetch } from '../../../config/api.js'
 import { TURMA_ROUTES } from '../../../config/routes/Turma_Endpoints.js'
 
 async function parseJson(response) {
@@ -25,19 +26,18 @@ export async function atualizarTurma(id, dadosTurma, token) {
         throw new Error('Dados da turma incompletos.')
     }
 
-    const resp = await fetch(TURMA_ROUTES.atualizar(id), {
+    const resp = await apiFetch(TURMA_ROUTES.atualizar(id), {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
             nome: dadosTurma.nome,
             ano_letivo: dadosTurma.ano_letivo,
         })
     })
-
+    if (!resp) return;
     const dados = await parseJson(resp)
 
     if (!resp.ok) {

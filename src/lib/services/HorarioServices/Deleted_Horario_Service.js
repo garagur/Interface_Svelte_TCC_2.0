@@ -1,3 +1,4 @@
+import { apiFetch } from '../../../config/api.js'
 import { HORARIO_ROUTES } from '../../../config/routes/Horario_Endpoits.js'
 
 /**
@@ -10,14 +11,13 @@ export async function deletarHorario(id, token) {
         throw new Error('Token de autenticação não encontrado. Faça login novamente.')
     }
 
-    const resp = await fetch(HORARIO_ROUTES.deletar(id), {
+    const resp = await apiFetch(HORARIO_ROUTES.deletar(id), {
         method: 'DELETE',
         headers: {
             'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
         },
     })
-
+    if (!resp) return;
     if (!resp.ok) {
         const text = await resp.text()
         let dados = null

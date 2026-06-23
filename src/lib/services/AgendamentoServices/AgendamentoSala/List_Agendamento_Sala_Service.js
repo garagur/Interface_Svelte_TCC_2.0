@@ -1,3 +1,4 @@
+import { apiFetch } from '../../../../config/api.js'
 import { AGENDAMENTOSALA_ROUTE } from '../../../../config/routes/Agendamento_Sala_Endpoints.js'
 
 async function parseJson(response) {
@@ -26,14 +27,13 @@ export async function carregarAgendamentosSalas(token, sala_id = null) {
         ? `${AGENDAMENTOSALA_ROUTE.listar}?sala_id=${sala_id}`
         : AGENDAMENTOSALA_ROUTE.listar
 
-    const resp = await fetch(url, {
+    const resp = await apiFetch(url, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
         },
     })
-
+    if (!resp) return [];
     const dados = await parseJson(resp)
 
     if (!resp.ok) {

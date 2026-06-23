@@ -1,3 +1,4 @@
+import { apiFetch } from '../../../config/api.js'
 import { USER_ROUTES } from '../../../config/routes/User_Endpoints.js'
 
 /**
@@ -28,12 +29,11 @@ export async function cadastrarUsuario(novoUsuario, token) {
     throw new Error('Dados do usuário incompletos.')
   }
 
-  const resp = await fetch(USER_ROUTES.cadastro, {
+  const resp = await apiFetch(USER_ROUTES.cadastro, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'Authorization': `Bearer ${token}`,
     },
     body: JSON.stringify({
       name: novoUsuario.nome,
@@ -42,7 +42,7 @@ export async function cadastrarUsuario(novoUsuario, token) {
       email: novoUsuario.email,
     }),
   })
-
+  if (!resp) return;
   const dados = await parseJson(resp)
 
   if (!resp.ok) {

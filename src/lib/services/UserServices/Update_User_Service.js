@@ -1,3 +1,4 @@
+import { apiFetch } from '../../../config/api.js'
 import { USER_ROUTES } from '../../../config/routes/User_Endpoints.js'
 
 async function parseJson(response) {
@@ -25,12 +26,12 @@ export async function atualizarUsuario(id, dadosUsuario, token) {
         throw new Error('Dados do usuário incompletos.')
     }
 
-    const resp = await fetch(USER_ROUTES.atualizar(id), {
+    const resp = await apiFetch(USER_ROUTES.atualizar(id), {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
+
         },
         body: JSON.stringify({
             name: dadosUsuario.nome,
@@ -39,7 +40,7 @@ export async function atualizarUsuario(id, dadosUsuario, token) {
             email: dadosUsuario.email,
         }),
     })
-
+    if (!resp) return;
     const dados = await parseJson(resp)
 
     if (!resp.ok) {

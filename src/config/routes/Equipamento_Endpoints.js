@@ -1,8 +1,7 @@
-import { API_URL } from '../constants.js'
-
+// Equipamento_Endpoints.js
 export const EQUIPAMENTO_ROUTES = {
-    listar: `${API_URL}/equipamentos`,
-    buscar: (id) => `${API_URL}/equipamentos/${id}`,
-    cadastrar: `${API_URL}/equipamentos`,
-    atualizar: (id) => `${API_URL}/equipamentos/${id}`,
+    listar: '/equipamentos',
+    buscar: (id) => `/equipamentos/${id}`,
+    cadastrar: '/equipamentos',
+    atualizar: (id) => `/equipamentos/${id}`,
 }

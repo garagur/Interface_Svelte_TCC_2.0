@@ -1,3 +1,4 @@
+import { apiFetch } from '../../../config/api.js'
 import { USER_ROUTES } from '../../../config/routes/User_Endpoints.js'
 
 /**
@@ -23,14 +24,14 @@ export async function carregarUsuarios(token) {
     throw new Error('Token de autenticação não encontrado. Faça login novamente.')
   }
 
-  const resp = await fetch(USER_ROUTES.listar, {
+  const resp = await apiFetch(USER_ROUTES.listar, {
     method: 'GET',
     headers: {
       'Accept': 'application/json',
-      'Authorization': `Bearer ${token}`,
+
     },
   })
-
+  if (!resp) return [];
   const dados = await parseJson(resp)
 
   if (!resp.ok) {

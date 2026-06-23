@@ -1,4 +1,4 @@
-import { AUTH_ROUTES } from '../../../config/routes/User_Endpoints.js'
+import { LOGIN_ROUTES } from '../../../config/routes/Login_Endpoints.js'
 
 async function parseJson(response) {
   const text = await response.text()
@@ -15,7 +15,7 @@ export async function sendOtp(email) {
     throw new Error('Preencha o email!')
   }
 
-  const resposta = await fetch(AUTH_ROUTES.sendOtp, {
+  const resp = await fetch(LOGIN_ROUTES.sendOtp, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -24,9 +24,9 @@ export async function sendOtp(email) {
     body: JSON.stringify({ email }),
   })
 
-  const dados = await parseJson(resposta)
+  const dados = await parseJson(resp)
 
-  if (!resposta.ok) {
+  if (!resp.ok) {
     throw new Error(dados?.message || 'Email não encontrado.')
   }
 
@@ -38,7 +38,7 @@ export async function loginUser(email, otp) {
     throw new Error('Preencha o código enviado ao seu email!')
   }
 
-  const resposta = await fetch(AUTH_ROUTES.login, {
+  const resposta = await fetch(LOGIN_ROUTES.login, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

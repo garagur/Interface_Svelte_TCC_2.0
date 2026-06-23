@@ -1,3 +1,4 @@
+import { apiFetch } from '../../../config/api.js'
 import { HORARIO_ROUTES } from '../../../config/routes/Horario_Endpoits.js'
 
 async function parseJson(response) {
@@ -34,14 +35,13 @@ async function buscarBlocos(token, params = {}) {
     const query = new URLSearchParams(params).toString()
     const url = query ? `${HORARIO_ROUTES.listar}?${query}` : HORARIO_ROUTES.listar
 
-    const resp = await fetch(url, {
+    const resp = await apiFetch(url, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
         },
     })
-
+    if (!resp) return [];
     const dados = await parseJson(resp)
 
     if (!resp.ok) {

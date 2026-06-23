@@ -1,3 +1,4 @@
+import { apiFetch } from '../../../config/api.js'
 import { TURMA_ROUTES } from '../../../config/routes/Turma_Endpoints.js'
 
 async function parseJson(response) {
@@ -19,14 +20,13 @@ export async function carregarTurmas(token) {
         throw new Error('Token de autenticação não encontrado. Faça login novamente.')
     }
 
-    const resp = await fetch(TURMA_ROUTES.listar, {
+    const resp = await apiFetch(TURMA_ROUTES.listar, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
         },
     })
-
+    if (!resp) return [];
     const dados = await parseJson(resp)
 
     if (!resp.ok) {

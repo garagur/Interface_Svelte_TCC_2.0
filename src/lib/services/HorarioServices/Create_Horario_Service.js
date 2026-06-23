@@ -1,3 +1,4 @@
+import { apiFetch } from '../../../config/api.js'
 import { HORARIO_ROUTES } from '../../../config/routes/Horario_Endpoits.js'
 
 async function parseJson(response) {
@@ -24,12 +25,11 @@ export async function cadastrarHorario(novoHorario, token) {
         throw new Error('Dados do horário incompletos.')
     }
 
-    const resp = await fetch(HORARIO_ROUTES.cadastrar, {
+    const resp = await apiFetch(HORARIO_ROUTES.cadastrar, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
             turma_id: novoHorario.turma_id,
@@ -41,7 +41,7 @@ export async function cadastrarHorario(novoHorario, token) {
             hora_fim: novoHorario.hora_fim,
         }),
     })
-
+    if (!resp) return;
     const dados = await parseJson(resp)
 
     if (!resp.ok) {

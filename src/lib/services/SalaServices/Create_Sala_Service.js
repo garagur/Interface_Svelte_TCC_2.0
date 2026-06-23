@@ -1,3 +1,4 @@
+import { apiFetch } from '../../../config/api.js'
 import { SALA_ROUTES } from '../../../config/routes/Sala_Endpoints.js'
 
 async function parseJson(response) {
@@ -24,12 +25,11 @@ export async function cadastrarSala(novaSala, token) {
         throw new Error('Dados da sala incompletos.')
     }
 
-    const resp = await fetch(SALA_ROUTES.cadastrar, {
+    const resp = await apiFetch(SALA_ROUTES.cadastrar, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
             nome: novaSala.nome,
@@ -38,7 +38,7 @@ export async function cadastrarSala(novaSala, token) {
             status: novaSala.status,
         }),
     })
-
+    if (!resp) return;
     const dados = await parseJson(resp)
 
     if (!resp.ok) {
