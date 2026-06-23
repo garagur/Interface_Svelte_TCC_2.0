@@ -5,8 +5,10 @@
     /** @type {((ag: any) => void) | null} */
     export let onDeletar = null;
     export let usuarioId = null;
+    export let cargo = null;
 
     $: proprio = usuarioId != null && ag.user_id == usuarioId;
+    $: podeDeletar = cargo === "admin" || proprio;
 </script>
 
 <div class="ag-bloco-inner {proprio ? 'proprio' : 'outro'}">
@@ -29,7 +31,7 @@
     {/if}
 
     <div class="ag-acoes">
-        {#if onDeletar}
+        {#if onDeletar && podeDeletar}
             <button
                 class="btn-ag delete"
                 on:click={() => onDeletar(ag)}
@@ -63,13 +65,13 @@
     }
 
     .ag-bloco-inner.proprio {
-        background-color: #dbeafe;
-        border-left: 3px solid #3b82f6;
+        background-color: #dcfce7;
+        border-left: 3px solid #16a34a;
     }
 
     .ag-bloco-inner.outro {
         background-color: #f1f5f9;
-        border-left: 3px solid #94a3b8;
+        border-left: 3px solid #929292;
     }
 
     .ag-hora {
@@ -131,6 +133,6 @@
     }
 
     .btn-ag.info:hover {
-        color: #3b82f6;
+        color: #003da0;
     }
 </style>

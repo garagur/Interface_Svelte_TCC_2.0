@@ -1,8 +1,11 @@
 <script>
     import { goto } from "$app/navigation";
+    import { onMount } from "svelte";
     import CalendarioAgendamentos from "$lib/components/MesGrade/GradeMensal.svelte";
     import AgendamentoBloco from "$lib/components/Card/BlocoAgendamentoCard.svelte";
-    import { onMount } from "svelte";
+    import ConfirmarDelecaoModal from "$lib/components/Card/ConfirmarDelecaoModal.svelte";
+    import { deletarAgendamentoSala } from "$lib/services/AgendamentoServices/AgendamentoSala/Deleted_Agendamento_Sala_Service.js";
+
     export let titulo = "";
     export let matricula = "";
     export let cargo = "";
@@ -11,21 +14,55 @@
     export let agendamentos = [];
     export let carregando = false;
     export let erro = "";
+
+    let token = "";
     let usuarioId = null;
-    const DIAS_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+    let agendamentoParaDeletar = null;
 
     function irParaDetalhes(ag) {
         goto(`/agendamento/${ag.tipo}/${ag.id}`);
     }
+
     function hoje() {
         return new Date().toISOString().slice(0, 10);
     }
+
+    function abrirModalDeletar(ag) {
+        agendamentoParaDeletar = ag;
+    }
+
+    function fecharModalDeletar() {
+        agendamentoParaDeletar = null;
+    }
+
+    async function confirmarDeletar(ag) {
+        fecharModalDeletar();
+        try {
+            if (ag.tipo === "sala") {
+                await deletarAgendamentoSala(ag.id, token);
+            }
+            agendamentos = agendamentos.filter(
+                (a) => a.id !== ag.id || a.tipo !== ag.tipo,
+            );
+        } catch (e) {
+            erro = e?.message || "Erro ao deletar agendamento.";
+        }
+    }
+
     onMount(() => {
+        token = localStorage.getItem("token") || "";
         usuarioId = localStorage.getItem("user_id");
+        cargo = localStorage.getItem("cargo");
     });
 
     $: totalRegistros = agendamentos.length;
 </script>
+
+<ConfirmarDelecaoModal
+    agendamento={agendamentoParaDeletar}
+    onConfirmar={confirmarDeletar}
+    onCancelar={fecharModalDeletar}
+/>
 
 <div class="scaffold">
     <header class="app-bar">
@@ -99,6 +136,7 @@
             </div>
             <div class="badge">{totalRegistros} registros</div>
         </div>
+
         <CalendarioAgendamentos
             {agendamentos}
             hojeStr={hoje()}
@@ -108,8 +146,8 @@
                 <AgendamentoBloco
                     {ag}
                     {usuarioId}
-                    onDetalhes={irParaDetalhes}
-                    onDeletar={() => {}}
+                    {cargo}
+                    onDeletar={abrirModalDeletar}
                 />
             </svelte:fragment>
         </CalendarioAgendamentos>

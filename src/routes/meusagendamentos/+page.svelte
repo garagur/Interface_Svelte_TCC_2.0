@@ -16,10 +16,6 @@
     let carregandoAgendamentos = false;
     let erro = "";
 
-    // ── Confirmação de exclusão ──
-    let agendamentoParaDeletar = null;
-    let deletando = false;
-
     onMount(async () => {
         token = localStorage.getItem("token") || "";
         professor_id = localStorage.getItem("user_id") || "";
@@ -57,27 +53,12 @@
         }
     }
 
-    function pedirConfirmacaoDeletar(ag) {
-        agendamentoParaDeletar = ag;
-    }
-
-    function cancelarDeletar() {
-        agendamentoParaDeletar = null;
-    }
-
-    async function confirmarDeletar() {
-        if (!agendamentoParaDeletar) return;
-        deletando = true;
+    async function deletar(ag) {
         try {
-            await deletarAgendamentoSala(agendamentoParaDeletar.id, token);
-            agendamentos = agendamentos.filter(
-                (a) => a.id !== agendamentoParaDeletar.id,
-            );
-            agendamentoParaDeletar = null;
+            await deletarAgendamentoSala(ag.id, token);
+            agendamentos = agendamentos.filter((a) => a.id !== ag.id);
         } catch (e) {
             erro = e?.message || "Erro ao deletar agendamento.";
-        } finally {
-            deletando = false;
         }
     }
 </script>
@@ -89,100 +70,5 @@
     {carregandoAgendamentos}
     {erro}
     onSair={() => goto("/main")}
-    onDeletar={pedirConfirmacaoDeletar}
+    onDeletar={deletar}
 />
-
-{#if agendamentoParaDeletar}
-    <div class="overlay-confirmar">
-        <div class="popup-confirmar">
-            <h3>Tem certeza que deseja deletar esse agendamento?</h3>
-            <p>Essa ação não pode ser desfeita.</p>
-            <div class="popup-acoes">
-                <button
-                    class="btn-secondary"
-                    on:click={cancelarDeletar}
-                    disabled={deletando}
-                >
-                    Cancelar
-                </button>
-                <button
-                    class="btn-danger"
-                    on:click={confirmarDeletar}
-                    disabled={deletando}
-                >
-                    {deletando ? "Deletando..." : "Deletar"}
-                </button>
-            </div>
-        </div>
-    </div>
-{/if}
-
-<style>
-    .overlay-confirmar {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        font-family: Arial, sans-serif;
-    }
-
-    .popup-confirmar {
-        background: var(--white, #fff);
-        border-radius: 12px;
-        padding: 24px;
-        max-width: 380px;
-        width: 90%;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-        font-family: Arial, sans-serif;
-    }
-
-    .popup-confirmar h3 {
-        margin: 0 0 10px 0;
-        font-size: 18px;
-        font-weight: 700;
-        color: #1e293b;
-    }
-
-    .popup-confirmar p {
-        margin: 0 0 18px 0;
-        font-size: 14px;
-        color: #64748b;
-    }
-
-    .popup-acoes {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-    }
-
-    .btn-secondary {
-        background: #e2e8f0;
-        color: #334155;
-        border: none;
-        border-radius: 8px;
-        padding: 10px 18px;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-    }
-
-    .btn-danger {
-        background: #ef4444;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 10px 18px;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-    }
-
-    .btn-danger:disabled,
-    .btn-secondary:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-</style>

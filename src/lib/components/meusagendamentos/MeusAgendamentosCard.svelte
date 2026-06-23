@@ -1,6 +1,7 @@
 <script>
     import GradeSemanal from "$lib/components/SemanalGrade/GradeSemanal.svelte";
     import BlocoCard from "$lib/components/Card/BlocoHorarioCard.svelte";
+    import ConfirmarDelecaoModal from "$lib/components/Card/ConfirmarDelecaoModal.svelte";
 
     export let blocos = [];
     export let agendamentos = [];
@@ -10,6 +11,8 @@
     export let onSair;
     /** @type {((ag: any) => void) | null} */
     export let onDeletar = null;
+
+    let agendamentoParaDeletar = null;
 
     const dias = [
         "segunda",
@@ -41,7 +44,19 @@
         return new Date(iso) >= new Date();
     }
 
-    // Ordena: futuros primeiro, depois por data
+    function abrirModal(ag) {
+        agendamentoParaDeletar = ag;
+    }
+
+    function fecharModal() {
+        agendamentoParaDeletar = null;
+    }
+
+    function confirmarDelecao(ag) {
+        fecharModal();
+        onDeletar?.(ag);
+    }
+
     $: agendamentosOrdenados = [...agendamentos].sort((a, b) => {
         const fa = isFuturo(a.data_hora_inicio);
         const fb = isFuturo(b.data_hora_inicio);
@@ -52,6 +67,12 @@
         );
     });
 </script>
+
+<ConfirmarDelecaoModal
+    agendamento={agendamentoParaDeletar}
+    onConfirmar={confirmarDelecao}
+    onCancelar={fecharModal}
+/>
 
 <div class="scaffold">
     <header class="app-bar">
@@ -90,7 +111,6 @@
             {/if}
         </div>
 
-        <!-- ── Agendamentos de Sala ── -->
         <div class="card">
             <div class="card-header">
                 <span class="material-symbols-outlined">event_available</span>
@@ -144,7 +164,7 @@
                                 {#if isFuturo(ag.data_hora_inicio) && onDeletar}
                                     <button
                                         class="btn-deletar-ag"
-                                        on:click={() => onDeletar(ag)}
+                                        on:click={() => abrirModal(ag)}
                                         title="Deletar agendamento"
                                     >
                                         <span class="material-symbols-outlined"
