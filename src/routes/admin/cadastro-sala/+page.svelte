@@ -153,7 +153,14 @@
 
     <svelte:fragment slot="tabela-header">
         <div class="table-header">
-            <div class="th flex-2">Nome</div>
+            <div class="th flex-2">
+                <span
+                    class="material-symbols-outlined"
+                    style="font-size:16px; margin-right:4px; vertical-align:middle"
+                    >meeting_room</span
+                >
+                Nome
+            </div>
             <div class="th flex-1">Número</div>
             <div class="th flex-2">Observação</div>
             <div class="th flex-1">Status</div>
@@ -165,9 +172,6 @@
         {#each salas as s, index}
             <div class="table-row {index % 2 === 0 ? 'even' : 'odd'}">
                 <div class="td flex-2">
-                    <span class="material-symbols-outlined icon-tiny"
-                        >meeting_room</span
-                    >
                     <span class="text-truncate">{s.nome}</span>
                 </div>
                 <div class="td flex-1">

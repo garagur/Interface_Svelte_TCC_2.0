@@ -120,7 +120,14 @@
 
     <svelte:fragment slot="tabela-header">
         <div class="table-header">
-            <div class="th flex-2">Nome</div>
+            <div class="th flex-2">
+                <span
+                    class="material-symbols-outlined"
+                    style="font-size:16px; margin-right:4px; vertical-align:middle"
+                    >groups</span
+                >
+                Nome
+            </div>
             <div class="th flex-1">Ano Letivo</div>
             <div class="th flex-1">Ações</div>
         </div>
@@ -130,9 +137,6 @@
         {#each turmas as t, index}
             <div class="table-row {index % 2 === 0 ? 'even' : 'odd'}">
                 <div class="td flex-2">
-                    <span class="material-symbols-outlined icon-tiny"
-                        >groups</span
-                    >
                     <span class="text-truncate">{t.nome}</span>
                 </div>
                 <div class="td flex-1">

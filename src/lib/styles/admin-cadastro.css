@@ -206,10 +206,9 @@
     padding: 12px 6px;
     display: flex;
     flex-direction: column;
-    /* 👈 ISSO AQUI força tudo dentro da célula a virar uma coluna! */
     align-items: center;
     justify-content: center;
-    font-size: 12px;
+    font-size: 18px;
     color: var(--text-dark);
 }
 
@@ -308,6 +307,7 @@
     border-radius: 24px;
     cursor: pointer;
     transition: background 0.2s;
+
 }
 
 .escopo-admin-cadastro .toggle-switch input:checked~.toggle-track {
@@ -327,12 +327,14 @@
 
 .escopo-admin-cadastro .toggle-switch input:checked~.toggle-track .toggle-thumb {
     transform: translateX(18px);
+
 }
 
 .escopo-admin-cadastro .toggle-label {
     font-size: 0.85rem;
     color: var(--text-muted);
     font-weight: 600;
+    font-size: 16px;
 }
 
 .escopo-admin-cadastro .badge-numero {
@@ -341,24 +343,26 @@
     border-radius: 6px;
     font-weight: bold;
     color: var(--primary);
-    font-size: 11px;
+    font-size: 16px;
 }
 
 .escopo-admin-cadastro .badge-status {
     padding: 4px 8px;
     border-radius: 6px;
     font-weight: bold;
-    font-size: 11px;
+    font-size: 16px;
 }
 
 .escopo-admin-cadastro .badge-status.ativo {
     background: var(--confirm-light);
     color: var(--confirm-dark);
+    font-size: 16px;
 }
 
 .escopo-admin-cadastro .badge-status.inativo {
     background: var(--cancel-light);
     color: var(--cancel-dark);
+    font-size: 16px;
 }
 
 @media (max-width: 900px) {

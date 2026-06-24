@@ -167,10 +167,16 @@
         </div>
     </svelte:fragment>
 
-    <!-- Cabeçalho da tabela -->
     <svelte:fragment slot="tabela-header">
         <div class="table-header">
-            <div class="th flex-2">Nome</div>
+            <div class="th flex-2">
+                <span
+                    class="material-symbols-outlined"
+                    style="font-size:16px; margin-right:4px; vertical-align:middle"
+                    >computer</span
+                >
+                Nome
+            </div>
             <div class="th flex-1">Número</div>
             <div class="th flex-2">Observação</div>
             <div class="th flex-1">Status</div>
@@ -179,13 +185,11 @@
     </svelte:fragment>
 
     <!-- Linhas da tabela -->
+
     <svelte:fragment slot="tabela-body">
         {#each equipamentos as s, index}
             <div class="table-row {index % 2 === 0 ? 'even' : 'odd'}">
                 <div class="td flex-2">
-                    <span class="material-symbols-outlined icon-tiny"
-                        >computer</span
-                    >
                     <span class="text-truncate">{s.nome}</span>
                 </div>
                 <div class="td flex-1">

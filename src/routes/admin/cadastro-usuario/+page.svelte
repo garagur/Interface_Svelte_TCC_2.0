@@ -158,8 +158,22 @@
 
   <svelte:fragment slot="tabela-header">
     <div class="table-header">
-      <div class="th flex-2">Nome</div>
-      <div class="th flex-2">E-mail</div>
+      <div class="th flex-2">
+        <span
+          class="material-symbols-outlined"
+          style="font-size:16px; margin-right:4px; vertical-align:middle"
+          >person</span
+        >
+        Nome
+      </div>
+      <div class="th flex-2">
+        <span
+          class="material-symbols-outlined"
+          style="font-size:16px; margin-right:4px; vertical-align:middle"
+          >mail</span
+        >
+        E-mail
+      </div>
       <div class="th flex-1">Cargo</div>
       <div class="th flex-1">Matrícula</div>
       <div class="th flex-1">Ações</div>
@@ -170,11 +184,9 @@
     {#each usuarios as u, index}
       <div class="table-row {index % 2 === 0 ? 'even' : 'odd'}">
         <div class="td flex-2">
-          <span class="material-symbols-outlined icon-tiny">person</span>
           <span class="text-truncate">{u.nome}</span>
         </div>
         <div class="td flex-2">
-          <span class="material-symbols-outlined icon-tiny">mail</span>
           <span class="text-truncate">{u.email}</span>
         </div>
         <div class="td flex-1">

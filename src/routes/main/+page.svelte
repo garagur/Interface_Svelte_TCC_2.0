@@ -4,8 +4,6 @@
   import MainCard from "$lib/components/main/MainCard.svelte";
   import { logoutUser } from "$lib/services/UserServices/Logout_User_Service.js";
   import { carregarAgendamentosSalas } from "$lib/services/AgendamentoServices/AgendamentoSala/List_Agendamento_Sala_Service.js";
-  import { carregarAgendamentosEquipamentos } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/List_Agendamento_Equipamento_Service.js";
-
   let token = "";
   let matricula = "";
   let cargo = "";
@@ -25,24 +23,16 @@
 
     carregando = true;
     try {
-      const [salas, equipamentos] = await Promise.all([
-        carregarAgendamentosSalas(token),
-        carregarAgendamentosEquipamentos(token),
-      ]);
-      agendamentos = [
-        ...salas.map((s) => ({
-          ...s,
-          tipo: "sala",
-        })),
-        ...equipamentos.map((e) => ({
-          ...e,
-          tipo: "equipamento",
-        })),
-      ];
+      const salas = await carregarAgendamentosSalas(token);
+      console.log("salas recebidas:", salas); // ← quantos chegam?
+      agendamentos = salas.map((s) => ({ ...s, tipo: "sala" }));
+      console.log("agendamentos setados:", agendamentos); // ← está populado?
     } catch (e) {
+      console.error("ERRO:", e);
       erro = e?.message || "Erro ao carregar agendamentos.";
     } finally {
       carregando = false;
+      console.log("carregando:", carregando); // ← vai pra false?
     }
   });
 
