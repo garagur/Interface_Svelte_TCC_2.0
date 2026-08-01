@@ -1,5 +1,5 @@
 import { apiFetch } from '../../../../config/api.js'
-import { AGENDAMENTOSALA_ROUTE } from '../../../../config/routes/Agendamento_Sala_Endpoints.js'
+import { AGENDAMENTOEQUIPAMENTO_ROUTE } from '../../../../config/routes/Agendamento_Equipamento_Endpoints.js'
 
 async function parseJson(response) {
     const text = await response.text()
@@ -17,12 +17,12 @@ async function parseJson(response) {
  * @param {string} [justificativa]
  * @returns {Promise<void>}
  */
-export async function deletarAgendamentoSala(id, token, justificativa = '') {
+export async function deletarAgendamentoEquipamento(id, token, justificativa = '') {
     if (!token) {
         throw new Error('Token de autenticação não encontrado. Faça login novamente.')
     }
 
-    const resp = await apiFetch(AGENDAMENTOSALA_ROUTE.deletar(id), {
+    const resp = await apiFetch(AGENDAMENTOEQUIPAMENTO_ROUTE.deletar(id), {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',

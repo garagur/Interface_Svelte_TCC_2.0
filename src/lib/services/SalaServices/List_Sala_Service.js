@@ -26,6 +26,7 @@ export async function carregarSalas(token) {
             'Accept': 'application/json',
         },
     })
+
     if (!resp) return [];
     const dados = await parseJson(resp)
 
@@ -42,5 +43,6 @@ export async function carregarSalas(token) {
         numero: s.numero || '',
         obs: s.obs || '',
         status: s.status ?? true,
+        responsavel_nome: s.responsavel?.nome || s.responsavel?.name || '',
     }))
 }

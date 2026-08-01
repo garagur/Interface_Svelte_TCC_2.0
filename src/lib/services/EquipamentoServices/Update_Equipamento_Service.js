@@ -13,7 +13,7 @@ async function parseJson(response) {
 
 /**
  * @param {number} id
- * @param {{ nome: string, N_patrimonio: string, obs: string, status: boolean }} dadosEquipamento
+ * @param {{ nome: string, N_patrimonio: string, obs: string, status: boolean, responsavel_id?: number | null }} dadosEquipamento
  * @param {string} token
  * @returns {Promise<any>}
  */
@@ -37,8 +37,10 @@ export async function atualizarEquipamentos(id, dadosEquipamento, token) {
             N_patrimonio: dadosEquipamento.N_patrimonio,
             obs: dadosEquipamento.obs,
             status: dadosEquipamento.status,
+            responsavel_id: dadosEquipamento.responsavel_id || null,
         })
     })
+
     if (!resp) return;
     const dados = await parseJson(resp)
 

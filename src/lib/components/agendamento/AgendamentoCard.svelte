@@ -4,6 +4,7 @@
     import CalendarioAgendamentos from "$lib/components/MesGrade/GradeMensal.svelte";
     import AgendamentoBloco from "$lib/components/Card/BlocoAgendamentoCard.svelte";
     import ConfirmarDelecaoModal from "$lib/components/Card/ConfirmarDelecaoModal.svelte";
+    import ConfirmarRecorrenciaModal from "$lib/components/Card/ConfirmarRecorrenciaModal.svelte";
     import { deletarAgendamentoSala } from "$lib/services/AgendamentoServices/AgendamentoSala/Deleted_Agendamento_Sala_Service.js";
 
     import { onMount } from "svelte";
@@ -16,6 +17,8 @@
     export let carregando = false;
     export let erro = "";
     export let sucesso = "";
+    export let tipo = "avulso";
+    export let diasSemana = [];
     export let dataAgendamento = "";
     export let horaInicio = "";
     export let horaFim = "";
@@ -24,6 +27,14 @@
     export let onSubmit;
     export let onLimpar;
     export let onSair;
+
+    export let ocorrenciasPendentes = null;
+    export let enviando = false;
+    export let progresso = { atual: 0, total: 0 };
+    export let resultadoFinal = null;
+    export let onConfirmarRecorrencia;
+    export let onCancelarRecorrencia;
+
     let token = "";
     let cargo = null;
     let usuarioId = null;
@@ -36,6 +47,17 @@
         "sabado",
         "domingo",
     ];
+
+    const diasSemanaOpcoes = [
+        { key: "dom", label: "Dom" },
+        { key: "seg", label: "Seg" },
+        { key: "ter", label: "Ter" },
+        { key: "qua", label: "Qua" },
+        { key: "qui", label: "Qui" },
+        { key: "sex", label: "Sex" },
+        { key: "sab", label: "Sab" },
+    ];
+
     let agendamentoParaDeletar = null;
 
     function abrirModalDeletar(ag) {
@@ -59,6 +81,22 @@
             erro = e?.message || "Erro ao deletar agendamento.";
         }
     }
+
+    function toggleDia(dia) {
+        if (diasSemana.includes(dia)) {
+            diasSemana = diasSemana.filter((d) => d !== dia);
+        } else {
+            diasSemana = [...diasSemana, dia];
+        }
+    }
+
+    function selecionarTipo(novoTipo) {
+        tipo = novoTipo;
+        if (novoTipo === "avulso") {
+            diasSemana = [];
+        }
+    }
+
     onMount(() => {
         token = localStorage.getItem("token") || "";
         usuarioId = localStorage.getItem("user_id");
@@ -70,6 +108,17 @@
     agendamento={agendamentoParaDeletar}
     onConfirmar={confirmarDeletar}
     onCancelar={fecharModalDeletar}
+/>
+
+<ConfirmarRecorrenciaModal
+    ocorrencias={ocorrenciasPendentes}
+    {enviando}
+    {progresso}
+    {resultadoFinal}
+    {horaInicio}
+    {horaFim}
+    onConfirmar={onConfirmarRecorrencia}
+    onCancelar={onCancelarRecorrencia}
 />
 
 <div class="escopo-agendamento">
@@ -122,7 +171,6 @@
             {/if}
 
             <div class="conteudo-principal">
-                <!-- Calendário em cima, largura total -->
                 <div class="card calendario-card">
                     <div class="grade-header-title">
                         <div class="title-left">
@@ -160,7 +208,6 @@
                     {/if}
                 </div>
 
-                <!-- Formulário embaixo, campos em linha -->
                 <div class="card form-card">
                     <div class="card-header">
                         <span class="material-symbols-outlined icon-large">
@@ -168,10 +215,40 @@
                         </span>
                     </div>
 
+                    <div class="tabs-recorrencia">
+                        <button
+                            type="button"
+                            class="tab-btn {tipo === 'avulso' ? 'ativo' : ''}"
+                            on:click={() => selecionarTipo("avulso")}
+                        >
+                            Avulso
+                        </button>
+                        <button
+                            type="button"
+                            class="tab-btn {tipo === 'semanal' ? 'ativo' : ''}"
+                            on:click={() => selecionarTipo("semanal")}
+                        >
+                            Semanal
+                        </button>
+                        <button
+                            type="button"
+                            class="tab-btn {tipo === 'quinzenal'
+                                ? 'ativo'
+                                : ''}"
+                            on:click={() => selecionarTipo("quinzenal")}
+                        >
+                            Quinzenal
+                        </button>
+                    </div>
+
                     <form on:submit|preventDefault={onSubmit}>
                         <div class="form-fields">
                             <div class="field">
-                                <label for="data-agendamento">Data</label>
+                                <label for="data-agendamento">
+                                    {tipo === "avulso"
+                                        ? "Data"
+                                        : "Data de início"}
+                                </label>
                                 <input
                                     id="data-agendamento"
                                     type="date"
@@ -209,6 +286,37 @@
                             </div>
                         </div>
 
+                        {#if tipo !== "avulso"}
+                            <div class="field dias-semana-field">
+                                <label>Dias da semana</label>
+                                <div class="dias-semana">
+                                    {#each diasSemanaOpcoes as d}
+                                        <button
+                                            type="button"
+                                            class="dia-btn {diasSemana.includes(
+                                                d.key,
+                                            )
+                                                ? 'ativo'
+                                                : ''}"
+                                            on:click={() => toggleDia(d.key)}
+                                        >
+                                            {d.label}
+                                        </button>
+                                    {/each}
+                                </div>
+                            </div>
+
+                            <p class="aviso-recorrencia">
+                                <span class="material-symbols-outlined"
+                                    >info</span
+                                >
+                                {tipo === "semanal"
+                                    ? "Cobre 7 dias a partir da data escolhida."
+                                    : "Cobre 14 dias a partir da data escolhida."}
+                                Início só a partir de amanhã.
+                            </p>
+                        {/if}
+
                         {#if erro}<p class="msg-erro">{erro}</p>{/if}
                         {#if sucesso}<p class="msg-sucesso">{sucesso}</p>{/if}
 
@@ -231,7 +339,11 @@
                                 <span class="material-symbols-outlined"
                                     >save</span
                                 >
-                                {carregando ? "Salvando..." : "Confirmar"}
+                                {carregando
+                                    ? "Salvando..."
+                                    : tipo === "avulso"
+                                      ? "Confirmar"
+                                      : "Revisar Agendamentos"}
                             </button>
                         </div>
                     </form>

@@ -12,7 +12,7 @@ async function parseJson(response) {
 }
 
 /**
- * @param {{ nome: string, N_patrimonio: string, obs: string, status: boolean }} novoEquipamento
+ * @param {{ nome: string, N_patrimonio: string, obs: string, status: boolean, responsavel_id?: number | null }} novoEquipamento
  * @param {string} token
  * @returns {Promise<any>}
  */
@@ -36,11 +36,13 @@ export async function cadastrarEquipamento(novoEquipamento, token) {
             N_patrimonio: novoEquipamento.N_patrimonio,
             obs: novoEquipamento.obs,
             status: novoEquipamento.status,
+            responsavel_id: novoEquipamento.responsavel_id || null,
         }),
     })
 
+    if (!resp) return; // Movido para cima por segurança
     const dados = await parseJson(resp)
-    if (!resp) return;
+
     if (!resp.ok) {
         if (dados?.errors) {
             throw new Error(Object.values(dados.errors).flat().join(' '))

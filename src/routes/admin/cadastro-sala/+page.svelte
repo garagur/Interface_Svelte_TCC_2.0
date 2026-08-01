@@ -4,12 +4,21 @@
     import { cadastrarSala } from "$lib/services/SalaServices/Create_Sala_Service.js";
     import { carregarSalas } from "$lib/services/SalaServices/List_Sala_Service.js";
     import { atualizarSalas } from "$lib/services/SalaServices/Update_Sala_Service.js";
+    import { carregarUsuarios } from "$lib/services/UserServices/List_User_Service.js";
     import { goto } from "$app/navigation";
+
     let token = "";
     let matriculaLogado = "";
 
-    let novaSala = { nome: "", numero: null, obs: "", status: true };
+    let novaSala = {
+        nome: "",
+        numero: null,
+        obs: "",
+        status: true,
+        responsavel_id: null,
+    };
     let salas = [];
+    let usuarios = [];
     let carregando = false;
     let carregandoLista = false;
     let erro = "";
@@ -25,7 +34,7 @@
             erro = "Token não encontrado. Faça login novamente.";
             return;
         }
-        await carregarLista();
+        await Promise.all([carregarLista(), carregarListaUsuarios()]);
     });
 
     async function carregarLista() {
@@ -37,6 +46,15 @@
             erro = e?.message || "Não foi possível carregar as salas.";
         } finally {
             carregandoLista = false;
+        }
+    }
+
+    async function carregarListaUsuarios() {
+        try {
+            usuarios = await carregarUsuarios(token);
+        } catch (e) {
+            // não bloqueia o formulário se falhar, só fica sem opções
+            usuarios = [];
         }
     }
 
@@ -66,7 +84,10 @@
     }
 
     function editarSala(sala) {
-        novaSala = { ...sala };
+        novaSala = {
+            ...sala,
+            responsavel_id: sala.responsavel_id ?? sala.responsavel?.id ?? null,
+        };
         salaEditandoId = sala.id;
         editando = true;
         sucesso = "";
@@ -74,7 +95,13 @@
     }
 
     function resetForm() {
-        novaSala = { nome: "", numero: "", obs: "", status: true };
+        novaSala = {
+            nome: "",
+            numero: "",
+            obs: "",
+            status: true,
+            responsavel_id: null,
+        };
         editando = false;
         salaEditandoId = null;
     }
@@ -130,6 +157,15 @@
                 required
             />
         </div>
+        <div class="field">
+            <label for="responsavel-sala">Responsável</label>
+            <select id="responsavel-sala" bind:value={novaSala.responsavel_id}>
+                <option value={null}>Nenhum responsável</option>
+                {#each usuarios as u}
+                    <option value={u.id}>{u.nome}</option>
+                {/each}
+            </select>
+        </div>
     </svelte:fragment>
 
     <svelte:fragment slot="toggle">
@@ -163,6 +199,7 @@
             </div>
             <div class="th flex-1">Número</div>
             <div class="th flex-2">Observação</div>
+            <div class="th flex-2">Responsável</div>
             <div class="th flex-1">Status</div>
             <div class="th flex-1">Ações</div>
         </div>
@@ -179,6 +216,13 @@
                 </div>
                 <div class="td flex-2">
                     <span class="text-truncate">{s.obs}</span>
+                </div>
+                <div class="td flex-2">
+                    <span class="text-truncate"
+                        >{s.responsavel?.nome ||
+                            s.responsavel?.name ||
+                            "—"}</span
+                    >
                 </div>
                 <div class="td flex-1">
                     <span class="badge-status {s.status ? 'ativo' : 'inativo'}">

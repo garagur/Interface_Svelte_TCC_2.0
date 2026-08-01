@@ -4,18 +4,21 @@
     import { cadastrarEquipamento } from "$lib/services/EquipamentoServices/Create_Equipamento_Service.js";
     import { carregarEquipamentos } from "$lib/services/EquipamentoServices/List_Equipamento_Service.js";
     import { atualizarEquipamentos } from "$lib/services/EquipamentoServices/Update_Equipamento_Service.js";
+    import { carregarUsuarios } from "$lib/services/UserServices/List_User_Service.js";
     import { goto } from "$app/navigation";
-    import "$lib/styles/admin-cadastro.css";
+
     let token = "";
     let matriculaLogado = "";
 
     let novoEquipamento = {
         nome: "",
-        N_patrimonio: null,
+        N_patrimonio: "",
         obs: "",
         status: true,
+        responsavel_id: null,
     };
     let equipamentos = [];
+    let usuarios = [];
     let carregando = false;
     let carregandoLista = false;
     let erro = "";
@@ -31,7 +34,7 @@
             erro = "Token não encontrado. Faça login novamente.";
             return;
         }
-        await carregarLista();
+        await Promise.all([carregarLista(), carregarListaUsuarios()]);
     });
 
     async function carregarLista() {
@@ -43,6 +46,14 @@
             erro = e?.message || "Não foi possível carregar os equipamentos.";
         } finally {
             carregandoLista = false;
+        }
+    }
+
+    async function carregarListaUsuarios() {
+        try {
+            usuarios = await carregarUsuarios(token);
+        } catch (e) {
+            usuarios = [];
         }
     }
 
@@ -80,7 +91,10 @@
     }
 
     function editarEquipamento(eq) {
-        novoEquipamento = { ...eq };
+        novoEquipamento = {
+            ...eq,
+            responsavel_id: eq.responsavel_id ?? eq.responsavel?.id ?? null,
+        };
         equipamentoEditandoId = eq.id;
         editando = true;
         sucesso = "";
@@ -88,7 +102,13 @@
     }
 
     function resetForm() {
-        novoEquipamento = { nome: "", N_patrimonio: "", obs: "", status: true };
+        novoEquipamento = {
+            nome: "",
+            N_patrimonio: "",
+            obs: "",
+            status: true,
+            responsavel_id: null,
+        };
         editando = false;
         equipamentoEditandoId = null;
     }
@@ -113,7 +133,6 @@
     carregandoTexto="Carregando equipamentos..."
     temToggle={true}
 >
-    <!-- Campos do formulário -->
     <svelte:fragment slot="campos">
         <div class="field">
             <label for="nome-equipamento">Nome do Equipamento</label>
@@ -145,9 +164,20 @@
                 required
             />
         </div>
+        <div class="field">
+            <label for="responsavel-equipamento">Responsável</label>
+            <select
+                id="responsavel-equipamento"
+                bind:value={novoEquipamento.responsavel_id}
+            >
+                <option value={null}>Nenhum responsável</option>
+                {#each usuarios as u}
+                    <option value={u.id}>{u.nome}</option>
+                {/each}
+            </select>
+        </div>
     </svelte:fragment>
 
-    <!-- Toggle de status -->
     <svelte:fragment slot="toggle">
         <label for="status-equipamento">Status</label>
         <div class="toggle-wrapper">
@@ -179,12 +209,11 @@
             </div>
             <div class="th flex-1">Número</div>
             <div class="th flex-2">Observação</div>
+            <div class="th flex-2">Responsável</div>
             <div class="th flex-1">Status</div>
             <div class="th flex-1">Ações</div>
         </div>
     </svelte:fragment>
-
-    <!-- Linhas da tabela -->
 
     <svelte:fragment slot="tabela-body">
         {#each equipamentos as s, index}
@@ -197,6 +226,13 @@
                 </div>
                 <div class="td flex-2">
                     <span class="text-truncate">{s.obs}</span>
+                </div>
+                <div class="td flex-2">
+                    <span class="text-truncate"
+                        >{s.responsavel?.nome ||
+                            s.responsavel?.name ||
+                            "—"}</span
+                    >
                 </div>
                 <div class="td flex-1">
                     <span class="badge-status {s.status ? 'ativo' : 'inativo'}">

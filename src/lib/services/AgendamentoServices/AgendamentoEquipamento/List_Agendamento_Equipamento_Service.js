@@ -30,7 +30,7 @@ export async function carregarAgendamentosEquipamentos(token) {
     const dados = await parseJson(resp)
 
     if (!resp.ok) {
-        throw new Error(dados?.message || dados?.error || 'Erro ao carregar salas.')
+        throw new Error(dados?.message || dados?.error || 'Erro ao carregar equipamentos.')
     }
 
     const lista = Array.isArray(dados) ? dados : dados?.data || []

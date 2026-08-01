@@ -13,7 +13,7 @@ async function parseJson(response) {
 
 /**
  * @param {number} id
- * @param {{ nome: string, numero: number, obs: string, status: boolean }} dadosSala
+ * @param {{ nome: string, numero: number, obs: string, status: boolean, responsavel_id?: number | null }} dadosSala
  * @param {string} token
  * @returns {Promise<any>}
  */
@@ -37,8 +37,10 @@ export async function atualizarSalas(id, dadosSala, token) {
             numero: dadosSala.numero,
             obs: dadosSala.obs,
             status: dadosSala.status,
+            responsavel_id: dadosSala.responsavel_id || null,
         })
     })
+
     if (!resp) return;
     const dados = await parseJson(resp)
 

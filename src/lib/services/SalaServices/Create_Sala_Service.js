@@ -12,7 +12,7 @@ async function parseJson(response) {
 }
 
 /**
- * @param {{ nome: string, numero: number, obs: string, status: boolean }} novaSala
+ * @param {{ nome: string, numero: number, obs: string, status: boolean, responsavel_id?: number | null }} novaSala
  * @param {string} token
  * @returns {Promise<any>}
  */
@@ -36,8 +36,10 @@ export async function cadastrarSala(novaSala, token) {
             numero: novaSala.numero,
             obs: novaSala.obs,
             status: novaSala.status,
+            responsavel_id: novaSala.responsavel_id || null,
         }),
     })
+
     if (!resp) return;
     const dados = await parseJson(resp)
 

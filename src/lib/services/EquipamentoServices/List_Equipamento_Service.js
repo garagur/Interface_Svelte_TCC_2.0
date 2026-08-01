@@ -1,5 +1,6 @@
 import { apiFetch } from '../../../config/api.js'
 import { EQUIPAMENTO_ROUTES } from '../../../config/routes/Equipamento_Endpoints.js'
+
 async function parseJson(response) {
     const text = await response.text()
     if (!text) return null
@@ -26,8 +27,9 @@ export async function carregarEquipamentos(token) {
         },
     })
 
+    if (!resp) return []; // Movido para cima por segurança
     const dados = await parseJson(resp)
-    if (!resp) return [];
+
     if (!resp.ok) {
         throw new Error(dados?.message || dados?.error || 'Erro ao carregar equipamentos.')
     }
@@ -40,5 +42,6 @@ export async function carregarEquipamentos(token) {
         N_patrimonio: s.N_patrimonio || '',
         obs: s.obs || '',
         status: s.status ?? true,
+        responsavel_nome: s.responsavel?.nome || s.responsavel?.name || '',
     }))
 }
