@@ -12,7 +12,7 @@ async function parseJson(response) {
 }
 
 /**
- * @param {{ nome: string, numero: number, obs: string, status: boolean, responsavel_id?: number | null }} novaSala
+ * @param {{ nome: string, obs: string, status: boolean, responsavel_id?: number | null }} novaSala
  * @param {string} token
  * @returns {Promise<any>}
  */
@@ -21,7 +21,7 @@ export async function cadastrarSala(novaSala, token) {
         throw new Error('Token de autenticação não encontrado. Faça login novamente.')
     }
 
-    if (!novaSala?.nome || !novaSala?.numero || novaSala?.obs === '') {
+    if (!novaSala?.nome || novaSala?.obs === '') {
         throw new Error('Dados da sala incompletos.')
     }
 
@@ -33,7 +33,6 @@ export async function cadastrarSala(novaSala, token) {
         },
         body: JSON.stringify({
             nome: novaSala.nome,
-            numero: novaSala.numero,
             obs: novaSala.obs,
             status: novaSala.status,
             responsavel_id: novaSala.responsavel_id || null,

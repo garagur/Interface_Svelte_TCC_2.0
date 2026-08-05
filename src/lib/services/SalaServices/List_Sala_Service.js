@@ -40,7 +40,6 @@ export async function carregarSalas(token) {
     return lista.map(s => ({
         id: s.id,
         nome: s.nome || '',
-        numero: s.numero || '',
         obs: s.obs || '',
         status: s.status ?? true,
         responsavel_nome: s.responsavel?.nome || s.responsavel?.name || '',

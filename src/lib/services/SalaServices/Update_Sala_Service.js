@@ -13,7 +13,7 @@ async function parseJson(response) {
 
 /**
  * @param {number} id
- * @param {{ nome: string, numero: number, obs: string, status: boolean, responsavel_id?: number | null }} dadosSala
+ * @param {{ nome: string, obs: string, status: boolean, responsavel_id?: number | null }} dadosSala
  * @param {string} token
  * @returns {Promise<any>}
  */
@@ -22,7 +22,7 @@ export async function atualizarSalas(id, dadosSala, token) {
         throw new Error('Token de autenticação não encontrado. Faça login novamente.')
     }
 
-    if (!dadosSala?.nome || !dadosSala?.numero) {
+    if (!dadosSala?.nome) {
         throw new Error('Dados da sala incompletos.')
     }
 
@@ -34,7 +34,6 @@ export async function atualizarSalas(id, dadosSala, token) {
         },
         body: JSON.stringify({
             nome: dadosSala.nome,
-            numero: dadosSala.numero,
             obs: dadosSala.obs,
             status: dadosSala.status,
             responsavel_id: dadosSala.responsavel_id || null,

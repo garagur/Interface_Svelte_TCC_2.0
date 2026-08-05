@@ -12,7 +12,6 @@
 
     let novaSala = {
         nome: "",
-        numero: null,
         obs: "",
         status: true,
         responsavel_id: null,
@@ -61,7 +60,7 @@
     async function salvarSala() {
         erro = "";
         sucesso = "";
-        if (!novaSala.nome || !novaSala.numero || !novaSala.obs) {
+        if (!novaSala.nome || !novaSala.obs) {
             erro = "Preencha todos os campos do formulário.";
             return;
         }
@@ -97,7 +96,6 @@
     function resetForm() {
         novaSala = {
             nome: "",
-            numero: "",
             obs: "",
             status: true,
             responsavel_id: null,
@@ -134,16 +132,6 @@
                 type="text"
                 bind:value={novaSala.nome}
                 placeholder="Ex: Sala de Reunião A"
-                required
-            />
-        </div>
-        <div class="field">
-            <label for="numero-sala">Número</label>
-            <input
-                id="numero-sala"
-                type="number"
-                bind:value={novaSala.numero}
-                placeholder="Ex: 101"
                 required
             />
         </div>
@@ -210,9 +198,6 @@
             <div class="table-row {index % 2 === 0 ? 'even' : 'odd'}">
                 <div class="td flex-2">
                     <span class="text-truncate">{s.nome}</span>
-                </div>
-                <div class="td flex-1">
-                    <span class="badge-numero">{s.numero}</span>
                 </div>
                 <div class="td flex-2">
                     <span class="text-truncate">{s.obs}</span>
