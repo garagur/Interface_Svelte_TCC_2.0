@@ -104,24 +104,24 @@
     });
 </script>
 
-<ConfirmarDelecaoModal
-    agendamento={agendamentoParaDeletar}
-    onConfirmar={confirmarDeletar}
-    onCancelar={fecharModalDeletar}
-/>
-
-<ConfirmarRecorrenciaModal
-    ocorrencias={ocorrenciasPendentes}
-    {enviando}
-    {progresso}
-    {resultadoFinal}
-    {horaInicio}
-    {horaFim}
-    onConfirmar={onConfirmarRecorrencia}
-    onCancelar={onCancelarRecorrencia}
-/>
-
 <div class="escopo-agendamento">
+    <ConfirmarDelecaoModal
+        agendamento={agendamentoParaDeletar}
+        onConfirmar={confirmarDeletar}
+        onCancelar={fecharModalDeletar}
+    />
+
+    <ConfirmarRecorrenciaModal
+        ocorrencias={ocorrenciasPendentes}
+        {enviando}
+        {progresso}
+        {resultadoFinal}
+        {horaInicio}
+        {horaFim}
+        onConfirmar={onConfirmarRecorrencia}
+        onCancelar={onCancelarRecorrencia}
+    />
+
     <div class="scaffold">
         <header class="app-bar">
             <div class="title-section">

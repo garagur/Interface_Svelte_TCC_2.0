@@ -3,6 +3,11 @@
     export let carregandoLista = false;
     export let hojeStr = "";
 
+    const LIMITE_VISIVEL = 2;
+
+    /** @type {string|null} */
+    let diaExpandido = null;
+
     function gerarDias() {
         const hoje = new Date();
         const diaSemana = hoje.getDay();
@@ -41,6 +46,10 @@
         return formatarChave(date) === hojeStr;
     }
 
+    function toggleExpandir(chave) {
+        diaExpandido = diaExpandido === chave ? null : chave;
+    }
+
     const CABECALHO = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
     $: agendamentosPorData = agendamentos.reduce((acc, ag) => {
@@ -72,11 +81,12 @@
                         {@const ags = dia
                             ? agendamentosPorData[chave] || []
                             : []}
+                        {@const expandido = !!chave && chave === diaExpandido}
                         <div
                             class="dia-celula {!dia ? 'dia-vazio' : ''} {dia &&
                             ehHoje(dia)
                                 ? 'dia-hoje'
-                                : ''}"
+                                : ''} {expandido ? 'expandido' : ''}"
                         >
                             {#if dia}
                                 <span
@@ -86,11 +96,31 @@
                                 >
                                     {dia.getDate()}
                                 </span>
-                                {#each ags as ag}
-                                    <div class="ag-bloco {ag.tipo ?? 'sala'}">
-                                        <slot {ag} />
-                                    </div>
-                                {/each}
+                                <div class="dia-conteudo">
+                                    {#each ags as ag}
+                                        <div
+                                            class="ag-bloco {ag.tipo ?? 'sala'}"
+                                        >
+                                            <slot {ag} />
+                                        </div>
+                                    {/each}
+                                </div>
+                                {#if ags.length > LIMITE_VISIVEL || expandido}
+                                    <button
+                                        type="button"
+                                        class="btn-expandir"
+                                        title={expandido
+                                            ? "Recolher"
+                                            : "Ver todos os agendamentos"}
+                                        on:click={() => toggleExpandir(chave)}
+                                    >
+                                        <span class="material-symbols-outlined">
+                                            {expandido
+                                                ? "expand_less"
+                                                : "expand_more"}
+                                        </span>
+                                    </button>
+                                {/if}
                             {/if}
                         </div>
                     {/each}

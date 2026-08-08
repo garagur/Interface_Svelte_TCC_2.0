@@ -193,6 +193,7 @@
 
     function cancelarRecorrencia() {
         ocorrenciasPendentes = null;
+        resultadoFinal = null;
     }
 
     function resetForm() {

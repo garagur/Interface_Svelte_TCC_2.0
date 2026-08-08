@@ -314,10 +314,9 @@
 }
 
 .escopo-agendamento .semana-row {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    display: flex;
+    align-items: flex-start;
     gap: 4px;
-    min-height: 72px;
 }
 
 .escopo-agendamento .dia-celula {
@@ -328,9 +327,19 @@
     display: flex;
     flex-direction: column;
     gap: 3px;
-    min-height: 72px;
+    position: relative;
+    height: 92px;
+    min-height: 92px;
+    max-height: 92px;
     overflow: hidden;
+    flex: 1 1 0;
+    min-width: 0;
+}
 
+.escopo-agendamento .dia-celula.expandido {
+    height: auto;
+    max-height: none;
+    overflow: visible;
 }
 
 .escopo-agendamento .dia-celula.dia-hoje {
@@ -342,6 +351,7 @@
     background: var(--bg-input);
     border-color: transparent;
 }
+
 
 .escopo-agendamento .dia-numero {
     font-size: 11px;
@@ -512,16 +522,6 @@
     font-size: 16px;
 }
 
-.escopo-agendamento .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.45);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-}
-
 .escopo-agendamento .modal-recorrencia {
     background: var(--white);
     border-radius: 16px;
@@ -559,4 +559,73 @@
     font-size: 12px;
     color: var(--text-muted);
     margin: 0 0 12px;
+}
+
+.escopo-agendamento .dia-conteudo {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.escopo-agendamento .dia-celula.expandido .dia-conteudo {
+    overflow-y: visible;
+}
+
+.escopo-agendamento .dia-conteudo::-webkit-scrollbar {
+    width: 4px;
+}
+
+.escopo-agendamento .dia-conteudo::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.escopo-agendamento .dia-conteudo::-webkit-scrollbar-thumb {
+    background: var(--primary-light);
+    border-radius: 4px;
+}
+
+.escopo-agendamento .dia-conteudo {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-light) transparent;
+}
+
+.escopo-agendamento .btn-expandir {
+    background: var(--gray-50);
+    border: 1px solid var(--primary-light);
+    color: var(--primary-dark);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    cursor: pointer;
+    margin-top: auto;
+    flex-shrink: 0;
+}
+
+.escopo-agendamento .btn-expandir:hover {
+    background: var(--primary-light);
+}
+
+.escopo-agendamento .btn-expandir .material-symbols-outlined {
+    font-size: 16px;
+}
+
+/* Modal de expansão do dia */
+.escopo-agendamento .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.escopo-agendamento .modal-header h3 {
+    margin: 0;
+    font-size: 15px;
 }
