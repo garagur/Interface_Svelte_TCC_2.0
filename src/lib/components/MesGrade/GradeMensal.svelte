@@ -3,7 +3,7 @@
     export let carregandoLista = false;
     export let hojeStr = "";
 
-    const LIMITE_VISIVEL = 2;
+    const LIMITE_VISIVEL = 1;
 
     /** @type {string|null} */
     let diaExpandido = null;
@@ -82,6 +82,9 @@
                             ? agendamentosPorData[chave] || []
                             : []}
                         {@const expandido = !!chave && chave === diaExpandido}
+                        {@const visiveis = expandido
+                            ? ags
+                            : ags.slice(0, LIMITE_VISIVEL)}
                         <div
                             class="dia-celula {!dia ? 'dia-vazio' : ''} {dia &&
                             ehHoje(dia)
@@ -96,8 +99,12 @@
                                 >
                                     {dia.getDate()}
                                 </span>
-                                <div class="dia-conteudo">
-                                    {#each ags as ag}
+                                <div
+                                    class="dia-conteudo {ags.length > 1
+                                        ? 'com-scroll'
+                                        : ''}"
+                                >
+                                    {#each visiveis as ag}
                                         <div
                                             class="ag-bloco {ag.tipo ?? 'sala'}"
                                         >

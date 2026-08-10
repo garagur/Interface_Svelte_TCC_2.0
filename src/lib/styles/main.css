@@ -358,16 +358,17 @@
     background: #ffffff;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
-    padding: 6px;
+    padding: 5px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
     position: relative;
-    height: 92px;
-    min-height: 92px;
-    max-height: 92px;
+    height: 104px;
+    min-height: 140px;
+    max-height: 104px;
     overflow: hidden;
-    flex: 1 1 0;
+    flex: 0 0 calc(100% / 7 - 4px);
+    box-sizing: border-box;
     min-width: 0;
 }
 
@@ -404,12 +405,14 @@
 
 .escopo-main .ag-bloco {
     border-radius: 6px;
-    padding: 0;
+    padding: 4px 6px;
     display: flex;
+    flex-shrink: 0;
     flex-direction: column;
     gap: 2px;
     min-width: 0;
-    overflow: hidden;
+    overflow: hidden !important;
+    box-sizing: border-box;
     background: transparent;
     border-left: none;
 }
@@ -458,9 +461,13 @@
 .escopo-main .dia-conteudo {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 4px;
     flex: 1;
     min-height: 0;
+    overflow-y: hidden;
+}
+
+.escopo-main .dia-conteudo.com-scroll {
     overflow-y: auto;
 }
 
