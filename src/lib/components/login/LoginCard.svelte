@@ -30,6 +30,10 @@
                     <p class="aviso-sessao">{avisoSessao}</p>
                 {/if}
 
+                {#if erro}
+                    <p class="erro">{erro}</p>
+                {/if}
+
                 <button type="submit" class="btn-main" disabled={carregando}>
                     {carregando ? "Verificando..." : "Verificar usuário"}
                 </button>
