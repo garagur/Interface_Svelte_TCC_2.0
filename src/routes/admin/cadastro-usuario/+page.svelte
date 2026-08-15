@@ -8,7 +8,13 @@
   let token = "";
   let matriculaLogado = "";
 
-  let novoUsuario = { nome: "", email: "", cargo: "", matricula: "" };
+  let novoUsuario = {
+    nome: "",
+    email: "",
+    cargo: "",
+    matricula: "",
+    status: true,
+  };
   let usuarios = [];
   let carregando = false;
   let carregandoLista = false;
@@ -71,7 +77,10 @@
   }
 
   function editarUsuario(usuario) {
-    novoUsuario = { ...usuario };
+    novoUsuario = {
+      ...usuario,
+      status: usuario.status ?? true,
+    };
     usuarioEditandoId = usuario.id;
     editando = true;
     sucesso = "";
@@ -79,18 +88,42 @@
   }
 
   function resetForm() {
-    novoUsuario = { nome: "", email: "", cargo: "", matricula: "" };
+    novoUsuario = {
+      nome: "",
+      email: "",
+      cargo: "",
+      matricula: "",
+      status: true,
+    };
     editando = false;
     usuarioEditandoId = null;
   }
 
-  function excluirUsuario(matricula) {
-    if (matricula === matriculaLogado) {
-      alert("Você não pode excluir o seu próprio usuário!");
+  async function alternarStatus(usuario) {
+    if (usuario.matricula === matriculaLogado) {
+      alert("Você não pode desabilitar o seu próprio usuário!");
       return;
     }
-    if (confirm("Tem certeza que deseja excluir este usuário?")) {
-      usuarios = usuarios.filter((u) => u.matricula !== matricula);
+
+    const novoStatus = !usuario.status;
+    const acao = novoStatus ? "habilitar" : "desabilitar";
+
+    if (!confirm(`Tem certeza que deseja ${acao} este usuário?`)) {
+      return;
+    }
+
+    erro = "";
+    sucesso = "";
+    try {
+      await atualizarUsuario(
+        usuario.id,
+        { ...usuario, status: novoStatus },
+        token,
+      );
+      sucesso = `Usuário ${acao === "desabilitar" ? "desabilitado" : "habilitado"} com sucesso.`;
+      await carregarLista();
+    } catch (e) {
+      erro = e?.message || "Erro ao alterar status do usuário.";
     }
   }
 </script>
@@ -112,7 +145,7 @@
   {carregandoLista}
   estadoVazioTexto="Nenhum usuário cadastrado ainda."
   carregandoTexto="Carregando usuários..."
-  temToggle={false}
+  temToggle={true}
 >
   <svelte:fragment slot="campos">
     <div class="field">
@@ -156,6 +189,23 @@
     </div>
   </svelte:fragment>
 
+  <svelte:fragment slot="toggle">
+    <label for="status-usuario">Status</label>
+    <div class="toggle-wrapper">
+      <label class="toggle-switch">
+        <input
+          id="status-usuario"
+          type="checkbox"
+          bind:checked={novoUsuario.status}
+        />
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+      </label>
+      <span class="toggle-label">
+        {novoUsuario.status ? "Habilitado" : "Desabilitado"}
+      </span>
+    </div>
+  </svelte:fragment>
+
   <svelte:fragment slot="tabela-header">
     <div class="table-header">
       <div class="th flex-2">
@@ -176,6 +226,7 @@
       </div>
       <div class="th flex-1">Cargo</div>
       <div class="th flex-1">Matrícula</div>
+      <div class="th flex-1">Status</div>
       <div class="th flex-1">Ações</div>
     </div>
   </svelte:fragment>
@@ -195,6 +246,11 @@
         <div class="td flex-1">
           <span class="badge-matricula">{u.matricula}</span>
         </div>
+        <div class="td flex-1">
+          <span class="badge-status {u.status ? 'ativo' : 'inativo'}">
+            {u.status ? "Habilitado" : "Desabilitado"}
+          </span>
+        </div>
         <div class="td flex-1 action-cell">
           <button
             class="btn-action edit"
@@ -204,11 +260,13 @@
             <span class="material-symbols-outlined">edit</span>
           </button>
           <button
-            class="btn-action delete"
-            on:click={() => excluirUsuario(u.matricula)}
-            title="Excluir"
+            class="btn-action {u.status ? 'delete' : 'edit'}"
+            on:click={() => alternarStatus(u)}
+            title={u.status ? "Desabilitar usuário" : "Habilitar usuário"}
           >
-            <span class="material-symbols-outlined">delete</span>
+            <span class="material-symbols-outlined">
+              {u.status ? "block" : "check_circle"}
+            </span>
           </button>
         </div>
       </div>

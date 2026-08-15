@@ -46,5 +46,6 @@ export async function carregarUsuarios(token) {
     email: u.email || '',
     cargo: u.cargo || '',
     matricula: u.matricula || '',
+    status: u.status ?? true,
   }))
 }

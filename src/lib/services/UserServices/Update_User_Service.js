@@ -13,7 +13,7 @@ async function parseJson(response) {
 
 /**
  * @param {number} id
- * @param {{ nome: string, email: string, cargo: string, matricula: string }} dadosUsuario
+ * @param {{ nome: string, email: string, cargo: string, matricula: string, status: boolean }} dadosUsuario
  * @param {string} token
  * @returns {Promise<any>}
  */
@@ -22,7 +22,7 @@ export async function atualizarUsuario(id, dadosUsuario, token) {
         throw new Error('Token de autenticação não encontrado. Faça login novamente.')
     }
 
-    if (!dadosUsuario?.nome || !dadosUsuario?.email || !dadosUsuario?.cargo || !dadosUsuario?.matricula) {
+    if (!dadosUsuario?.nome || !dadosUsuario?.email || !dadosUsuario?.cargo || !dadosUsuario?.matricula || typeof dadosUsuario?.status !== 'boolean') {
         throw new Error('Dados do usuário incompletos.')
     }
 
@@ -38,6 +38,7 @@ export async function atualizarUsuario(id, dadosUsuario, token) {
             matricula: dadosUsuario.matricula,
             cargo: dadosUsuario.cargo,
             email: dadosUsuario.email,
+            status: dadosUsuario.status,
         }),
     })
     if (!resp) return;
