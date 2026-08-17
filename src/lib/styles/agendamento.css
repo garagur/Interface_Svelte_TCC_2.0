@@ -629,3 +629,35 @@
     margin: 0;
     font-size: 15px;
 }
+
+.escopo-agendamento .toggle-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: flex-start;
+}
+
+.escopo-agendamento .toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.escopo-agendamento .toggle-btn:hover {
+    background-color: #f3f4f6;
+}
+
+.escopo-agendamento .toggle-btn.active {
+    background-color: #10b981;
+    color: #fff;
+    border-color: #10b981;
+}

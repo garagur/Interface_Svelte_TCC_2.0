@@ -406,9 +406,6 @@
     height: 40px;
     width: 100%;
     max-width: 350px;
-    /* Reduzi um pouco para não espremer os botões em telas médias */
-
-    /* APAGUE O margin-right: auto; QUE ESTAVA AQUI */
 }
 
 .campo-pesquisa input {

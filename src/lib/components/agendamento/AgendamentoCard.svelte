@@ -8,6 +8,7 @@
     import { deletarAgendamentoSala } from "$lib/services/AgendamentoServices/AgendamentoSala/Deleted_Agendamento_Sala_Service.js";
 
     import { onMount } from "svelte";
+    export let modo = "sala";
     export let salas = [];
     export let sala_id = null;
     export let agendamentos = [];
@@ -134,16 +135,45 @@
         </header>
 
         <main class="body-content">
+            <div class="toggle-container"></div>
+
+            <slot name="botoes-topo" />
             <div class="card sala-select-card">
-                <label for="sala-select">Sala</label>
                 <select id="sala-select" bind:value={sala_id}>
-                    <option value={null}>Selecione uma sala</option>
+                    <option value={null}
+                        >Selecione {modo === "sala"
+                            ? "uma sala"
+                            : "um equipamento"}</option
+                    >
                     {#each salas as s}
                         <option value={s.id}>{s.nome}</option>
                     {/each}
                 </select>
+                <button
+                    type="button"
+                    class="toggle-btn {modo === 'sala' ? 'active' : ''}"
+                    on:click={() => {
+                        modo = "sala";
+                        sala_id = null;
+                        if (onLimpar) onLimpar();
+                    }}
+                >
+                    <span class="material-symbols-outlined">meeting_room</span>
+                    Salas
+                </button>
+                <button
+                    type="button"
+                    class="toggle-btn {modo === 'equipamento' ? 'active' : ''}"
+                    on:click={() => {
+                        modo = "equipamento";
+                        sala_id = null;
+                        if (onLimpar) onLimpar();
+                    }}
+                >
+                    <span class="material-symbols-outlined">devices</span>
+                    Equipamentos
+                </button>
             </div>
-
             {#if sala_id}
                 <div class="card grade-card">
                     <div class="grade-header-title">

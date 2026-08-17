@@ -2,34 +2,49 @@
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
     import AgendamentoCard from "$lib/components/agendamento/AgendamentoCard.svelte";
+
+    // ── Imports de Salas ──
     import { carregarSalas } from "$lib/services/SalaServices/List_Sala_Service.js";
-    import { cadastrarAgendamento } from "$lib/services/AgendamentoServices/AgendamentoSala/Create_Agendamento_Sala_Service.js";
+    import { cadastrarAgendamento as cadastrarAgendamentoSala } from "$lib/services/AgendamentoServices/AgendamentoSala/Create_Agendamento_Sala_Service.js";
     import { carregarAgendamentosSalas } from "$lib/services/AgendamentoServices/AgendamentoSala/List_Agendamento_Sala_Service.js";
     import { carregarHorariosSala } from "$lib/services/HorarioServices/List_Horario_Service.js";
+
+    // ── Imports de Equipamentos ──
+    // IMPORTANTE: Ajuste o caminho do carregarEquipamentos conforme seu projeto
+    import { carregarEquipamentos } from "$lib/services/EquipamentoServices/List_Equipamento_Service.js";
+    import { cadastrarAgendamento as cadastrarAgendamentoEquipamento } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/Create_Agendamento_Equipamento_Service.js";
+    import { carregarAgendamentosEquipamentos } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/List_Agendamento_Equipamento_Service.js";
+
+    // ── Imports de Recorrência ──
     import { validarRecorrencia } from "$lib/services/RecorrenciaService/Validar_Recorrencia.js";
     import { gerarDatasRecorrentes } from "$lib/services/RecorrenciaService/Gerar_Datas_Recorrentes.js";
     import { executarLoteAgendamentos } from "$lib/services/RecorrenciaService/Executar_Lote_Agendamentos.js";
 
     let token = "";
 
-    // ── Sala selecionada ──
-    let sala_id = null;
+    // ── Controle de Seleção (Modo) ──
+    let modo = "sala"; // Pode ser 'sala' ou 'equipamento'
+
+    // Listas originais carregadas da API
     let salas = [];
+    let equipamentos = [];
+
+    // Variáveis dinâmicas que alimentam o card
+    let itensDisponiveis = [];
+    let itemSelecionadoId = null;
 
     // ── Form state ──
     /** @type {'avulso' | 'semanal' | 'quinzenal'} */
-    let tipo = "avulso"; // 'avulso' | 'semanal' | 'quinzenal'
+    let tipo = "avulso";
     let diasSemana = [];
     let dataAgendamento = hoje();
     let horaInicio = "08:00";
     let horaFim = "10:00";
     let obs = "";
 
-    // ── Agendamentos do calendário ──
+    // ── Agendamentos e Grade ──
     let agendamentos = [];
     let carregandoLista = false;
-
-    // ── Aulas fixas (grade semanal) ──
     let blocosFixos = [];
     let carregandoBlocos = false;
 
@@ -38,7 +53,7 @@
     let erro = "";
     let sucesso = "";
 
-    // ── Recorrência: confirmação em lote ──
+    // ── Recorrência ──
     let ocorrenciasPendentes = null;
     let enviando = false;
     let progresso = { atual: 0, total: 0 };
@@ -50,23 +65,40 @@
             goto("/login");
             return;
         }
-        await carregarListaSalas();
+        await carregarListasIniciais();
     });
 
-    $: if (sala_id) {
-        carregarAgendamentos(sala_id);
-        carregarBlocosFixos(sala_id);
+    // Atualiza a lista exibida no Select sempre que o modo mudar
+    $: if (modo === "sala") {
+        itensDisponiveis = salas;
+    } else {
+        itensDisponiveis = equipamentos;
+    }
+
+    // Dispara as buscas quando um item do select for escolhido ou quando o modo trocar e resetar o ID
+    $: if (itemSelecionadoId) {
+        carregarAgendamentos(itemSelecionadoId);
+        if (modo === "sala") {
+            carregarBlocosFixos(itemSelecionadoId);
+        } else {
+            blocosFixos = []; // Equipamentos geralmente não possuem grade fixa
+        }
     } else {
         agendamentos = [];
         blocosFixos = [];
     }
 
-    async function carregarListaSalas() {
+    async function carregarListasIniciais() {
         try {
-            const todas = await carregarSalas(token);
-            salas = todas.filter((s) => s.status !== false);
+            // Carrega salas e equipamentos simultaneamente (se não houver carregarEquipamentos ainda, comente as linhas)
+            const [resSalas, resEquip] = await Promise.all([
+                carregarSalas(token).catch(() => []),
+                carregarEquipamentos(token).catch(() => []),
+            ]);
+            salas = resSalas.filter((s) => s.status !== false);
+            equipamentos = resEquip.filter((e) => e.status !== false);
         } catch (e) {
-            erro = e?.message || "Erro ao carregar salas.";
+            erro = "Erro ao carregar dados iniciais.";
         }
     }
 
@@ -74,7 +106,13 @@
         carregandoLista = true;
         erro = "";
         try {
-            agendamentos = await carregarAgendamentosSalas(token, id);
+            if (modo === "sala") {
+                agendamentos = await carregarAgendamentosSalas(token, id);
+            } else {
+                // O endpoint de equipamentos retorna todos. Precisamos filtrar pelo selecionado no front:
+                const todos = await carregarAgendamentosEquipamentos(token);
+                agendamentos = todos.filter((a) => a.equipamento_id === id);
+            }
         } catch (e) {
             erro = e?.message || "Erro ao carregar agendamentos.";
         } finally {
@@ -98,8 +136,8 @@
         sucesso = "";
         resultadoFinal = null;
 
-        if (!sala_id) {
-            erro = "Selecione uma sala.";
+        if (!itemSelecionadoId) {
+            erro = `Selecione um${modo === "sala" ? "a sala" : " equipamento"}.`;
             return;
         }
         if (!dataAgendamento || !horaInicio || !horaFim) {
@@ -111,21 +149,32 @@
             return;
         }
 
+        // Define a chave correta para o objeto JSON de acordo com o modo escolhido
+        const payloadBase = {
+            data_hora_inicio: `${dataAgendamento}T${horaInicio}`,
+            data_hora_fim: `${dataAgendamento}T${horaFim}`,
+            obs,
+        };
+
+        if (modo === "sala") {
+            payloadBase.sala_id = itemSelecionadoId;
+        } else {
+            payloadBase.equipamento_id = itemSelecionadoId;
+        }
+
+        // Define o serviço dinâmico a ser chamado
+        const serviceCadastrar =
+            modo === "sala"
+                ? cadastrarAgendamentoSala
+                : cadastrarAgendamentoEquipamento;
+
         if (tipo === "avulso") {
             carregando = true;
             try {
-                await cadastrarAgendamento(
-                    {
-                        sala_id,
-                        data_hora_inicio: `${dataAgendamento}T${horaInicio}`,
-                        data_hora_fim: `${dataAgendamento}T${horaFim}`,
-                        obs,
-                    },
-                    token,
-                );
+                await serviceCadastrar(payloadBase, token);
                 sucesso = "Agendamento realizado com sucesso.";
                 resetForm();
-                await carregarAgendamentos(sala_id);
+                await carregarAgendamentos(itemSelecionadoId);
             } catch (e) {
                 erro = e?.message || "Erro ao realizar agendamento.";
             } finally {
@@ -142,6 +191,7 @@
             horaInicio,
             horaFim,
         });
+
         if (erroValidacao) {
             erro = erroValidacao;
             return;
@@ -164,10 +214,9 @@
         ocorrenciasPendentes = datasGeradas.map((d) => ({
             data: d.data,
             payload: {
-                sala_id,
+                ...payloadBase,
                 data_hora_inicio: d.data_hora_inicio,
                 data_hora_fim: d.data_hora_fim,
-                obs,
             },
         }));
     }
@@ -178,9 +227,14 @@
         enviando = true;
         progresso = { atual: 0, total: ocorrenciasPendentes.length };
 
+        const serviceCadastrar =
+            modo === "sala"
+                ? cadastrarAgendamentoSala
+                : cadastrarAgendamentoEquipamento;
+
         resultadoFinal = await executarLoteAgendamentos(
             ocorrenciasPendentes,
-            cadastrarAgendamento,
+            serviceCadastrar, // Passa o serviço correspondente
             token,
             (p) => (progresso = p),
         );
@@ -188,7 +242,7 @@
         enviando = false;
         ocorrenciasPendentes = null;
         resetForm();
-        await carregarAgendamentos(sala_id);
+        await carregarAgendamentos(itemSelecionadoId);
     }
 
     function cancelarRecorrencia() {
@@ -211,8 +265,9 @@
 </script>
 
 <AgendamentoCard
-    {salas}
-    bind:sala_id
+    bind:modo
+    salas={itensDisponiveis}
+    bind:sala_id={itemSelecionadoId}
     {agendamentos}
     {blocosFixos}
     {carregandoLista}
