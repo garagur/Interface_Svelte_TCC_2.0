@@ -18,6 +18,8 @@
     const sessao = new URL(window.location.href).searchParams.get("sessao");
     if (sessao === "expirada") {
       avisoSessao = "Sua sessão foi desconectada, Faça login novamente.";
+    } else if (sessao === "desconectado") {
+      avisoSessao = "Você foi desconectado do servidor, gateway 502.";
     }
   });
 

@@ -4,7 +4,7 @@
     export let onSair;
 
     // form
-    export let campos = []; // [{id, label, type, bind, placeholder}]
+    export let campos = [];
     export let temToggle = false;
     export let toggleValue = true;
     export let onSubmit;
@@ -22,6 +22,15 @@
     export let carregandoLista = false;
     export let estadoVazioTexto = "Nenhum registro encontrado.";
     export let carregandoTexto = "Carregando...";
+
+    // busca e ordenação (novo)
+    export let mostrarPesquisa = false;
+    export let pesquisa = "";
+    export let placeholderPesquisa = "Pesquisar...";
+    export let ordenacao = "asc";
+    export let onOrdenarChange = (value) => {};
+    export let labelOrdenacaoAsc = "Nome (A-Z)";
+    export let labelOrdenacaoDesc = "Nome (Z-A)";
 </script>
 
 <div class="scaffold">
@@ -88,7 +97,6 @@
             </form>
         </div>
 
-        <!-- DIREITA: Tabela -->
         <div class="card table-card">
             <div class="table-header-title">
                 <div class="title-left">
@@ -99,6 +107,37 @@
                 </div>
                 <div class="badge">{totalRegistros} registros</div>
             </div>
+
+            {#if mostrarPesquisa}
+                <div class="table-toolbar">
+                    <div class="campo-pesquisa">
+                        <span class="material-symbols-outlined">search</span>
+                        <input
+                            type="text"
+                            placeholder={placeholderPesquisa}
+                            bind:value={pesquisa}
+                        />
+                    </div>
+
+                    {#if onOrdenarChange}
+                        <select
+                            class="select-ordenacao"
+                            value={ordenacao}
+                            on:change={(event) => {
+                                const select = event.currentTarget;
+                                if (select instanceof HTMLSelectElement) {
+                                    onOrdenarChange(select.value);
+                                }
+                            }}
+                        >
+                            <option value="asc">{labelOrdenacaoAsc}</option>
+                            <option value="desc">{labelOrdenacaoDesc}</option>
+                        </select>
+                    {/if}
+
+                    <slot name="filtros-extra" />
+                </div>
+            {/if}
 
             <div class="table-wrapper">
                 <slot name="tabela-header" />

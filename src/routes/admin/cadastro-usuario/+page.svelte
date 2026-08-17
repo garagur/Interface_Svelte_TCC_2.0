@@ -5,6 +5,7 @@
   import { carregarUsuarios } from "$lib/services/UserServices/List_User_Service.js";
   import { atualizarUsuario } from "$lib/services/UserServices/Update_User_Service.js";
   import { goto } from "$app/navigation";
+
   let token = "";
   let matriculaLogado = "";
 
@@ -22,6 +23,11 @@
   let sucesso = "";
   let editando = false;
   let usuarioEditandoId = null;
+
+  // pesquisa, ordenação e filtro de status
+  let pesquisa = "";
+  let ordenacao = "asc"; // "asc" | "desc"
+  let filtroStatus = "todos"; // "todos" | "ativos" | "inativos"
 
   onMount(async () => {
     token = localStorage.getItem("token") || "";
@@ -126,6 +132,34 @@
       erro = e?.message || "Erro ao alterar status do usuário.";
     }
   }
+
+  function mudarOrdenacao(novoValor) {
+    ordenacao = novoValor;
+  }
+
+  // pipeline: pesquisa -> filtro de status -> ordenação
+  $: usuariosFiltrados = usuarios
+    .filter((u) => {
+      if (!pesquisa.trim()) return true;
+      const termo = pesquisa.toLowerCase();
+      return (
+        u.nome?.toLowerCase().includes(termo) ||
+        u.email?.toLowerCase().includes(termo) ||
+        u.matricula?.toLowerCase().includes(termo)
+      );
+    })
+    .filter((u) => {
+      if (filtroStatus === "ativos") return u.status;
+      if (filtroStatus === "inativos") return !u.status;
+      return true; // "todos"
+    })
+    .sort((a, b) => {
+      const nomeA = (a.nome || "").toLowerCase();
+      const nomeB = (b.nome || "").toLowerCase();
+      return ordenacao === "asc"
+        ? nomeA.localeCompare(nomeB)
+        : nomeB.localeCompare(nomeA);
+    });
 </script>
 
 <CadastroCard
@@ -141,11 +175,16 @@
   iconeForm={novoUsuario.matricula ? "manage_accounts" : "person_add"}
   tituloTabela="Usuários Cadastrados"
   iconeTabela="group"
-  totalRegistros={usuarios.length}
+  totalRegistros={usuariosFiltrados.length}
   {carregandoLista}
-  estadoVazioTexto="Nenhum usuário cadastrado ainda."
+  estadoVazioTexto="Nenhum usuário encontrado."
   carregandoTexto="Carregando usuários..."
   temToggle={true}
+  mostrarPesquisa={true}
+  bind:pesquisa
+  placeholderPesquisa="Pesquisar por nome, e-mail ou matrícula..."
+  {ordenacao}
+  onOrdenarChange={mudarOrdenacao}
 >
   <svelte:fragment slot="campos">
     <div class="field">
@@ -206,6 +245,32 @@
     </div>
   </svelte:fragment>
 
+  <svelte:fragment slot="filtros-extra">
+    <div class="filtro-status">
+      <button
+        type="button"
+        class="chip {filtroStatus === 'todos' ? 'ativo' : ''}"
+        on:click={() => (filtroStatus = "todos")}
+      >
+        Todos
+      </button>
+      <button
+        type="button"
+        class="chip {filtroStatus === 'ativos' ? 'ativo' : ''}"
+        on:click={() => (filtroStatus = "ativos")}
+      >
+        Habilitados
+      </button>
+      <button
+        type="button"
+        class="chip {filtroStatus === 'inativos' ? 'ativo' : ''}"
+        on:click={() => (filtroStatus = "inativos")}
+      >
+        Desabilitados
+      </button>
+    </div>
+  </svelte:fragment>
+
   <svelte:fragment slot="tabela-header">
     <div class="table-header">
       <div class="th flex-2">
@@ -232,7 +297,7 @@
   </svelte:fragment>
 
   <svelte:fragment slot="tabela-body">
-    {#each usuarios as u, index}
+    {#each usuariosFiltrados as u, index}
       <div class="table-row {index % 2 === 0 ? 'even' : 'odd'}">
         <div class="td flex-2">
           <span class="text-truncate">{u.nome}</span>
