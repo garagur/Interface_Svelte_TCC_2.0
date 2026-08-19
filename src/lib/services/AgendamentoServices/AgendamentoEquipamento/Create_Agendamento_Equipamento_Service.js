@@ -1,3 +1,4 @@
+import { apiFetch } from '../../../../config/api.js'
 import { AGENDAMENTOEQUIPAMENTO_ROUTE } from '../../../../config/routes/Agendamento_Equipamento_Endpoints.js'
 
 async function parseJson(response) {
@@ -10,22 +11,15 @@ async function parseJson(response) {
     }
 }
 
-/**
- * @param {{ equipamento_id: number, data_hora_inicio: string, data_hora_fim: string, obs: string }} novoAgendamentoEquipamento
- * @param {string} token
- * @returns {Promise<any>}
- */
 export async function cadastrarAgendamento(novoAgendamentoEquipamento, token) {
     if (!token) {
         throw new Error('Token de autenticação não encontrado. Faça login novamente.')
     }
 
-    const resp = await fetch(AGENDAMENTOEQUIPAMENTO_ROUTE.cadastrar, {
+    const resp = await apiFetch(AGENDAMENTOEQUIPAMENTO_ROUTE.cadastrar, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
             equipamento_id: novoAgendamentoEquipamento.equipamento_id,
@@ -34,6 +28,8 @@ export async function cadastrarAgendamento(novoAgendamentoEquipamento, token) {
             obs: novoAgendamentoEquipamento.obs,
         }),
     })
+
+    if (!resp) return {};
 
     const dados = await parseJson(resp)
 

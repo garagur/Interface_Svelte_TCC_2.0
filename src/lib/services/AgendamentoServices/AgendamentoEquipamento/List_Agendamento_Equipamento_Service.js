@@ -1,3 +1,4 @@
+import { apiFetch } from '../../../../config/api.js'
 import { AGENDAMENTOEQUIPAMENTO_ROUTE } from '../../../../config/routes/Agendamento_Equipamento_Endpoints.js'
 
 async function parseJson(response) {
@@ -10,34 +11,29 @@ async function parseJson(response) {
     }
 }
 
-/**
- * @param {string} token
- * @returns {Promise<any[]>}
- */
 export async function carregarAgendamentosEquipamentos(token) {
     if (!token) {
         throw new Error('Token de autenticação não encontrado. Faça login novamente.')
     }
 
-    const resp = await fetch(AGENDAMENTOEQUIPAMENTO_ROUTE.listar, {
+    const resp = await apiFetch(AGENDAMENTOEQUIPAMENTO_ROUTE.listar, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
         },
     })
+
+    if (!resp) return [];
 
     const dados = await parseJson(resp)
 
     if (!resp.ok) {
-        throw new Error(dados?.message || dados?.error || 'Erro ao carregar equipamentos.')
+        throw new Error(dados?.message || dados?.error || 'Erro ao carregar agendamentos de equipamento.')
     }
 
     const lista = Array.isArray(dados) ? dados : dados?.data || []
 
-    // @ts-ignore
     return lista.map(s => ({
-
         id: s.id,
         user_id: s.user_id || '',
         equipamento_id: s.equipamento_id || '',

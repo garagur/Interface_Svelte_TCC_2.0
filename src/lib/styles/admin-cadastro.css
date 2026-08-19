@@ -13,7 +13,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    box-shadow: 10px 10px 20px #1a1a1a,
+        -10px -10px 20px #282828;
     z-index: 10;
 }
 
@@ -65,15 +66,27 @@
 .escopo-admin-cadastro .card {
     background: var(--white);
     border-radius: 24px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    border: none;
+    box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.26),
+        -8px -8px 16px rgba(255, 255, 255, 0.26);
 }
 
-.escopo-admin-cadastro .form-card {
-    width: 350px;
-    flex-shrink: 0;
-    padding: 2rem;
-    overflow-y: auto;
-    max-height: 100%;
+.escopo-admin-cadastro .form-card input,
+.escopo-admin-cadastro .form-card select {
+    width: 360px;
+    margin: 0;
+    height: 40px;
+    border: none;
+
+    background-color: var(--white);
+    border-radius: 8px;
+    padding: 0 12px;
+    box-sizing: border-box;
+    box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.26),
+        inset -4px -4px 8px rgba(255, 255, 255, 0.26);
+
+    outline: none;
+    color: var(--text-dark);
 }
 
 .escopo-admin-cadastro .table-card {
@@ -154,10 +167,13 @@
     margin: 0 24px;
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--primary-light);
+    border: none;
     border-radius: 12px;
     flex: 1;
     overflow: hidden;
+    background: var(--white);
+    box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.26),
+        -6px -6px 12px rgba(255, 255, 255, 0.26);
 }
 
 .escopo-admin-cadastro .table-header {
@@ -246,29 +262,91 @@
 }
 
 .escopo-admin-cadastro .btn-action {
-    background: none;
+    background: var(--white);
     border: none;
     cursor: pointer;
-    padding: 6px;
+    padding: 8px;
     border-radius: 8px;
     transition: all 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.26),
+        -3px -3px 6px rgba(255, 255, 255, 0.26);
+}
+
+.escopo-admin-cadastro .btn-primary {
+    flex: 1;
+
+    padding: 14px 24px;
+    background-color: var(--confirm);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.26),
+        -6px -6px 12px rgba(255, 255, 255, 0.26);
+}
+
+.escopo-admin-cadastro .btn-primary:active:not(:disabled) {
+
+    box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.26),
+        inset -4px -4px 8px rgba(255, 255, 255, 0.26);
+    transform: scale(0.98);
+}
+
+.escopo-admin-cadastro .btn-primary:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.26),
+        -2px -2px 4px rgba(255, 255, 255, 0.26);
+}
+
+.escopo-admin-cadastro .btn-secondary {
+    flex: 1;
+    padding: 14px 24px;
+    background-color: var(--cancel);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.26),
+        -6px -6px 12px rgba(255, 255, 255, 0.26);
+}
+
+.escopo-admin-cadastro .btn-secondary:active {
+
+    box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.26),
+        inset -4px -4px 8px rgba(255, 255, 255, 0.26);
+    transform: scale(0.98);
 }
 
 .escopo-admin-cadastro .btn-action.edit {
     color: var(--warning);
-    background-color: var(--warning-light);
-}
-
-.escopo-admin-cadastro .btn-action.edit:hover {
-    background-color: #fde68a;
 }
 
 .escopo-admin-cadastro .btn-action.delete {
     color: var(--cancel);
-    background-color: var(--cancel-light);
+}
+
+.escopo-admin-cadastro .btn-action.delete {
+    color: var(--cancel);
+
 }
 
 .escopo-admin-cadastro .btn-action.delete:hover {
@@ -303,15 +381,16 @@
 .escopo-admin-cadastro .toggle-track {
     position: absolute;
     inset: 0;
-    background: var(--border-input);
+    background: var(--white);
     border-radius: 24px;
     cursor: pointer;
-    transition: background 0.2s;
-
+    transition: all 0.3s ease;
+    box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.26),
+        inset -4px -4px 8px rgba(255, 255, 255, 0.26);
 }
 
 .escopo-admin-cadastro .toggle-switch input:checked~.toggle-track {
-    background: var(--confirm);
+    background: var(--white);
 }
 
 .escopo-admin-cadastro .toggle-thumb {
@@ -320,14 +399,16 @@
     height: 18px;
     left: 3px;
     top: 3px;
-    background: var(--white);
+    background: #94a3b8;
     border-radius: 50%;
-    transition: transform 0.2s;
+    transition: all 0.3s ease;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1),
+        -2px -2px 4px rgba(255, 255, 255, 0.9);
 }
 
 .escopo-admin-cadastro .toggle-switch input:checked~.toggle-track .toggle-thumb {
     transform: translateX(18px);
-
+    background: var(--confirm);
 }
 
 .escopo-admin-cadastro .toggle-label {
@@ -371,8 +452,13 @@
     }
 
     .escopo-admin-cadastro .form-card {
-        width: 100%;
-        max-width: none;
+        width: 450px;
+        min-width: 450px;
+        flex-shrink: 0;
+        padding: 24px 5%;
+        overflow-y: auto;
+        max-height: 100%;
+        box-sizing: border-box;
     }
 
     .escopo-admin-cadastro .table-card {
@@ -389,23 +475,26 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    /* NOVO: Empurra todos os elementos unidos para a direita */
     gap: 12px;
     width: 100%;
     margin-bottom: 20px;
     flex-wrap: wrap;
+    padding: 0 24px;
+    box-sizing: border-box;
 }
 
 .campo-pesquisa {
     display: flex;
     align-items: center;
-    background-color: #f5f5f5;
-    border: 1px solid transparent;
+    background-color: var(--white);
+    border: none;
     border-radius: 8px;
     padding: 0 16px;
     height: 40px;
     width: 100%;
     max-width: 350px;
+    box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.26),
+        inset -4px -4px 8px rgba(255, 255, 255, 0.26);
 }
 
 .campo-pesquisa input {
@@ -420,9 +509,9 @@
 .select-ordenacao {
     height: 40px;
     padding: 0 12px;
-    border: 1px solid #d1d5db;
+    border: none;
     border-radius: 8px;
-    background-color: #fff;
+    background-color: var(--white);
     color: #374151;
     font-size: 14px;
     cursor: pointer;
@@ -431,7 +520,8 @@
     min-width: 130px;
     flex-shrink: 0;
     flex-grow: 0;
-
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.26),
+        -4px -4px 8px rgba(255, 255, 255, 0.26);
 }
 
 .filtro-status {
@@ -444,15 +534,18 @@
 .chip {
     height: 40px;
     padding: 0 16px;
-    border: 1px solid #d1d5db;
+    border: none;
+    /* Borda removida */
     border-radius: 8px;
-    background-color: #fff;
+    background-color: var(--white);
     color: #374151;
     font-size: 14px;
     cursor: pointer;
     transition: all 0.2s ease;
     white-space: nowrap;
     flex-shrink: 0;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.26),
+        -4px -4px 8px rgba(255, 255, 255, 0.26);
 }
 
 .chip:hover {
@@ -462,5 +555,6 @@
 .chip.ativo {
     background-color: #10b981;
     color: #fff;
-    border-color: #10b981;
+    box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.2),
+        inset -3px -3px 6px rgba(255, 255, 255, 0.2);
 }

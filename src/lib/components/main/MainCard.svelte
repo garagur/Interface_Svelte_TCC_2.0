@@ -137,20 +137,22 @@
             <div class="badge">{totalRegistros} registros</div>
         </div>
 
-        <CalendarioAgendamentos
-            {agendamentos}
-            hojeStr={hoje()}
-            carregandoLista={carregando}
-        >
-            <svelte:fragment let:ag>
-                <AgendamentoBloco
-                    {ag}
-                    {usuarioId}
-                    {cargo}
-                    onDeletar={abrirModalDeletar}
-                />
-            </svelte:fragment>
-        </CalendarioAgendamentos>
+        <div class="calendario-scroll-area">
+            <CalendarioAgendamentos
+                {agendamentos}
+                hojeStr={hoje()}
+                carregandoLista={carregando}
+            >
+                <svelte:fragment let:ag>
+                    <AgendamentoBloco
+                        {ag}
+                        {usuarioId}
+                        {cargo}
+                        onDeletar={abrirModalDeletar}
+                    />
+                </svelte:fragment>
+            </CalendarioAgendamentos>
+        </div>
 
         <div class="bottom-action">
             <button

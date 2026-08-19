@@ -5,18 +5,16 @@
 }
 
 :root {
-    /* Interface padrão: cinza e branco */
     --primary: #4b4b4b;
     --primary-dark: #2c2c2c;
-    --primary-light: #e2e8f0;
-    --gray-50: #f1f5f9;
-    --white: #ffffff;
+    --primary-light: #cccccc;
+    --gray-50: #e2e8f0;
+    --white: #edf2f7;
+
     --text-dark: #424242;
     --text-muted: #64748b;
-    --bg-input: #f8fafc;
+    --bg-input: #e2e8f0;
     --border-input: #cbd5e1;
-
-    /* Ações: confirmar (verde) / cancelar (vermelho) */
     --confirm: #16a34a;
     --confirm-dark: #15803d;
     --confirm-light: #dcfce7;

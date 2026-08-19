@@ -2,12 +2,9 @@
     export let agendamentos = [];
     export let carregandoLista = false;
     export let hojeStr = "";
-
     const LIMITE_VISIVEL = 1;
-
     /** @type {string|null} */
     let diaExpandido = null;
-
     function gerarDias() {
         const hoje = new Date();
         const diaSemana = hoje.getDay();
@@ -20,7 +17,6 @@
             return d;
         });
     }
-
     function gerarSemanas(dias) {
         const semanas = [];
         const primeiro = dias[0].getDay();
@@ -31,27 +27,21 @@
         }
         return semanas;
     }
-
     function extrairHora(dtStr) {
         if (!dtStr) return "";
         return dtStr.slice(11, 16);
     }
-
     function formatarChave(date) {
         return date.toISOString().slice(0, 10);
     }
-
     function ehHoje(date) {
         if (!date) return false;
         return formatarChave(date) === hojeStr;
     }
-
     function toggleExpandir(chave) {
         diaExpandido = diaExpandido === chave ? null : chave;
     }
-
     const CABECALHO = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-
     $: agendamentosPorData = agendamentos.reduce((acc, ag) => {
         const chave = ag.data_hora_inicio?.slice(0, 10);
         if (!chave) return acc;
@@ -59,80 +49,83 @@
         acc[chave].push(ag);
         return acc;
     }, {});
-
     $: dias = gerarDias();
     $: semanas = gerarSemanas(dias);
 </script>
 
-{#if carregandoLista}
-    <p class="estado-vazio">Carregando agendamentos...</p>
-{:else}
-    <div class="grade-wrapper">
-        <div class="grade-cabecalho">
-            {#each CABECALHO as dia}
-                <div class="cabecalho-dia">{dia}</div>
-            {/each}
-        </div>
-        <div class="grade-semanas">
-            {#each semanas as semana}
-                <div class="semana-row">
-                    {#each semana as dia}
-                        {@const chave = dia ? formatarChave(dia) : ""}
-                        {@const ags = dia
-                            ? agendamentosPorData[chave] || []
-                            : []}
-                        {@const expandido = !!chave && chave === diaExpandido}
-                        {@const visiveis = expandido
-                            ? ags
-                            : ags.slice(0, LIMITE_VISIVEL)}
-                        <div
-                            class="dia-celula {!dia ? 'dia-vazio' : ''} {dia &&
-                            ehHoje(dia)
-                                ? 'dia-hoje'
-                                : ''} {expandido ? 'expandido' : ''}"
-                        >
-                            {#if dia}
-                                <span
-                                    class="dia-numero {ehHoje(dia)
-                                        ? 'numero-hoje'
-                                        : ''}"
-                                >
-                                    {dia.getDate()}
-                                </span>
-                                <div
-                                    class="dia-conteudo {ags.length > 1
-                                        ? 'com-scroll'
-                                        : ''}"
-                                >
-                                    {#each visiveis as ag}
-                                        <div
-                                            class="ag-bloco {ag.tipo ?? 'sala'}"
-                                        >
-                                            <slot {ag} />
-                                        </div>
-                                    {/each}
-                                </div>
-                                {#if ags.length > LIMITE_VISIVEL || expandido}
-                                    <button
-                                        type="button"
-                                        class="btn-expandir"
-                                        title={expandido
-                                            ? "Recolher"
-                                            : "Ver todos os agendamentos"}
-                                        on:click={() => toggleExpandir(chave)}
+<div class="grade-mensal">
+    {#if carregandoLista}
+        <p class="estado-vazio">Carregando agendamentos...</p>
+    {:else}
+        <div class="grade-wrapper">
+            <div class="grade-cabecalho">
+                {#each CABECALHO as dia}
+                    <div class="cabecalho-dia">{dia}</div>
+                {/each}
+            </div>
+            <div class="grade-semanas">
+                {#each semanas as semana}
+                    <div class="semana-row">
+                        {#each semana as dia}
+                            {@const chave = dia ? formatarChave(dia) : ""}
+                            {@const ags = dia
+                                ? agendamentosPorData[chave] || []
+                                : []}
+                            {@const expandido =
+                                !!chave && chave === diaExpandido}
+                            {@const visiveis = expandido
+                                ? ags
+                                : ags.slice(0, LIMITE_VISIVEL)}
+                            <div
+                                class="dia-celula {!dia
+                                    ? 'dia-vazio'
+                                    : ''} {dia && ehHoje(dia)
+                                    ? 'dia-hoje'
+                                    : ''} {expandido ? 'expandido' : ''}"
+                            >
+                                {#if dia}
+                                    <span
+                                        class="dia-numero {ehHoje(dia)
+                                            ? 'numero-hoje'
+                                            : ''}"
                                     >
-                                        <span class="material-symbols-outlined">
-                                            {expandido
-                                                ? "expand_less"
-                                                : "expand_more"}
-                                        </span>
-                                    </button>
+                                        {dia.getDate()}
+                                    </span>
+                                    <div class="dia-conteudo">
+                                        {#each visiveis as ag}
+                                            <div
+                                                class="ag-bloco {ag.tipo ??
+                                                    'sala'}"
+                                            >
+                                                <slot {ag} />
+                                            </div>
+                                        {/each}
+                                    </div>
+                                    {#if ags.length > LIMITE_VISIVEL || expandido}
+                                        <button
+                                            type="button"
+                                            class="btn-expandir"
+                                            title={expandido
+                                                ? "Recolher"
+                                                : "Ver todos os agendamentos"}
+                                            on:click={() =>
+                                                toggleExpandir(chave)}
+                                        >
+                                            <span
+                                                class="material-symbols-outlined"
+                                            >
+                                                {expandido
+                                                    ? "expand_less"
+                                                    : "expand_more"}
+                                            </span>
+                                        </button>
+                                    {/if}
                                 {/if}
-                            {/if}
-                        </div>
-                    {/each}
-                </div>
-            {/each}
+                            </div>
+                        {/each}
+                    </div>
+                {/each}
+            </div>
         </div>
-    </div>
-{/if}
+    {/if}
+</div>

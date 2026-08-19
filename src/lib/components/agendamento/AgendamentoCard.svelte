@@ -174,7 +174,7 @@
                     Equipamentos
                 </button>
             </div>
-            {#if sala_id}
+            {#if sala_id && modo === "sala"}
                 <div class="card grade-card">
                     <div class="grade-header-title">
                         <div class="title-left">
