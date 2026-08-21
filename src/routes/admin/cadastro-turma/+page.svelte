@@ -16,6 +16,12 @@
     let editando = false;
     let turmaEditandoId = null;
 
+    // pesquisa, ordenação e filtros extras
+    let pesquisa = "";
+    let ordenacao = "asc"; // "asc" | "desc"
+    let filtroAno = "todos"; // "todos" | valor específico do ano_letivo
+    let filtroSerie = "todos"; // "todos" | "1" | "2" | "3" ...
+
     onMount(async () => {
         token = localStorage.getItem("token") || "";
         if (!token) {
@@ -40,10 +46,18 @@
     async function salvarTurma() {
         erro = "";
         sucesso = "";
+
         if (!novaTurma.nome || !novaTurma.ano_letivo) {
             erro = "Preencha todos os campos do formulário.";
             return;
         }
+
+        if (!/^\d/.test(novaTurma.nome.trim())) {
+            erro =
+                "O nome da turma deve começar com um número (ex: 1A, 9º Ano A).";
+            return;
+        }
+
         carregando = true;
         try {
             if (editando && turmaEditandoId) {
@@ -75,6 +89,51 @@
         editando = false;
         turmaEditandoId = null;
     }
+
+    function mudarOrdenacao(novoValor) {
+        ordenacao = novoValor;
+    }
+
+    // extrai o número inicial do nome da turma (ex: "1A" -> "1", "9º Ano A" -> "9")
+    function extrairSerie(nome) {
+        const match = (nome || "").match(/^\d+/);
+        return match ? match[0] : null;
+    }
+
+    // opções dinâmicas geradas a partir dos dados carregados
+    $: anosDisponiveis = [
+        ...new Set(turmas.map((t) => t.ano_letivo).filter(Boolean)),
+    ].sort((a, b) => b - a); // mais recente primeiro
+
+    $: seriesDisponiveis = [
+        ...new Set(turmas.map((t) => extrairSerie(t.nome)).filter(Boolean)),
+    ].sort((a, b) => Number(a) - Number(b));
+
+    // pipeline: pesquisa -> filtro ano -> filtro série -> ordenação
+    $: turmasFiltradas = turmas
+        .filter((t) => {
+            if (!pesquisa.trim()) return true;
+            const termo = pesquisa.toLowerCase();
+            return (
+                t.nome?.toLowerCase().includes(termo) ||
+                String(t.ano_letivo ?? "").includes(termo)
+            );
+        })
+        .filter((t) => {
+            if (filtroAno === "todos") return true;
+            return String(t.ano_letivo) === filtroAno;
+        })
+        .filter((t) => {
+            if (filtroSerie === "todos") return true;
+            return extrairSerie(t.nome) === filtroSerie;
+        })
+        .sort((a, b) => {
+            const nomeA = (a.nome || "").toLowerCase();
+            const nomeB = (b.nome || "").toLowerCase();
+            return ordenacao === "asc"
+                ? nomeA.localeCompare(nomeB)
+                : nomeB.localeCompare(nomeA);
+        });
 </script>
 
 <CadastroCard
@@ -90,10 +149,15 @@
     iconeForm={editando ? "edit" : "add_circle"}
     tituloTabela="Turmas Cadastradas"
     iconeTabela="groups"
-    totalRegistros={turmas.length}
+    totalRegistros={turmasFiltradas.length}
     {carregandoLista}
-    estadoVazioTexto="Nenhuma turma cadastrada ainda."
+    estadoVazioTexto="Nenhuma turma encontrada."
     carregandoTexto="Carregando turmas..."
+    mostrarPesquisa={true}
+    bind:pesquisa
+    placeholderPesquisa="Pesquisar por nome ou ano..."
+    {ordenacao}
+    onOrdenarChange={mudarOrdenacao}
 >
     <svelte:fragment slot="campos">
         <div class="field">
@@ -105,6 +169,9 @@
                 placeholder="Ex: 9º Ano A"
                 required
             />
+            <small class="dica-campo"
+                >Deve começar com um número (ex: 1A, 9º Ano A).</small
+            >
         </div>
         <div class="field">
             <label for="ano-letivo">Ano Letivo</label>
@@ -116,6 +183,22 @@
                 required
             />
         </div>
+    </svelte:fragment>
+
+    <svelte:fragment slot="filtros-extra">
+        <select class="select-ordenacao" bind:value={filtroAno}>
+            <option value="todos">Todos os anos</option>
+            {#each anosDisponiveis as ano}
+                <option value={String(ano)}>{ano}</option>
+            {/each}
+        </select>
+
+        <select class="select-ordenacao" bind:value={filtroSerie}>
+            <option value="todos">Todas as séries</option>
+            {#each seriesDisponiveis as serie}
+                <option value={serie}>{serie}º</option>
+            {/each}
+        </select>
     </svelte:fragment>
 
     <svelte:fragment slot="tabela-header">
@@ -134,7 +217,7 @@
     </svelte:fragment>
 
     <svelte:fragment slot="tabela-body">
-        {#each turmas as t, index}
+        {#each turmasFiltradas as t, index}
             <div class="table-row {index % 2 === 0 ? 'even' : 'odd'}">
                 <div class="td flex-2">
                     <span class="text-truncate">{t.nome}</span>

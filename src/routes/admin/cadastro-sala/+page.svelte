@@ -25,6 +25,11 @@
     let editando = false;
     let salaEditandoId = null;
 
+    // pesquisa, ordenação e filtro de status
+    let pesquisa = "";
+    let ordenacao = "asc"; // "asc" | "desc"
+    let filtroStatus = "todos"; // "todos" | "ativos" | "inativos"
+
     onMount(async () => {
         token = localStorage.getItem("token") || "";
         matriculaLogado = localStorage.getItem("matricula") || "";
@@ -103,6 +108,35 @@
         editando = false;
         salaEditandoId = null;
     }
+
+    function mudarOrdenacao(novoValor) {
+        ordenacao = novoValor;
+    }
+
+    // pipeline: pesquisa -> filtro de status -> ordenação
+    $: salasFiltradas = salas
+        .filter((s) => {
+            if (!pesquisa.trim()) return true;
+            const termo = pesquisa.toLowerCase();
+            const nomeResp = s.responsavel?.nome || s.responsavel?.name || "";
+            return (
+                s.nome?.toLowerCase().includes(termo) ||
+                s.obs?.toLowerCase().includes(termo) ||
+                nomeResp.toLowerCase().includes(termo)
+            );
+        })
+        .filter((s) => {
+            if (filtroStatus === "ativos") return s.status;
+            if (filtroStatus === "inativos") return !s.status;
+            return true; // "todos"
+        })
+        .sort((a, b) => {
+            const nomeA = (a.nome || "").toLowerCase();
+            const nomeB = (b.nome || "").toLowerCase();
+            return ordenacao === "asc"
+                ? nomeA.localeCompare(nomeB)
+                : nomeB.localeCompare(nomeA);
+        });
 </script>
 
 <CadastroCard
@@ -118,11 +152,16 @@
     iconeForm={editando ? "meeting_room" : "add_home"}
     tituloTabela="Salas Cadastradas"
     iconeTabela="door_front"
-    totalRegistros={salas.length}
+    totalRegistros={salasFiltradas.length}
     {carregandoLista}
-    estadoVazioTexto="Nenhuma sala cadastrada ainda."
+    estadoVazioTexto="Nenhuma sala encontrada."
     carregandoTexto="Carregando salas..."
     temToggle={true}
+    mostrarPesquisa={true}
+    bind:pesquisa
+    placeholderPesquisa="Pesquisar por nome, observação ou responsável..."
+    {ordenacao}
+    onOrdenarChange={mudarOrdenacao}
 >
     <svelte:fragment slot="campos">
         <div class="field">
@@ -175,6 +214,32 @@
         </div>
     </svelte:fragment>
 
+    <svelte:fragment slot="filtros-extra">
+        <div class="filtro-status">
+            <button
+                type="button"
+                class="chip {filtroStatus === 'todos' ? 'ativo' : ''}"
+                on:click={() => (filtroStatus = "todos")}
+            >
+                Todos
+            </button>
+            <button
+                type="button"
+                class="chip {filtroStatus === 'ativos' ? 'ativo' : ''}"
+                on:click={() => (filtroStatus = "ativos")}
+            >
+                Ativos
+            </button>
+            <button
+                type="button"
+                class="chip {filtroStatus === 'inativos' ? 'ativo' : ''}"
+                on:click={() => (filtroStatus = "inativos")}
+            >
+                Inativos
+            </button>
+        </div>
+    </svelte:fragment>
+
     <svelte:fragment slot="tabela-header">
         <div class="table-header">
             <div class="th flex-2">
@@ -185,7 +250,6 @@
                 >
                 Nome
             </div>
-            <div class="th flex-1">Número</div>
             <div class="th flex-2">Observação</div>
             <div class="th flex-2">Responsável</div>
             <div class="th flex-1">Status</div>
@@ -194,7 +258,7 @@
     </svelte:fragment>
 
     <svelte:fragment slot="tabela-body">
-        {#each salas as s, index}
+        {#each salasFiltradas as s, index}
             <div class="table-row {index % 2 === 0 ? 'even' : 'odd'}">
                 <div class="td flex-2">
                     <span class="text-truncate">{s.nome}</span>

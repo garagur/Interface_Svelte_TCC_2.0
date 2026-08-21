@@ -71,20 +71,25 @@
         -8px -8px 16px rgba(255, 255, 255, 0.26);
 }
 
+.escopo-admin-cadastro .form-card {
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
 .escopo-admin-cadastro .form-card input,
 .escopo-admin-cadastro .form-card select {
     width: 360px;
     margin: 0;
     height: 40px;
     border: none;
-
     background-color: var(--white);
     border-radius: 8px;
     padding: 0 12px;
     box-sizing: border-box;
     box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.26),
         inset -4px -4px 8px rgba(255, 255, 255, 0.26);
-
     outline: none;
     color: var(--text-dark);
 }
@@ -452,12 +457,12 @@
     }
 
     .escopo-admin-cadastro .form-card {
-        width: 450px;
-        min-width: 450px;
+        width: 400px;
         flex-shrink: 0;
-        padding: 24px 5%;
-        overflow-y: auto;
-        max-height: 100%;
+        padding: 28px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
         box-sizing: border-box;
     }
 
@@ -511,6 +516,7 @@
     padding: 0 12px;
     border: none;
     border-radius: 8px;
+    padding: 0.55rem 1.8rem 0.55rem 0.75rem;
     background-color: var(--white);
     color: #374151;
     font-size: 14px;

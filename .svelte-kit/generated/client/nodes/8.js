@@ -1,1 +1,2 @@
-export { default as component } from "../../../../src/routes/meusagendamentos/+layout.svelte";
+import * as universal from "../../../../src/routes/+page.js";
+export { universal };

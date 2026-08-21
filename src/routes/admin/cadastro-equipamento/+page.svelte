@@ -26,6 +26,11 @@
     let editando = false;
     let equipamentoEditandoId = null;
 
+    // pesquisa, ordenação e filtro de status
+    let pesquisa = "";
+    let ordenacao = "asc"; // "asc" | "desc"
+    let filtroStatus = "todos"; // "todos" | "ativos" | "inativos"
+
     onMount(async () => {
         token = localStorage.getItem("token") || "";
         matriculaLogado = localStorage.getItem("matricula") || "";
@@ -112,6 +117,36 @@
         editando = false;
         equipamentoEditandoId = null;
     }
+
+    function mudarOrdenacao(novoValor) {
+        ordenacao = novoValor;
+    }
+
+    // pipeline: pesquisa -> filtro de status -> ordenação
+    $: equipamentosFiltrados = equipamentos
+        .filter((eq) => {
+            if (!pesquisa.trim()) return true;
+            const termo = pesquisa.toLowerCase();
+            const nomeResp = eq.responsavel?.nome || eq.responsavel?.name || "";
+            return (
+                eq.nome?.toLowerCase().includes(termo) ||
+                eq.N_patrimonio?.toLowerCase().includes(termo) ||
+                eq.obs?.toLowerCase().includes(termo) ||
+                nomeResp.toLowerCase().includes(termo)
+            );
+        })
+        .filter((eq) => {
+            if (filtroStatus === "ativos") return eq.status;
+            if (filtroStatus === "inativos") return !eq.status;
+            return true; // "todos"
+        })
+        .sort((a, b) => {
+            const nomeA = (a.nome || "").toLowerCase();
+            const nomeB = (b.nome || "").toLowerCase();
+            return ordenacao === "asc"
+                ? nomeA.localeCompare(nomeB)
+                : nomeB.localeCompare(nomeA);
+        });
 </script>
 
 <CadastroCard
@@ -127,11 +162,16 @@
     iconeForm={editando ? "edit" : "add_circle"}
     tituloTabela="Equipamentos Cadastrados"
     iconeTabela="computer"
-    totalRegistros={equipamentos.length}
+    totalRegistros={equipamentosFiltrados.length}
     {carregandoLista}
-    estadoVazioTexto="Nenhum equipamento cadastrado ainda."
+    estadoVazioTexto="Nenhum equipamento encontrado."
     carregandoTexto="Carregando equipamentos..."
     temToggle={true}
+    mostrarPesquisa={true}
+    bind:pesquisa
+    placeholderPesquisa="Pesquisar por nome, patrimônio ou responsável..."
+    {ordenacao}
+    onOrdenarChange={mudarOrdenacao}
 >
     <svelte:fragment slot="campos">
         <div class="field">
@@ -197,6 +237,32 @@
         </div>
     </svelte:fragment>
 
+    <svelte:fragment slot="filtros-extra">
+        <div class="filtro-status">
+            <button
+                type="button"
+                class="chip {filtroStatus === 'todos' ? 'ativo' : ''}"
+                on:click={() => (filtroStatus = "todos")}
+            >
+                Todos
+            </button>
+            <button
+                type="button"
+                class="chip {filtroStatus === 'ativos' ? 'ativo' : ''}"
+                on:click={() => (filtroStatus = "ativos")}
+            >
+                Ativos
+            </button>
+            <button
+                type="button"
+                class="chip {filtroStatus === 'inativos' ? 'ativo' : ''}"
+                on:click={() => (filtroStatus = "inativos")}
+            >
+                Inativos
+            </button>
+        </div>
+    </svelte:fragment>
+
     <svelte:fragment slot="tabela-header">
         <div class="table-header">
             <div class="th flex-2">
@@ -216,7 +282,7 @@
     </svelte:fragment>
 
     <svelte:fragment slot="tabela-body">
-        {#each equipamentos as s, index}
+        {#each equipamentosFiltrados as s, index}
             <div class="table-row {index % 2 === 0 ? 'even' : 'odd'}">
                 <div class="td flex-2">
                     <span class="text-truncate">{s.nome}</span>

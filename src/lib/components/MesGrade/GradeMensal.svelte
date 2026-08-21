@@ -22,6 +22,11 @@
         const primeiro = dias[0].getDay();
         const prefixo = Array(primeiro).fill(null);
         const todos = [...prefixo, ...dias];
+        const resto = todos.length % 7;
+        if (resto !== 0) {
+            const sufixo = Array(7 - resto).fill(null);
+            todos.push(...sufixo);
+        }
         for (let i = 0; i < todos.length; i += 7) {
             semanas.push(todos.slice(i, i + 7));
         }
