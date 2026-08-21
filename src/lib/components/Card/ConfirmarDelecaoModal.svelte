@@ -4,6 +4,12 @@
     export let onConfirmar;
     export let onCancelar;
 
+    let justificativa = "";
+
+    $: if (!agendamento) {
+        justificativa = "";
+    }
+
     function formatarDataHora(iso) {
         if (!iso) return "—";
         const d = new Date(iso);
@@ -17,6 +23,10 @@
             minute: "2-digit",
         });
         return `${data} às ${hora}`;
+    }
+
+    function confirmar() {
+        onConfirmar({ ...agendamento, justificativa: justificativa.trim() });
     }
 </script>
 
@@ -38,7 +48,9 @@
             tabindex="-1"
         >
             <div class="modal-header">
-                <span class="material-symbols-outlined">warning</span>
+                <span class="icon-wrapper">
+                    <span class="material-symbols-outlined">warning</span>
+                </span>
                 <h3>Confirmar cancelamento</h3>
             </div>
 
@@ -52,14 +64,21 @@
                 {formatarDataHora(agendamento.data_hora_fim)}
             </p>
 
+            <div class="modal-campo">
+                <label for="justificativa">Justificativa do cancelamento</label>
+                <textarea
+                    id="justificativa"
+                    bind:value={justificativa}
+                    placeholder="Descreva o motivo do cancelamento..."
+                    rows="3"
+                ></textarea>
+            </div>
+
             <div class="modal-acoes">
                 <button class="btn-secondary" on:click={onCancelar}>
                     Cancelar
                 </button>
-                <button
-                    class="btn-danger"
-                    on:click={() => onConfirmar(agendamento)}
-                >
+                <button class="btn-danger" on:click={confirmar}>
                     Confirmar exclusão
                 </button>
             </div>
@@ -79,21 +98,43 @@
     }
 
     .modal-box {
-        background: var(--white);
-        border-radius: var(--card-radius);
-        padding: var(--card-padding);
+        --neu-bg: #e6e9ef;
+        --neu-shadow-dark: rgba(163, 177, 198, 0.65);
+        background: var(--neu-bg);
+        border-radius: 24px;
+        padding: 28px 26px;
         width: min(420px, 90vw);
         display: flex;
         flex-direction: column;
         gap: 1rem;
-        box-shadow: var(--card-shadow-elevated);
+        box-shadow:
+            9px 9px 18px var(--neu-shadow-dark),
+            -9px -9px 18px var(--neu-shadow-dark);
     }
 
     .modal-header {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        color: var(--cancel-dark);
+        gap: 0.75rem;
+        color: var(--cancel-dark, #b3261e);
+    }
+
+    .icon-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--neu-bg);
+        box-shadow:
+            4px 4px 8px var(--neu-shadow-dark),
+            -4px -4px 8px var(--neu-shadow-light);
+        flex-shrink: 0;
+    }
+
+    .icon-wrapper .material-symbols-outlined {
+        font-size: 1.2rem;
     }
 
     .modal-header h3 {
@@ -106,14 +147,57 @@
         margin: 0;
         font-family: "Inter", Arial, sans-serif;
         font-size: 0.95rem;
-        color: var(--text-dark);
+        color: var(--text-dark, #2b2f38);
     }
 
     .modal-horario {
         margin: 0;
         font-family: "Inter", Arial, sans-serif;
         font-size: 0.875rem;
-        color: var(--text-muted);
+        color: var(--text-muted, #6b7280);
+        background: rgba(163, 177, 198, 0.12);
+        padding: 8px 12px;
+        border-radius: 10px;
+        width: fit-content;
+    }
+
+    .modal-campo {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .modal-campo label {
+        font-family: "Inter", Arial, sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-dark, #2b2f38);
+    }
+
+    .modal-campo textarea {
+        font-family: "Inter", Arial, sans-serif;
+        font-size: 0.9rem;
+        color: var(--text-dark, #2b2f38);
+        background: var(--neu-bg);
+        border: none;
+        border-radius: 14px;
+        padding: 12px 14px;
+        resize: none;
+        outline: none;
+        box-shadow:
+            inset 4px 4px 8px var(--neu-shadow-dark),
+            inset -4px -4px 8px var(--neu-shadow-light);
+    }
+
+    .modal-campo textarea::placeholder {
+        color: var(--text-muted, #9aa0a8);
+    }
+
+    .modal-campo textarea:focus {
+        box-shadow:
+            inset 5px 5px 10px var(--neu-shadow-dark),
+            inset -5px -5px 10px var(--neu-shadow-light),
+            0 0 0 2px rgba(179, 38, 30, 0.25);
     }
 
     .modal-acoes {
@@ -123,35 +207,58 @@
         margin-top: 0.5rem;
     }
 
-    .btn-secondary {
-        background: var(--primary-light);
-        color: var(--primary-dark);
+    .btn-secondary,
+    .btn-danger {
         border: none;
-        border-radius: var(--btn-radius-sm);
-        padding: 10px 18px;
+        border-radius: 14px;
+        padding: 10px 20px;
         font-size: 0.9rem;
         font-weight: 600;
         font-family: "Inter", Arial, sans-serif;
         cursor: pointer;
+        transition:
+            box-shadow 0.15s ease,
+            transform 0.1s ease;
+    }
+
+    .btn-secondary {
+        background: var(--neu-bg);
+        color: var(--primary-dark, #3a3f4b);
+        box-shadow:
+            5px 5px 10px var(--neu-shadow-dark),
+            -5px -5px 10px var(--neu-shadow-light);
     }
 
     .btn-secondary:hover {
-        background: var(--border-input);
+        box-shadow:
+            3px 3px 6px var(--neu-shadow-dark),
+            -3px -3px 6px var(--neu-shadow-light);
+    }
+
+    .btn-secondary:active {
+        box-shadow:
+            inset 3px 3px 6px var(--neu-shadow-dark),
+            inset -3px -3px 6px var(--neu-shadow-light);
     }
 
     .btn-danger {
-        background: var(--cancel);
-        color: var(--white);
-        border: none;
-        border-radius: var(--btn-radius-sm);
-        padding: 10px 18px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        font-family: "Inter", Arial, sans-serif;
-        cursor: pointer;
+        background: var(--cancel, #d92d20);
+        color: #fff;
+        box-shadow:
+            5px 5px 10px var(--neu-shadow-dark),
+            -2px -2px 6px var(--neu-shadow-light);
     }
 
     .btn-danger:hover {
-        background: var(--cancel-dark);
+        background: var(--cancel-dark, #b3261e);
+        box-shadow:
+            3px 3px 6px var(--neu-shadow-dark),
+            -1px -1px 4px var(--neu-shadow-light);
+    }
+
+    .btn-danger:active {
+        box-shadow:
+            inset 3px 3px 6px rgba(0, 0, 0, 0.35),
+            inset -2px -2px 5px rgba(255, 255, 255, 0.15);
     }
 </style>

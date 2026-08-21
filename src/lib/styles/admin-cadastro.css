@@ -4,6 +4,7 @@
     height: 100vh;
     font-family: "Inter", Arial, sans-serif;
     overflow: hidden;
+    background-color: var(--white);
 }
 
 .escopo-admin-cadastro .app-bar {
