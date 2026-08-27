@@ -41,7 +41,7 @@ export const dictionary = {
 		"/agendamento": [14,[4]],
 		"/login": [15,[5]],
 		"/main": [16,[6]],
-		"/meusagendamentos": [17,[7]]
+		"/minhasinformacoes": [17,[7]]
 	};
 
 export const hooks = {

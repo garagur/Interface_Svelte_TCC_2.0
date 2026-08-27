@@ -2,11 +2,15 @@
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
   import MainCard from "$lib/components/main/MainCard.svelte";
-  import { logoutUser } from "$lib/services/UserServices/Logout_User_Service.js";
   import { carregarAgendamentosSalas } from "$lib/services/AgendamentoServices/AgendamentoSala/List_Agendamento_Sala_Service.js";
+  import { carregarAgendamentosEquipamentos } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/List_Agendamento_Equipamento_Service.js";
+
   let token = "";
+
+  let titulo = "Portal de Agendamento";
   let matricula = "";
   let cargo = "";
+
   let agendamentos = [];
   let carregando = false;
   let erro = "";
@@ -21,37 +25,48 @@
       return;
     }
 
+    await carregarAgendamentos();
+  });
+
+  async function carregarAgendamentos() {
     carregando = true;
     try {
-      const salas = await carregarAgendamentosSalas(token);
-      console.log("salas recebidas:", salas); // ← quantos chegam?
-      agendamentos = salas.map((s) => ({ ...s, tipo: "sala" }));
-      console.log("agendamentos setados:", agendamentos); // ← está populado?
+      const [salas, equipamentos] = await Promise.all([
+        carregarAgendamentosSalas(token, null),
+        carregarAgendamentosEquipamentos(token),
+      ]);
+
+      const salasComTipo = salas.map((ag) => ({ ...ag, tipo: "sala" }));
+      const equipamentosComTipo = equipamentos.map((ag) => ({
+        ...ag,
+        tipo: "equipamento",
+      }));
+
+      agendamentos = [...salasComTipo, ...equipamentosComTipo];
     } catch (e) {
-      console.error("ERRO:", e);
       erro = e?.message || "Erro ao carregar agendamentos.";
     } finally {
       carregando = false;
-      console.log("carregando:", carregando); // ← vai pra false?
     }
-  });
+  }
 
-  async function handleSair() {
-    await logoutUser(token);
-    localStorage.removeItem("token");
-    localStorage.removeItem("matricula");
-    localStorage.removeItem("cargo");
+  function irParaNovoAgendamento() {
+    goto("/agendamento");
+  }
+
+  function sair() {
+    localStorage.clear();
     goto("/login");
   }
 </script>
 
 <MainCard
-  titulo="Portal de Agendamento"
+  {titulo}
   {matricula}
   {cargo}
-  onSair={handleSair}
-  onNovoAgendamento={() => goto("/agendamento")}
   {agendamentos}
   {carregando}
   {erro}
+  onSair={sair}
+  onNovoAgendamento={irParaNovoAgendamento}
 />

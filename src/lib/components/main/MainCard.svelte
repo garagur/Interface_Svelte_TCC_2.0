@@ -18,6 +18,7 @@
     let token = "";
     let usuarioId = null;
     let agendamentoParaDeletar = null;
+    let mostrarMenuUsuario = false;
 
     function irParaDetalhes(ag) {
         goto(`/agendamento/${ag.tipo}/${ag.id}`);
@@ -49,6 +50,24 @@
         }
     }
 
+    function alternarMenuUsuario() {
+        mostrarMenuUsuario = !mostrarMenuUsuario;
+    }
+
+    function fecharMenuUsuario() {
+        mostrarMenuUsuario = false;
+    }
+
+    function irPara(rota) {
+        fecharMenuUsuario();
+        goto(rota);
+    }
+
+    function sair() {
+        fecharMenuUsuario();
+        onSair();
+    }
+
     onMount(() => {
         token = localStorage.getItem("token") || "";
         usuarioId = localStorage.getItem("user_id");
@@ -57,6 +76,8 @@
 
     $: totalRegistros = agendamentos.length;
 </script>
+
+<svelte:window on:click={fecharMenuUsuario} />
 
 <ConfirmarDelecaoModal
     agendamento={agendamentoParaDeletar}
@@ -120,9 +141,71 @@
         </nav>
 
         <div class="actions-section">
-            <button class="btn-icon" on:click={onSair} title="Sair">
-                <span class="material-symbols-outlined">logout</span>
-            </button>
+            <div class="user-menu" on:click|stopPropagation>
+                <button
+                    class="btn-icon"
+                    on:click={alternarMenuUsuario}
+                    title="Minha conta"
+                    aria-haspopup="true"
+                    aria-expanded={mostrarMenuUsuario}
+                >
+                    <span class="material-symbols-outlined">account_circle</span
+                    >
+                </button>
+
+                {#if mostrarMenuUsuario}
+                    <ul class="user-menu-dropdown" role="menu">
+                        <li role="none">
+                            <button
+                                role="menuitem"
+                                on:click={() =>
+                                    irPara("/minhasinformacoes#dados")}
+                            >
+                                <span class="material-symbols-outlined"
+                                    >person</span
+                                >
+                                Meus Dados
+                            </button>
+                        </li>
+                        <li role="none">
+                            <button
+                                role="menuitem"
+                                on:click={() =>
+                                    irPara("/minhasinformacoes#estatisticas")}
+                            >
+                                <span class="material-symbols-outlined"
+                                    >query_stats</span
+                                >
+                                Minhas Estatísticas
+                            </button>
+                        </li>
+                        <li role="none">
+                            <button
+                                role="menuitem"
+                                on:click={() => irPara("/meusagendamentos")}
+                            >
+                                <span class="material-symbols-outlined"
+                                    >event_available</span
+                                >
+                                Meus Agendamentos
+                            </button>
+                        </li>
+                        <li class="user-menu-separador" role="none"></li>
+                        <li role="none">
+                            <button
+                                role="menuitem"
+                                class="user-menu-sair"
+                                on:click={sair}
+                            >
+                                <span class="material-symbols-outlined"
+                                    >logout</span
+                                >
+                                Sair
+                            </button>
+                        </li>
+                    </ul>
+                {/if}
+            </div>
         </div>
     </header>
 
