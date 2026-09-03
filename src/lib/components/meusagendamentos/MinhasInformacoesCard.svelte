@@ -64,6 +64,21 @@
         "Dez",
     ];
 
+    // Ano exibido no heatmap (começa no ano atual)
+    let anoSelecionado = new Date().getFullYear();
+
+    function anoAnterior() {
+        anoSelecionado -= 1;
+    }
+
+    function anoSeguinte() {
+        anoSelecionado += 1;
+    }
+
+    function irParaAnoAtual() {
+        anoSelecionado = new Date().getFullYear();
+    }
+
     function formatarDataHora(iso) {
         if (!iso) return "—";
         const d = new Date(iso);
@@ -114,40 +129,45 @@
         return 4;
     }
 
-    // Monta a grade de semanas (colunas) x dias da semana (linhas), últimas ~53 semanas
-    function montarSemanas(heatmap) {
+    // Monta a grade de semanas (colunas) x dias da semana (linhas)
+    // cobrindo o ano civil completo (1 de Jan a 31 de Dez do ano informado),
+    // alinhado do domingo anterior ao 1º de Jan até o sábado seguinte ao 31 de Dez.
+    function montarSemanas(heatmap, ano) {
         const mapa = new Map(
             (heatmap || []).map((h) => [h.data, h.quantidade]),
         );
 
-        const hoje = new Date();
-        hoje.setHours(0, 0, 0, 0);
+        const inicioAno = new Date(ano, 0, 1);
+        const fimAno = new Date(ano, 11, 31);
 
-        const inicio = new Date(hoje);
-        inicio.setDate(inicio.getDate() - 370);
-        inicio.setDate(inicio.getDate() - inicio.getDay()); // alinha no domingo
+        const inicio = new Date(inicioAno);
+        inicio.setDate(inicio.getDate() - inicio.getDay()); // volta até domingo
 
-        const dias = [];
+        const fim = new Date(fimAno);
+        fim.setDate(fim.getDate() + (6 - fim.getDay())); // avança até sábado
+
+        const diasArr = [];
         const cursor = new Date(inicio);
-        while (cursor <= hoje) {
+        while (cursor <= fim) {
             const chave = cursor.toISOString().slice(0, 10);
-            dias.push({
+            diasArr.push({
                 data: chave,
                 dia: cursor.getDate(),
                 mes: cursor.getMonth(),
+                foraDoAno: cursor.getFullYear() !== ano,
                 quantidade: mapa.get(chave) || 0,
             });
             cursor.setDate(cursor.getDate() + 1);
         }
 
         const semanas = [];
-        for (let i = 0; i < dias.length; i += 7) {
-            semanas.push(dias.slice(i, i + 7));
+        for (let i = 0; i < diasArr.length; i += 7) {
+            semanas.push(diasArr.slice(i, i + 7));
         }
         return semanas;
     }
 
-    $: semanasHeatmap = montarSemanas(estatisticas?.heatmap);
+    $: semanasHeatmap = montarSemanas(estatisticas?.heatmap, anoSelecionado);
 
     // Rótulo de mês só na primeira semana em que o mês aparece
     $: rotulosMeses = semanasHeatmap.map((semana, idx) => {
@@ -306,6 +326,36 @@
                         </div>
                     </div>
 
+                    <div class="heatmap-header">
+                        <button
+                            class="heatmap-nav-btn"
+                            on:click={anoAnterior}
+                            title="Ano anterior"
+                        >
+                            <span class="material-symbols-outlined"
+                                >chevron_left</span
+                            >
+                        </button>
+
+                        <button
+                            class="heatmap-ano-btn"
+                            on:click={irParaAnoAtual}
+                            title="Ir para o ano atual"
+                        >
+                            {anoSelecionado}
+                        </button>
+
+                        <button
+                            class="heatmap-nav-btn"
+                            on:click={anoSeguinte}
+                            title="Próximo ano"
+                        >
+                            <span class="material-symbols-outlined"
+                                >chevron_right</span
+                            >
+                        </button>
+                    </div>
+
                     <div class="heatmap-wrapper">
                         <div class="heatmap-meses">
                             {#each rotulosMeses as rotulo}
@@ -319,6 +369,7 @@
                                         class="heatmap-dia nivel-{nivelHeatmap(
                                             dia.quantidade,
                                         )}"
+                                        class:fora-do-ano={dia.foraDoAno}
                                         title="{dia.data}: {dia.quantidade} agendamento(s)"
                                     ></div>
                                 {/each}

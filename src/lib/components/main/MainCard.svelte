@@ -93,13 +93,6 @@
         </div>
 
         <nav class="nav-menu">
-            <button
-                class="menu-card"
-                on:click={() => goto("/meusagendamentos")}
-            >
-                <span class="material-symbols-outlined">calendar_today</span>
-                <span>Meus<br />Agendamentos</span>
-            </button>
             {#if cargo === "admin"}
                 <button
                     class="menu-card"

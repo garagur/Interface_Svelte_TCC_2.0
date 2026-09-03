@@ -29,7 +29,7 @@ export async function buscarUsuario(token, id) {
         throw new Error('Id do usuário não informado.')
     }
 
-    const resp = await apiFetch(USER_ROUTES.mostrar(id), {
+    const resp = await apiFetch(USER_ROUTES.buscar(id), {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
