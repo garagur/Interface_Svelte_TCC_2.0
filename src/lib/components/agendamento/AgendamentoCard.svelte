@@ -6,6 +6,7 @@
     import ConfirmarDelecaoModal from "$lib/components/Card/ConfirmarDelecaoModal.svelte";
     import ConfirmarRecorrenciaModal from "$lib/components/Card/ConfirmarRecorrenciaModal.svelte";
     import { deletarAgendamentoSala } from "$lib/services/AgendamentoServices/AgendamentoSala/Deleted_Agendamento_Sala_Service.js";
+    import { deletarAgendamentoEquipamento } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/Deleted_Agendamento_equipamento.js";
 
     import { onMount } from "svelte";
     export let modo = "sala";
@@ -61,6 +62,10 @@
 
     let agendamentoParaDeletar = null;
 
+    $: agendamentosVisiveis = agendamentos.filter(
+        (a) => a.status !== "inativo",
+    );
+
     function abrirModalDeletar(ag) {
         agendamentoParaDeletar = ag;
     }
@@ -73,7 +78,17 @@
         fecharModalDeletar();
         try {
             if (ag.tipo === "sala") {
-                await deletarAgendamentoSala(ag.id, token);
+                await deletarAgendamentoSala(
+                    ag.id,
+                    token,
+                    ag.justificativa || "",
+                );
+            } else if (ag.tipo === "equipamento") {
+                await deletarAgendamentoEquipamento(
+                    ag.id,
+                    token,
+                    ag.justificativa || "",
+                );
             }
             agendamentos = agendamentos.filter(
                 (a) => a.id !== ag.id || a.tipo !== ag.tipo,
@@ -212,7 +227,7 @@
                             <h3>Agendamentos — próximos 60 dias</h3>
                         </div>
                         <span class="badge"
-                            >{agendamentos.length} registros</span
+                            >{agendamentosVisiveis.length} registros</span
                         >
                     </div>
 
@@ -222,7 +237,7 @@
                         </p>
                     {:else}
                         <CalendarioAgendamentos
-                            {agendamentos}
+                            agendamentos={agendamentosVisiveis}
                             {hojeStr}
                             {carregandoLista}
                         >

@@ -1,10 +1,14 @@
 <script>
-    /** @type {{ sala_nome?: string, sala_id?: number|string, data_hora_inicio: string, data_hora_fim: string, obs?: string } | null} */
+    /** @type {{ tipo?: string, sala_nome?: string, sala_id?: number|string, equipamento_nome?: string, equipamento_id?: number|string, data_hora_inicio: string, data_hora_fim: string, obs?: string } | null} */
     export let agendamento = null;
     export let onConfirmar;
     export let onCancelar;
 
     let justificativa = "";
+    $: ehEquipamento = agendamento?.tipo === "equipamento";
+    $: recursoNome = ehEquipamento
+        ? agendamento?.equipamento_nome || agendamento?.equipamento_id
+        : agendamento?.sala_nome || agendamento?.sala_id;
 
     $: if (!agendamento) {
         justificativa = "";
@@ -55,8 +59,9 @@
             </div>
 
             <p class="modal-descricao">
-                Deseja cancelar o agendamento da sala
-                <strong>{agendamento.sala_nome || agendamento.sala_id}</strong>?
+                Deseja cancelar o agendamento do
+                {ehEquipamento ? "equipamento" : "sala"}
+                <strong>{recursoNome}</strong>?
             </p>
             <p class="modal-horario">
                 {formatarDataHora(agendamento.data_hora_inicio)}

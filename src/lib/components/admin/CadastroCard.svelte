@@ -8,6 +8,7 @@
     export let temToggle = false;
     export let toggleValue = true;
     export let onSubmit;
+    /** @type {(() => void) | null} */
     export let onCancelar = null;
     export let editando = false;
     export let carregando = false;

@@ -1,6 +1,7 @@
 <script>
     export let bloco;
-    export let onRemover = null; // se passado, mostra botão de deletar
+    /** @type {((bloco: any) => void) | null} */
+    export let onRemover = null;
     export let mostrarTurma = false;
 </script>
 
@@ -23,7 +24,11 @@
     {/if}
     {#if onRemover}
         <div class="bloco-actions">
-            <button class="btn-action delete" title="Remover">
+            <button
+                class="btn-action delete"
+                title="Remover"
+                on:click={() => onRemover(bloco)}
+            >
                 <span class="material-symbols-outlined">delete</span>
             </button>
         </div>

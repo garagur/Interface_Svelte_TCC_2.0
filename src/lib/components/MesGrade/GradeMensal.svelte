@@ -47,13 +47,15 @@
         diaExpandido = diaExpandido === chave ? null : chave;
     }
     const CABECALHO = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-    $: agendamentosPorData = agendamentos.reduce((acc, ag) => {
-        const chave = ag.data_hora_inicio?.slice(0, 10);
-        if (!chave) return acc;
-        if (!acc[chave]) acc[chave] = [];
-        acc[chave].push(ag);
-        return acc;
-    }, {});
+    $: agendamentosPorData = agendamentos
+        .filter((ag) => ag.status !== "inativo")
+        .reduce((acc, ag) => {
+            const chave = ag.data_hora_inicio?.slice(0, 10);
+            if (!chave) return acc;
+            if (!acc[chave]) acc[chave] = [];
+            acc[chave].push(ag);
+            return acc;
+        }, {});
     $: dias = gerarDias();
     $: semanas = gerarSemanas(dias);
 </script>

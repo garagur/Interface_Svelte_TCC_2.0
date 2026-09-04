@@ -1,10 +1,12 @@
 <script>
     import { goto } from "$app/navigation";
     import { onMount } from "svelte";
+    import { tick } from "svelte";
     import CalendarioAgendamentos from "$lib/components/MesGrade/GradeMensal.svelte";
     import AgendamentoBloco from "$lib/components/Card/BlocoAgendamentoCard.svelte";
     import ConfirmarDelecaoModal from "$lib/components/Card/ConfirmarDelecaoModal.svelte";
     import { deletarAgendamentoSala } from "$lib/services/AgendamentoServices/AgendamentoSala/Deleted_Agendamento_Sala_Service.js";
+    import { deletarAgendamentoEquipamento } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/Deleted_Agendamento_equipamento.js";
 
     export let titulo = "";
     export let matricula = "";
@@ -40,7 +42,17 @@
         fecharModalDeletar();
         try {
             if (ag.tipo === "sala") {
-                await deletarAgendamentoSala(ag.id, token);
+                await deletarAgendamentoSala(
+                    ag.id,
+                    token,
+                    ag.justificativa || "",
+                );
+            } else if (ag.tipo === "equipamento") {
+                await deletarAgendamentoEquipamento(
+                    ag.id,
+                    token,
+                    ag.justificativa || "",
+                );
             }
             agendamentos = agendamentos.filter(
                 (a) => a.id !== ag.id || a.tipo !== ag.tipo,
@@ -58,9 +70,18 @@
         mostrarMenuUsuario = false;
     }
 
-    function irPara(rota) {
+    async function irPara(rota) {
         fecharMenuUsuario();
-        goto(rota);
+        const [caminho, hash] = rota.split("#");
+        await goto(caminho);
+        await tick();
+
+        if (hash) {
+            document.getElementById(hash)?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+            });
+        }
     }
 
     function sair() {
@@ -74,7 +95,10 @@
         cargo = localStorage.getItem("cargo");
     });
 
-    $: totalRegistros = agendamentos.length;
+    $: agendamentosVisiveis = agendamentos.filter(
+        (a) => a.status !== "inativo",
+    );
+    $: totalRegistros = agendamentosVisiveis.length;
 </script>
 
 <svelte:window on:click={fecharMenuUsuario} />
@@ -175,7 +199,8 @@
                         <li role="none">
                             <button
                                 role="menuitem"
-                                on:click={() => irPara("/meusagendamentos")}
+                                on:click={() =>
+                                    irPara("/minhasinformacoes#agendamentos")}
                             >
                                 <span class="material-symbols-outlined"
                                     >event_available</span
@@ -215,7 +240,7 @@
 
         <div class="calendario-scroll-area">
             <CalendarioAgendamentos
-                {agendamentos}
+                agendamentos={agendamentosVisiveis}
                 hojeStr={hoje()}
                 carregandoLista={carregando}
             >

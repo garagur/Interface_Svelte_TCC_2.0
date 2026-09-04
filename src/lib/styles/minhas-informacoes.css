@@ -254,6 +254,13 @@
     margin-bottom: 10px;
 }
 
+.minhas-informacoes .heatmap-wrapper {
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto;
+    overflow-x: auto;
+}
+
 .minhas-informacoes .heatmap-nav-btn {
     background: var(--neu-bg);
     border: none;
@@ -308,7 +315,7 @@
 
 .minhas-informacoes .heatmap-meses {
     display: flex;
-    gap: 3px;
+    gap: 4px;
     margin-bottom: 4px;
     padding-left: 6px;
     width: fit-content;
@@ -317,7 +324,7 @@
 .minhas-informacoes .heatmap-mes-label {
     font-size: 0.65rem;
     color: var(--text-muted);
-    width: 12px;
+    width: 14px;
     flex-shrink: 0;
     white-space: nowrap;
     overflow: visible;
@@ -326,8 +333,8 @@
 .minhas-informacoes .heatmap-grid {
     display: grid;
     grid-auto-flow: column;
-    grid-template-rows: repeat(7, 12px);
-    gap: 3px;
+    grid-template-rows: repeat(7, 14px);
+    gap: 4px;
     width: fit-content;
     padding: 6px;
     border-radius: 12px;
@@ -337,8 +344,8 @@
 }
 
 .minhas-informacoes .heatmap-dia {
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     border-radius: 3px;
     background: var(--neu-bg);
     box-shadow:
@@ -384,6 +391,8 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    width: min(100%, 1080px);
+    margin: 0 auto;
 }
 
 .minhas-informacoes .btn-deletar-ag {
@@ -525,6 +534,44 @@
     padding: 10px 14px;
     font-size: 0.82rem;
     margin: 0;
+}
+
+.minhas-informacoes.agendamento-item.cancelado {
+    opacity: 0.75;
+}
+
+.minhas-informacoes.badge-status.cancelado {
+    background: rgba(217, 45, 32, 0.12);
+    color: #d92d20;
+}
+
+.minhas-informacoes .agendamento-justificativa {
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+    font-size: 0.82rem;
+    color: #b3261e;
+    margin: 4px 0 0;
+}
+
+.agendamento-justificativa .material-symbols-outlined {
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.minhas-informacoes .agendamento-cancelador {
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin: 4px 0 0;
+}
+
+.agendamento-cancelador .material-symbols-outlined {
+    font-size: 1rem;
+    flex-shrink: 0;
 }
 
 @media (max-width: 640px) {

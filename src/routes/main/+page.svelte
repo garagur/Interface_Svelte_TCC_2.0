@@ -42,7 +42,9 @@
         tipo: "equipamento",
       }));
 
-      agendamentos = [...salasComTipo, ...equipamentosComTipo];
+      agendamentos = [...salasComTipo, ...equipamentosComTipo].filter(
+        (agendamento) => agendamento.status !== "inativo",
+      );
     } catch (e) {
       erro = e?.message || "Erro ao carregar agendamentos.";
     } finally {

@@ -99,6 +99,22 @@
         return new Date(iso) >= new Date();
     }
 
+    /**
+     * Determina o status de exibição do agendamento.
+     * @param {any} ag
+     * @returns {"cancelado" | "futuro" | "passado"}
+     */
+    function statusExibicao(ag) {
+        if (ag.status === "inativo") return "cancelado";
+        return isFuturo(ag.data_hora_inicio) ? "futuro" : "passado";
+    }
+
+    function rotuloStatus(status) {
+        if (status === "cancelado") return "Cancelado";
+        if (status === "futuro") return "Agendado";
+        return "Concluído";
+    }
+
     function abrirModal(ag) {
         agendamentoParaDeletar = ag;
     }
@@ -218,7 +234,7 @@
             {/if}
 
             <!-- Dados pessoais -->
-            <div class="card">
+            <div class="card" id="dados">
                 <div class="card-header">
                     <span class="material-symbols-outlined">person</span>
                     <h3>Meus Dados</h3>
@@ -260,7 +276,7 @@
             </div>
 
             <!-- Estatísticas -->
-            <div class="card">
+            <div class="card" id="estatisticas">
                 <div class="card-header">
                     <span class="material-symbols-outlined">query_stats</span>
                     <h3>Minhas Estatísticas</h3>
@@ -389,7 +405,7 @@
             </div>
 
             <!-- Grade de aulas (já existente) -->
-            <div class="card">
+            <div class="card" id="grade">
                 <div class="card-header">
                     <span class="material-symbols-outlined">calendar_month</span
                     >
@@ -413,13 +429,13 @@
                 {/if}
             </div>
 
-            <!-- Agendamentos de sala (já existente) -->
-            <div class="card">
+            <!-- Agendamentos de salas e equipamentos -->
+            <div class="card" id="agendamentos">
                 <div class="card-header">
                     <span class="material-symbols-outlined"
                         >event_available</span
                     >
-                    <h3>Meus Agendamentos de Sala</h3>
+                    <h3>Meus Agendamentos</h3>
                 </div>
 
                 {#if carregandoAgendamentos}
@@ -431,7 +447,11 @@
                 {:else}
                     <div class="agendamentos-lista">
                         {#each agendamentosOrdenados as ag}
-                            <div class="agendamento-item">
+                            {@const status = statusExibicao(ag)}
+                            <div
+                                class="agendamento-item"
+                                class:cancelado={status === "cancelado"}
+                            >
                                 <div class="agendamento-faixa"></div>
                                 <div class="agendamento-body">
                                     <div class="agendamento-data-hora">
@@ -444,29 +464,47 @@
                                     </div>
                                     <div class="agendamento-sala">
                                         <span class="material-symbols-outlined"
-                                            >meeting_room</span
+                                            >{ag.tipo === "equipamento"
+                                                ? "devices"
+                                                : "meeting_room"}</span
                                         >
-                                        {ag.sala_nome ||
-                                            ag.sala_id ||
-                                            "Sala não informada"}
+                                        {ag.tipo === "equipamento"
+                                            ? ag.equipamento_nome ||
+                                              ag.equipamento_id ||
+                                              "Equipamento não informado"
+                                            : ag.sala_nome ||
+                                              ag.sala_id ||
+                                              "Sala não informada"}
                                     </div>
                                     {#if ag.obs}
                                         <p class="agendamento-obs">{ag.obs}</p>
                                     {/if}
+                                    {#if status === "cancelado" && ag.justificativa}
+                                        <p class="agendamento-justificativa">
+                                            <span
+                                                class="material-symbols-outlined"
+                                                >info</span
+                                            >
+                                            Motivo do cancelamento: {ag.justificativa}
+                                        </p>
+                                    {/if}
+                                    {#if status === "cancelado"}
+                                        <p class="agendamento-cancelador">
+                                            <span
+                                                class="material-symbols-outlined"
+                                                >person</span
+                                            >
+                                            Cancelado por:
+                                            {ag.cancelador_nome ||
+                                                "Nome não informado"}
+                                        </p>
+                                    {/if}
                                 </div>
                                 <div class="agendamento-status">
-                                    <span
-                                        class="badge-status {isFuturo(
-                                            ag.data_hora_inicio,
-                                        )
-                                            ? 'futuro'
-                                            : 'passado'}"
-                                    >
-                                        {isFuturo(ag.data_hora_inicio)
-                                            ? "Agendado"
-                                            : "Concluído"}
+                                    <span class="badge-status {status}">
+                                        {rotuloStatus(status)}
                                     </span>
-                                    {#if isFuturo(ag.data_hora_inicio) && onDeletar}
+                                    {#if status === "futuro" && onDeletar}
                                         <button
                                             class="btn-deletar-ag"
                                             on:click={() => abrirModal(ag)}

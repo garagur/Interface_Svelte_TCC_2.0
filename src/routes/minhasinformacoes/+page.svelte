@@ -6,6 +6,7 @@
     import { carregarAgendamentosSalas } from "$lib/services/AgendamentoServices/AgendamentoSala/List_Agendamento_Sala_Service.js";
     import { deletarAgendamentoSala } from "$lib/services/AgendamentoServices/AgendamentoSala/Deleted_Agendamento_Sala_Service.js";
     import { carregarAgendamentosEquipamentos } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/List_Agendamento_Equipamento_Service.js";
+    import { deletarAgendamentoEquipamento } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/Deleted_Agendamento_equipamento.js";
     import { buscarUsuario } from "$lib/services/UserServices/Buscar_Usuario_Service.js";
 
     let token = "";
@@ -150,8 +151,28 @@
 
     async function deletar(ag) {
         try {
-            await deletarAgendamentoSala(ag.id, token);
-            agendamentosSala = agendamentosSala.filter((a) => a.id !== ag.id);
+            if (ag.tipo === "equipamento") {
+                await deletarAgendamentoEquipamento(
+                    ag.id,
+                    token,
+                    ag.justificativa || "",
+                );
+            } else {
+                await deletarAgendamentoSala(
+                    ag.id,
+                    token,
+                    ag.justificativa || "",
+                );
+            }
+            if (ag.tipo === "equipamento") {
+                agendamentosEquipamento = agendamentosEquipamento.filter(
+                    (a) => a.id !== ag.id,
+                );
+            } else {
+                agendamentosSala = agendamentosSala.filter(
+                    (a) => a.id !== ag.id,
+                );
+            }
             montarEstatisticas();
         } catch (e) {
             erro = e?.message || "Erro ao deletar agendamento.";
@@ -165,7 +186,7 @@
     {estatisticas}
     {carregandoEstatisticas}
     {blocos}
-    agendamentos={agendamentosSala}
+    agendamentos={[...agendamentosSala, ...agendamentosEquipamento]}
     {carregandoBlocos}
     {carregandoAgendamentos}
     {erro}

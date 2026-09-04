@@ -3,5 +3,5 @@ export const AGENDAMENTOEQUIPAMENTO_ROUTE = {
     listar: '/agendamento-equipamentos',
     buscar: (id) => `/agendamento-equipamentos/${id}`,
     cadastrar: '/agendamento-equipamentos',
-    deletaar: (id) => `/agendamento-equipamentos/${id}`,
+    deletar: (id) => `/agendamento-equipamentos/${id}`,
 }

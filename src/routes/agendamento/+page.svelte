@@ -107,11 +107,17 @@
         erro = "";
         try {
             if (modo === "sala") {
-                agendamentos = await carregarAgendamentosSalas(token, id);
+                agendamentos = (
+                    await carregarAgendamentosSalas(token, id)
+                ).filter((agendamento) => agendamento.status !== "inativo");
             } else {
                 // O endpoint de equipamentos retorna todos. Precisamos filtrar pelo selecionado no front:
                 const todos = await carregarAgendamentosEquipamentos(token);
-                agendamentos = todos.filter((a) => a.equipamento_id === id);
+                agendamentos = todos.filter(
+                    (agendamento) =>
+                        agendamento.equipamento_id === id &&
+                        agendamento.status !== "inativo",
+                );
             }
         } catch (e) {
             erro = e?.message || "Erro ao carregar agendamentos.";

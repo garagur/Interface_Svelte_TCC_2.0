@@ -40,5 +40,17 @@ export async function carregarAgendamentosEquipamentos(token) {
         data_hora_inicio: s.data_hora_inicio || '',
         data_hora_fim: s.data_hora_fim || '',
         obs: s.obs || '',
+        status:
+            s.status === false || s.status === 0 || s.status === '0'
+                ? 'inativo'
+                : String(s.status ?? '').toLowerCase(),
+        justificativa:
+            s.justificativa ||
+            s.justificativa_cancelamento ||
+            s.motivo_cancelamento ||
+            '',
+        cancelador_id: s.cancelador_id || '',
+        cancelador_nome: s.cancelador_nome || '',
+        tipo: 'equipamento',
     }))
 }
