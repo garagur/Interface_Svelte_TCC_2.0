@@ -52,55 +52,84 @@
 
 <style>
     .grade-wrapper {
+        --neu-bg: #e6e9ef;
+        --neu-shadow-dark: rgba(163, 177, 198, 0.55);
+        --neu-shadow-light: rgba(255, 255, 255, 0.85);
+
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 0.75rem;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 1rem;
+        padding: 0.5rem;
     }
+
     .dia-coluna {
         flex: 1;
         min-width: 120px;
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 0.75rem;
+        background: var(--neu-bg);
+        padding: 0.75rem;
+        border-radius: 16px;
+        /* Coluna levemente destacada */
+        box-shadow:
+            5px 5px 10px var(--neu-shadow-dark),
+            -5px -5px 10px var(--neu-shadow-light);
     }
 
+    /* Estilo para Fim de Semana (Efeito Afundado / Inset) */
     .dia-coluna.fds {
-        background: #f1f1f1;
-        border-radius: 10px;
-        padding: 0.5rem;
-        opacity: 0.75;
+        background: var(--neu-bg);
+        opacity: 0.8;
+        box-shadow:
+            inset 3px 3px 6px var(--neu-shadow-dark),
+            inset -3px -3px 6px var(--neu-shadow-light);
     }
 
     .dia-header {
+        font-family: "Inter", Arial, sans-serif;
         font-weight: 700;
         font-size: 0.85rem;
         color: #475569;
         text-align: center;
-        padding: 0.4rem;
-        background: #e2e8f0;
-        border-radius: 6px;
+        padding: 0.5rem;
+        background: var(--neu-bg);
+        border-radius: 10px;
+        /* Header das colunas em relevo suave */
+        box-shadow:
+            3px 3px 6px var(--neu-shadow-dark),
+            -3px -3px 6px var(--neu-shadow-light);
     }
 
     .dia-coluna.fds .dia-header {
-        background: #cbd5e1;
         color: #64748b;
+        /* Header no FDS ligeiramente neutro */
+        box-shadow:
+            2px 2px 4px var(--neu-shadow-dark),
+            -2px -2px 4px var(--neu-shadow-light);
     }
 
     .dia-blocos {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 0.6rem;
     }
 
     .bloco-vazio {
         text-align: center;
-        color: #cbd5e1;
-        font-size: 1.2rem;
+        color: #a0aec0;
+        font-size: 1.1rem;
         padding: 1rem 0;
+        border-radius: 10px;
+        /* Slot vazio afundado */
+        box-shadow:
+            inset 2px 2px 4px var(--neu-shadow-dark),
+            inset -2px -2px 4px var(--neu-shadow-light);
     }
 
     .estado-vazio {
         text-align: center;
+        font-family: "Inter", Arial, sans-serif;
         color: #94a3b8;
         padding: 2rem;
     }

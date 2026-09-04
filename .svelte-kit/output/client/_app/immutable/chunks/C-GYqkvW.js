@@ -1,0 +1,1 @@
+var e=`/api/eafinware`;export{e as t};

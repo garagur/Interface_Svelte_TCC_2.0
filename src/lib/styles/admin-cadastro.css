@@ -32,7 +32,7 @@
 
 .escopo-admin-cadastro .title-section span {
     font-size: 11px;
-    color: #a8a8a8;
+    color: var(--text-light);
     margin-top: 2px;
 }
 

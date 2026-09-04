@@ -1,0 +1,114 @@
+import "../../../chunks/internal.js";
+import { S as escape_html, n as bind_props, ot as fallback, tt as invalid_default_snippet, x as attr } from "../../../chunks/server.js";
+import { t as goto } from "../../../chunks/client.js";
+import "../../../chunks/navigation.js";
+import { n as GradeMensal, t as BlocoAgendamentoCard } from "../../../chunks/BlocoAgendamentoCard.js";
+import { a as deletarAgendamentoSala, r as deletarAgendamentoEquipamento, s as ConfirmarDelecaoModal } from "../../../chunks/List_Agendamento_Equipamento_Service.js";
+//#region src/lib/components/main/MainCard.svelte
+function MainCard($$renderer, $$props) {
+	$$renderer.component(($$renderer) => {
+		let agendamentosVisiveis, totalRegistros;
+		let titulo = fallback($$props["titulo"], "");
+		let matricula = fallback($$props["matricula"], "");
+		let cargo = fallback($$props["cargo"], "");
+		let onSair = fallback($$props["onSair"], () => {});
+		let onNovoAgendamento = fallback($$props["onNovoAgendamento"], () => {});
+		let agendamentos = fallback($$props["agendamentos"], () => [], true);
+		let carregando = fallback($$props["carregando"], false);
+		let erro = fallback($$props["erro"], "");
+		let token = "";
+		let usuarioId = null;
+		let agendamentoParaDeletar = null;
+		let mostrarMenuUsuario = false;
+		function hoje() {
+			return (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+		}
+		function abrirModalDeletar(ag) {
+			agendamentoParaDeletar = ag;
+		}
+		function fecharModalDeletar() {
+			agendamentoParaDeletar = null;
+		}
+		async function confirmarDeletar(ag) {
+			fecharModalDeletar();
+			try {
+				if (ag.tipo === "sala") await deletarAgendamentoSala(ag.id, token, ag.justificativa || "");
+				else if (ag.tipo === "equipamento") await deletarAgendamentoEquipamento(ag.id, token, ag.justificativa || "");
+				agendamentos = agendamentos.filter((a) => a.id !== ag.id || a.tipo !== ag.tipo);
+			} catch (e) {
+				erro = e?.message || "Erro ao deletar agendamento.";
+			}
+		}
+		$: agendamentosVisiveis = agendamentos.filter((a) => a.status !== "inativo");
+		$: totalRegistros = agendamentosVisiveis.length;
+		ConfirmarDelecaoModal($$renderer, {
+			agendamento: agendamentoParaDeletar,
+			onConfirmar: confirmarDeletar,
+			onCancelar: fecharModalDeletar
+		});
+		$$renderer.push(`<!----> <div class="scaffold"><header class="app-bar"><div class="title-section"><h1>${escape_html(titulo)}</h1> <span>Matrícula: ${escape_html(matricula)}</span></div> <nav class="nav-menu">`);
+		if (cargo === "admin") {
+			$$renderer.push("<!--[0-->");
+			$$renderer.push(`<button class="menu-card"><span class="material-symbols-outlined">meeting_room</span> <span>Gerenciar<br/>Salas</span></button> <button class="menu-card"><span class="material-symbols-outlined">groups</span> <span>Gerenciar<br/>Turmas</span></button> <button class="menu-card"><span class="material-symbols-outlined">calendar_month</span> <span>Gerenciar<br/>Horários</span></button> <button class="menu-card"><span class="material-symbols-outlined">playlist_add</span> <span>Gerenciar<br/>Equipamentos</span></button> <button class="menu-card"><span class="material-symbols-outlined">person_add</span> <span>Gerenciar<br/>Usuários</span></button>`);
+		} else $$renderer.push("<!--[-1-->");
+		$$renderer.push(`<!--]--></nav> <div class="actions-section"><div class="user-menu"><button class="btn-icon" title="Minha conta" aria-haspopup="true"${attr("aria-expanded", mostrarMenuUsuario)}><span class="material-symbols-outlined">account_circle</span></button> `);
+		$$renderer.push("<!--[-1-->");
+		$$renderer.push(`<!--]--></div></div></header> <main class="body-content"><div class="grade-header-title"><div class="title-left"><span class="material-symbols-outlined text-primary">calendar_month</span> <h2>Agendamentos — próximos 60 dias</h2></div> <div class="badge">${escape_html(totalRegistros)} registros</div></div> <div class="calendario-scroll-area">`);
+		GradeMensal($$renderer, {
+			agendamentos: agendamentosVisiveis,
+			hojeStr: hoje(),
+			carregandoLista: carregando,
+			children: invalid_default_snippet,
+			$$slots: { default: ($$renderer, { ag }) => {
+				BlocoAgendamentoCard($$renderer, {
+					ag,
+					usuarioId,
+					cargo,
+					onDeletar: abrirModalDeletar
+				});
+			} }
+		});
+		$$renderer.push(`<!----></div> <div class="bottom-action"><button class="btn-primary btn-novo-agendamento"><span class="material-symbols-outlined">add_circle</span> Novo Agendamento</button></div></main></div>`);
+		bind_props($$props, {
+			titulo,
+			matricula,
+			cargo,
+			onSair,
+			onNovoAgendamento,
+			agendamentos,
+			carregando,
+			erro
+		});
+	});
+}
+//#endregion
+//#region src/routes/main/+page.svelte
+function _page($$renderer, $$props) {
+	$$renderer.component(($$renderer) => {
+		let titulo = "Portal de Agendamento";
+		let matricula = "";
+		let cargo = "";
+		let agendamentos = [];
+		let carregando = false;
+		let erro = "";
+		function irParaNovoAgendamento() {
+			goto("/agendamento");
+		}
+		function sair() {
+			localStorage.clear();
+			goto("/login");
+		}
+		MainCard($$renderer, {
+			titulo,
+			matricula,
+			cargo,
+			agendamentos,
+			carregando,
+			erro,
+			onSair: sair,
+			onNovoAgendamento: irParaNovoAgendamento
+		});
+	});
+}
+//#endregion
+export { _page as default };

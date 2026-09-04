@@ -1,37 +1,69 @@
+.escopo-horario {
+    --neu-bg: #e6e9ef;
+    --neu-shadow-dark: rgba(163, 177, 198, 0.55);
+    --neu-shadow-light: rgba(255, 255, 255, 0.85);
+}
+
 .escopo-horario .scaffold {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     font-family: "Inter", sans-serif;
+    background: var(--neu-bg);
 }
 
 .escopo-horario .app-bar {
+    background-color: var(--primary);
+    color: var(--white);
+    padding: 12px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 2rem;
-    background: var(--primary);
-    color: var(--white);
+    box-shadow: 10px 10px 20px #1a1a1a,
+        -10px -10px 20px #282828;
+    z-index: 10;
 }
 
 .escopo-horario .title-section h1 {
-    color: var(--white);
+    color: var(--text-light);
     margin: 0;
     font-size: 1.2rem;
+    font-weight: 700;
 }
 
 .escopo-horario .title-section span {
     font-size: 0.85rem;
-    color: #a8a8a8;
+    color: var(--text-light);
 }
 
+/* Botões do Header */
 .escopo-horario .btn-icon {
-    background: transparent;
+    background: var(--neu-bg);
     border: none;
-    color: var(--white);
+    color: var(--text-dark);
     cursor: pointer;
     display: flex;
     align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    box-shadow:
+        3px 3px 6px var(--neu-shadow-dark),
+        -3px -3px 6px var(--neu-shadow-light);
+    transition: box-shadow 0.15s ease;
+}
+
+.escopo-horario .btn-icon:hover {
+    box-shadow:
+        1px 1px 3px var(--neu-shadow-dark),
+        -1px -1px 3px var(--neu-shadow-light);
+}
+
+.escopo-horario .btn-icon:active {
+    box-shadow:
+        inset 2px 2px 4px var(--neu-shadow-dark),
+        inset -2px -2px 4px var(--neu-shadow-light);
 }
 
 .escopo-horario .horario-content {
@@ -41,11 +73,15 @@
     padding: 2rem;
 }
 
+/* Cards Elevações Neumórficas */
 .escopo-horario .card {
-    background: var(--white);
-    border-radius: 16px;
+    background: var(--neu-bg);
+    border-radius: 20px;
     padding: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: none;
+    box-shadow:
+        8px 8px 16px var(--neu-shadow-dark),
+        -8px -8px 16px var(--neu-shadow-light);
 }
 
 .escopo-horario .turma-select-card {
@@ -60,23 +96,45 @@
     white-space: nowrap;
 }
 
-.escopo-horario select {
-    padding: 0.6rem 0.75rem;
-    border: 1px solid var(--border-input);
-    border-radius: 8px;
-    background: var(--bg-input);
+/* Form Inputs e Selects (Efeito Inset / Afundado) */
+.escopo-horario select,
+.escopo-horario input {
+    padding: 0.65rem 0.85rem;
+    border: none;
+    border-radius: 12px;
+    background: var(--neu-bg);
     color: var(--text-dark);
-    font-size: 0.95rem;
-    width: 100%;
-    max-width: 400px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    outline: none;
+    box-shadow:
+        inset 3px 3px 6px var(--neu-shadow-dark),
+        inset -3px -3px 6px var(--neu-shadow-light);
+    transition: box-shadow 0.2s ease;
 }
 
-.escopo-horario .form-bloco-card h3 {
+.escopo-horario select {
+    width: 100%;
+    max-width: 400px;
+    cursor: pointer;
+}
+
+.escopo-horario input:focus,
+.escopo-horario select:focus {
+    box-shadow:
+        inset 4px 4px 8px var(--neu-shadow-dark),
+        inset -4px -4px 8px var(--neu-shadow-light),
+        0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+.escopo-horario .form-bloco-card h3,
+.escopo-horario .grade-card h3 {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
     color: var(--text-dark);
+    font-size: 1.05rem;
 }
 
 .escopo-horario .form-bloco-fields {
@@ -100,83 +158,77 @@
     color: var(--text-muted);
 }
 
-.escopo-horario input {
-    padding: 0.65rem 0.75rem;
-    border: 1px solid var(--border-input);
-    border-radius: 8px;
-    background: var(--bg-input);
-    color: var(--text-dark);
-    font-size: 0.9rem;
-}
-
-.escopo-horario input:focus {
-    outline: none;
-    border-color: var(--primary);
-    background: var(--white);
-}
-
+/* Botão Principal */
 .escopo-horario .btn-primary {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.4rem;
     background: var(--confirm);
-    color: var(--white);
+    color: #ffffff;
     border: none;
-    padding: 0.7rem 1.2rem;
-    border-radius: 10px;
+    padding: 0.75rem 1.4rem;
+    border-radius: 12px;
     cursor: pointer;
     font-weight: bold;
-    transition: background 0.2s;
+    box-shadow:
+        4px 4px 8px var(--neu-shadow-dark),
+        -2px -2px 6px var(--neu-shadow-light);
+    transition: background 0.2s ease, box-shadow 0.15s ease, transform 0.1s ease;
 }
 
-.escopo-horario .btn-primary:hover {
+.escopo-horario .btn-primary:hover:not(:disabled) {
     background: var(--confirm-dark);
+    box-shadow:
+        2px 2px 5px var(--neu-shadow-dark),
+        -1px -1px 4px var(--neu-shadow-light);
+}
+
+.escopo-horario .btn-primary:active:not(:disabled) {
+    box-shadow:
+        inset 2px 2px 4px rgba(0, 0, 0, 0.25),
+        inset -2px -2px 4px rgba(255, 255, 255, 0.15);
 }
 
 .escopo-horario .btn-primary:disabled {
-    opacity: 0.6;
+    opacity: 0.55;
     cursor: not-allowed;
+    box-shadow: none;
 }
 
 .escopo-horario .msg-erro {
     color: var(--cancel);
-    font-size: 0.9rem;
+    font-size: 0.875rem;
+    font-weight: 600;
     margin: 0.5rem 0;
 }
 
 .escopo-horario .msg-sucesso {
-    color: var(--confirm);
-    font-size: 0.9rem;
+    color: var(--confirm-dark);
+    font-size: 0.875rem;
+    font-weight: 600;
     margin: 0.5rem 0;
 }
 
-/* GRADE — apenas o card que envolve a GradeSemanal; a estrutura interna
-   da grade (colunas, cabeçalho de dia, etc.) agora vive no próprio
-   componente GradeSemanal.svelte */
-.escopo-horario .grade-card h3 {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    color: var(--text-dark);
-}
-
-/* BLOCO — conteúdo específico do slot usado pelo HorarioCard */
+/* BLOCO CARD (Fallbacks/Slots no escopo principal) */
 .escopo-horario .bloco-card {
-    background: var(--bg-input);
-    border: 1px solid var(--primary-light);
-    border-radius: 8px;
-    padding: 0.6rem;
-    font-size: 0.8rem;
+    background: var(--neu-bg);
+    border: none;
+    border-radius: 12px;
+    padding: 0.75rem;
+    font-size: 0.82rem;
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.35rem;
+    box-shadow:
+        3px 3px 6px var(--neu-shadow-dark),
+        -3px -3px 6px var(--neu-shadow-light);
 }
 
 .escopo-horario .bloco-horario {
     font-weight: 700;
-    color: var(--primary-dark);
-    font-size: 0.75rem;
+    color: var(--text-dark);
+    font-size: 0.78rem;
 }
 
 .escopo-horario .bloco-disciplina {
@@ -187,7 +239,7 @@
 .escopo-horario .bloco-professor {
     display: flex;
     align-items: center;
-    gap: 0.2rem;
+    gap: 0.25rem;
     color: var(--text-muted);
     font-size: 0.75rem;
 }
@@ -195,16 +247,23 @@
 .escopo-horario .bloco-actions {
     display: flex;
     justify-content: flex-end;
+    margin-top: 0.2rem;
 }
 
 .escopo-horario .btn-action {
-    background: transparent;
+    background: var(--neu-bg);
     border: none;
     cursor: pointer;
-    padding: 0.2rem;
-    border-radius: 6px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
+    justify-content: center;
+    box-shadow:
+        2px 2px 4px var(--neu-shadow-dark),
+        -2px -2px 4px var(--neu-shadow-light);
+    transition: box-shadow 0.15s ease, color 0.15s ease;
 }
 
 .escopo-horario .btn-action.delete {
@@ -212,9 +271,18 @@
 }
 
 .escopo-horario .btn-action.delete:hover {
-    background: var(--cancel-light);
+    color: #b91c1c;
+    box-shadow:
+        1px 1px 3px var(--neu-shadow-dark),
+        -1px -1px 3px var(--neu-shadow-light);
+}
+
+.escopo-horario .btn-action:active {
+    box-shadow:
+        inset 1px 1px 3px var(--neu-shadow-dark),
+        inset -1px -1px 3px var(--neu-shadow-light);
 }
 
 .escopo-horario .icon-tiny {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
 }

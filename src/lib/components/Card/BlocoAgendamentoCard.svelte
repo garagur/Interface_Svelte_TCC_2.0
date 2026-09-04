@@ -54,24 +54,36 @@
 
 <style>
     .ag-bloco-inner {
-        border-radius: 6px;
-        padding: 4px 6px;
+        --neu-bg: #e6e9ef;
+        --neu-shadow-dark: rgba(163, 177, 198, 0.55);
+        --neu-shadow-light: rgba(255, 255, 255, 0.85);
+
+        background: var(--neu-bg);
+        border-radius: 12px;
+        padding: 0.6rem;
         display: flex;
         flex-direction: column;
-        gap: 3px;
+        gap: 0.35rem;
         width: 100%;
         box-sizing: border-box;
         min-width: 0;
+        font-family: "Inter", Arial, sans-serif;
+
+        box-shadow:
+            3px 3px 6px var(--neu-shadow-dark),
+            -3px -3px 6px var(--neu-shadow-light);
+        transition:
+            transform 0.15s ease,
+            box-shadow 0.15s ease;
     }
 
+    /* Diferenciação por indicação de cor lateral com tom neutro neumórfico */
     .ag-bloco-inner.proprio {
-        background-color: #dcfce7;
-        border-left: 3px solid #16a34a;
+        border-left: 4px solid #16a34a;
     }
 
     .ag-bloco-inner.outro {
-        background-color: #f1f5f9;
-        border-left: 3px solid #929292;
+        border-left: 4px solid #94a3b8;
     }
 
     .ag-hora {
@@ -83,11 +95,11 @@
     .ag-info {
         display: flex;
         align-items: center;
-        gap: 3px;
+        gap: 0.3rem;
     }
 
     .ag-icon {
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         color: #64748b;
     }
 
@@ -103,23 +115,34 @@
     .ag-acoes {
         display: flex;
         justify-content: flex-end;
-        gap: 2px;
-        margin-top: 2px;
+        gap: 0.4rem;
+        margin-top: 0.2rem;
     }
 
     .btn-ag {
-        background: none;
+        background: var(--neu-bg);
         border: none;
         cursor: pointer;
-        padding: 0;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
         display: flex;
         align-items: center;
+        justify-content: center;
+        padding: 0;
+        box-shadow:
+            2px 2px 4px var(--neu-shadow-dark),
+            -2px -2px 4px var(--neu-shadow-light);
+        transition:
+            box-shadow 0.15s ease,
+            color 0.15s ease;
     }
 
     .btn-ag .material-symbols-outlined {
-        font-size: 1rem;
+        font-size: 0.95rem;
     }
 
+    /* Botão Delete */
     .btn-ag.delete {
         color: #ef4444;
     }
@@ -128,11 +151,17 @@
         color: #b91c1c;
     }
 
+    /* Botão Info */
     .btn-ag.info {
         color: #64748b;
     }
 
     .btn-ag.info:hover {
-        color: #003da0;
+        color: #2563eb;
+    }
+    .btn-ag:active {
+        box-shadow:
+            inset 1px 1px 3px var(--neu-shadow-dark),
+            inset -1px -1px 3px var(--neu-shadow-light);
     }
 </style>

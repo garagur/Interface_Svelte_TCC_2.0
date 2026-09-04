@@ -37,14 +37,31 @@
 
 <style>
     .bloco-card {
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 0.6rem 0.75rem;
+        --neu-bg: #e6e9ef;
+        --neu-shadow-dark: rgba(163, 177, 198, 0.55);
+        --neu-shadow-light: rgba(255, 255, 255, 0.85);
+
+        background: var(--neu-bg);
+        border: none;
+        border-radius: 12px;
+        padding: 0.75rem;
         display: flex;
         flex-direction: column;
-        gap: 0.25rem;
+        gap: 0.35rem;
         font-size: 0.82rem;
+        font-family: "Inter", Arial, sans-serif;
+        box-shadow:
+            4px 4px 8px var(--neu-shadow-dark),
+            -4px -4px 8px var(--neu-shadow-light);
+        transition:
+            transform 0.15s ease,
+            box-shadow 0.15s ease;
+    }
+
+    .bloco-card:hover {
+        box-shadow:
+            2px 2px 5px var(--neu-shadow-dark),
+            -2px -2px 5px var(--neu-shadow-light);
     }
 
     .bloco-horario {
@@ -62,8 +79,13 @@
     .bloco-turma {
         display: flex;
         align-items: center;
-        gap: 0.25rem;
+        gap: 0.3rem;
         color: #64748b;
+        font-size: 0.78rem;
+    }
+
+    .icon-tiny {
+        font-size: 1rem;
     }
 
     .bloco-actions {
@@ -73,16 +95,38 @@
     }
 
     .btn-action.delete {
-        background: none;
+        background: var(--neu-bg);
         border: none;
         cursor: pointer;
         color: #ef4444;
-        padding: 0;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
         display: flex;
         align-items: center;
+        justify-content: center;
+        box-shadow:
+            2px 2px 5px var(--neu-shadow-dark),
+            -2px -2px 5px var(--neu-shadow-light);
+        transition:
+            box-shadow 0.15s ease,
+            color 0.15s ease;
+    }
+
+    .btn-action.delete .material-symbols-outlined {
+        font-size: 1.05rem;
     }
 
     .btn-action.delete:hover {
         color: #b91c1c;
+        box-shadow:
+            1px 1px 3px var(--neu-shadow-dark),
+            -1px -1px 3px var(--neu-shadow-light);
+    }
+
+    .btn-action.delete:active {
+        box-shadow:
+            inset 2px 2px 4px var(--neu-shadow-dark),
+            inset -2px -2px 4px var(--neu-shadow-light);
     }
 </style>

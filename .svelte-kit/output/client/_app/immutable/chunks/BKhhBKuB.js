@@ -1,0 +1,1 @@
+var e={cadastro:`/users`,listar:`/users`,buscar:e=>`/users/${e}`,atualizar:e=>`/users/${e}`};export{e as t};

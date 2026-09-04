@@ -37,6 +37,7 @@ export async function carregarAgendamentosEquipamentos(token) {
         id: s.id,
         user_id: s.user_id || '',
         equipamento_id: s.equipamento_id || '',
+        equipamento_nome: s.equipamento_nome || '',
         data_hora_inicio: s.data_hora_inicio || '',
         data_hora_fim: s.data_hora_fim || '',
         obs: s.obs || '',

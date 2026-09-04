@@ -104,7 +104,8 @@
 
     .modal-box {
         --neu-bg: #e6e9ef;
-        --neu-shadow-dark: rgba(163, 177, 198, 0.65);
+        --neu-shadow-dark: rgba(12, 12, 14, 0.45);
+
         background: var(--neu-bg);
         border-radius: 24px;
         padding: 28px 26px;
@@ -112,9 +113,7 @@
         display: flex;
         flex-direction: column;
         gap: 1rem;
-        box-shadow:
-            9px 9px 18px var(--neu-shadow-dark),
-            -9px -9px 18px var(--neu-shadow-dark);
+        box-shadow: 8px 8px 16px var(--neu-shadow-dark);
     }
 
     .modal-header {
@@ -190,8 +189,9 @@
         resize: none;
         outline: none;
         box-shadow:
-            inset 4px 4px 8px var(--neu-shadow-dark),
-            inset -4px -4px 8px var(--neu-shadow-light);
+            inset 3px 3px 6px var(--neu-shadow-dark),
+            inset -3px -3px 6px var(--neu-shadow-light);
+        transition: box-shadow 0.2s ease;
     }
 
     .modal-campo textarea::placeholder {
@@ -200,9 +200,9 @@
 
     .modal-campo textarea:focus {
         box-shadow:
-            inset 5px 5px 10px var(--neu-shadow-dark),
-            inset -5px -5px 10px var(--neu-shadow-light),
-            0 0 0 2px rgba(179, 38, 30, 0.25);
+            inset 4px 4px 8px var(--neu-shadow-dark),
+            inset -4px -4px 8px var(--neu-shadow-light),
+            0 0 0 2px rgba(179, 38, 30, 0.2);
     }
 
     .modal-acoes {

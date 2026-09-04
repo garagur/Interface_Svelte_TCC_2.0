@@ -536,13 +536,26 @@
     margin: 0;
 }
 
-.minhas-informacoes.agendamento-item.cancelado {
-    opacity: 0.75;
+.minhas-informacoes .agendamento-item.cancelado {
+    opacity: 0.85;
+    background: var(--cancel-light);
+    box-shadow:
+        5px 5px 10px var(--neu-shadow-dark),
+        -5px -5px 10px var(--neu-shadow-light);
 }
 
-.minhas-informacoes.badge-status.cancelado {
-    background: rgba(217, 45, 32, 0.12);
-    color: #d92d20;
+.minhas-informacoes .agendamento-item.cancelado .agendamento-faixa {
+    background: var(--cancel);
+}
+
+.minhas-informacoes .agendamento-item.cancelado .agendamento-data-hora {
+    color: var(--cancel-dark);
+}
+
+.minhas-informacoes .badge-status.cancelado {
+    background: var(--cancel);
+    color: var(--white);
+    box-shadow: none;
 }
 
 .minhas-informacoes .agendamento-justificativa {
@@ -550,7 +563,7 @@
     align-items: flex-start;
     gap: 4px;
     font-size: 0.82rem;
-    color: #b3261e;
+    color: var(--cancel-dark);
     margin: 4px 0 0;
 }
 
