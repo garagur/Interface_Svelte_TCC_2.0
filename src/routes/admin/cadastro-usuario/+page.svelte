@@ -137,7 +137,6 @@
     ordenacao = novoValor;
   }
 
-  // pipeline: pesquisa -> filtro de status -> ordenação
   $: usuariosFiltrados = usuarios
     .filter((u) => {
       if (!pesquisa.trim()) return true;

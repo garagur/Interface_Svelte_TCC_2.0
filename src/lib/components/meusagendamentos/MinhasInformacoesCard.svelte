@@ -115,6 +115,24 @@
         return "Concluído";
     }
 
+    /**
+     * Normaliza o tipo do agendamento ("sala" | "equipamento").
+     * @param {any} ag
+     */
+    function tipoAgendamento(ag) {
+        return ag.tipo === "equipamento" ? "equipamento" : "sala";
+    }
+
+    /**
+     * Nome de exibição do recurso agendado, usado na ordenação A-Z/Z-A.
+     * @param {any} ag
+     */
+    function nomeAgendamento(ag) {
+        return tipoAgendamento(ag) === "equipamento"
+            ? ag.equipamento_nome || ""
+            : ag.sala_nome || "";
+    }
+
     function abrirModal(ag) {
         agendamentoParaDeletar = ag;
     }
@@ -199,15 +217,44 @@
     $: totalGeral =
         (estatisticas?.totalSala || 0) + (estatisticas?.totalEquipamento || 0);
 
-    $: agendamentosOrdenados = [...agendamentos].sort((a, b) => {
-        const fa = isFuturo(a.data_hora_inicio);
-        const fb = isFuturo(b.data_hora_inicio);
-        if (fa !== fb) return fb ? 1 : -1;
-        return (
-            new Date(a.data_hora_inicio).getTime() -
-            new Date(b.data_hora_inicio).getTime()
-        );
-    });
+    let pesquisaAg = "";
+    let filtroStatusAg = "todos"; // "todos" | "ativo" | "cancelado" | "finalizado"
+    let filtroTipoAg = "todos"; // "todos" | "sala" | "equipamento"
+    let ordenacaoAg = "recente"; // "recente" | "antigo" | "az" | "za"
+
+    $: agendamentosFiltrados = agendamentos
+        .filter((ag) => {
+            if (!pesquisaAg.trim()) return true;
+            const termo = pesquisaAg.toLowerCase();
+            return (
+                nomeAgendamento(ag).toLowerCase().includes(termo) ||
+                (ag.obs || "").toLowerCase().includes(termo)
+            );
+        })
+        .filter((ag) => {
+            if (filtroTipoAg === "todos") return true;
+            return tipoAgendamento(ag) === filtroTipoAg;
+        })
+        .filter((ag) => {
+            if (filtroStatusAg === "todos") return true;
+            const status = statusExibicao(ag);
+            if (filtroStatusAg === "ativo") return status === "futuro";
+            if (filtroStatusAg === "cancelado") return status === "cancelado";
+            if (filtroStatusAg === "finalizado") return status === "passado";
+            return true;
+        })
+        .sort((a, b) => {
+            if (ordenacaoAg === "az" || ordenacaoAg === "za") {
+                const nomeA = nomeAgendamento(a).toLowerCase();
+                const nomeB = nomeAgendamento(b).toLowerCase();
+                return ordenacaoAg === "az"
+                    ? nomeA.localeCompare(nomeB)
+                    : nomeB.localeCompare(nomeA);
+            }
+            const dataA = new Date(a.data_hora_inicio).getTime();
+            const dataB = new Date(b.data_hora_inicio).getTime();
+            return ordenacaoAg === "recente" ? dataB - dataA : dataA - dataB;
+        });
 </script>
 
 <ConfirmarDelecaoModal
@@ -438,15 +485,65 @@
                     <h3>Meus Agendamentos</h3>
                 </div>
 
+                <div class="agendamentos-toolbar">
+                    <div class="campo-pesquisa-ag">
+                        <span class="material-symbols-outlined">search</span>
+                        <input
+                            type="text"
+                            placeholder="Pesquisar por sala ou equipamento..."
+                            bind:value={pesquisaAg}
+                        />
+                    </div>
+
+                    <div class="filtro-grupo">
+                        <span class="filtro-grupo-label">Status</span>
+                        <select
+                            class="select-filtro-ag"
+                            bind:value={filtroStatusAg}
+                        >
+                            <option value="todos">Todos</option>
+                            <option value="ativo">Ativos</option>
+                            <option value="cancelado">Cancelados</option>
+                            <option value="finalizado">Finalizados</option>
+                        </select>
+                    </div>
+
+                    <div class="filtro-grupo">
+                        <span class="filtro-grupo-label">Tipo</span>
+                        <select
+                            class="select-filtro-ag"
+                            bind:value={filtroTipoAg}
+                        >
+                            <option value="todos">Todos</option>
+                            <option value="sala">Salas</option>
+                            <option value="equipamento">Equipamentos</option>
+                        </select>
+                    </div>
+
+                    <div class="filtro-grupo">
+                        <span class="filtro-grupo-label">Ordenar</span>
+                        <select
+                            class="select-filtro-ag"
+                            bind:value={ordenacaoAg}
+                        >
+                            <option value="recente">Mais recente</option>
+                            <option value="antigo">Mais antigo</option>
+                            <option value="az">Nome (A-Z)</option>
+                            <option value="za">Nome (Z-A)</option>
+                        </select>
+                    </div>
+                </div>
+
                 {#if carregandoAgendamentos}
                     <p class="estado-vazio">Carregando agendamentos...</p>
-                {:else if agendamentosOrdenados.length === 0}
+                {:else if agendamentosFiltrados.length === 0}
                     <p class="estado-vazio">
-                        Nenhum agendamento de sala encontrado.
+                        Nenhum agendamento encontrado com os filtros
+                        selecionados.
                     </p>
                 {:else}
                     <div class="agendamentos-lista">
-                        {#each agendamentosOrdenados as ag}
+                        {#each agendamentosFiltrados as ag}
                             {@const status = statusExibicao(ag)}
                             <div
                                 class="agendamento-item"
