@@ -18,6 +18,7 @@
   };
   let usuarios = [];
   let carregando = false;
+  let atualizandoId = null; // guarda o id do usuário sendo atualizado no momento
   let carregandoLista = false;
   let erro = "";
   let sucesso = "";
@@ -85,7 +86,7 @@
   function editarUsuario(usuario) {
     novoUsuario = {
       ...usuario,
-      status: usuario.status ?? true,
+      status: Boolean(usuario.status ?? true),
     };
     usuarioEditandoId = usuario.id;
     editando = true;
@@ -120,6 +121,7 @@
 
     erro = "";
     sucesso = "";
+    atualizandoId = usuario.id; // <- inicia loading dessa linha
     try {
       await atualizarUsuario(
         usuario.id,
@@ -130,6 +132,8 @@
       await carregarLista();
     } catch (e) {
       erro = e?.message || "Erro ao alterar status do usuário.";
+    } finally {
+      atualizandoId = null; // <- termina loading, sucesso ou erro
     }
   }
 
@@ -320,6 +324,7 @@
             class="btn-action edit"
             on:click={() => editarUsuario(u)}
             title="Editar"
+            disabled={atualizandoId !== null}
           >
             <span class="material-symbols-outlined">edit</span>
           </button>
@@ -327,10 +332,17 @@
             class="btn-action {u.status ? 'delete' : 'edit'}"
             on:click={() => alternarStatus(u)}
             title={u.status ? "Desabilitar usuário" : "Habilitar usuário"}
+            disabled={atualizandoId !== null}
           >
-            <span class="material-symbols-outlined">
-              {u.status ? "block" : "check_circle"}
-            </span>
+            {#if atualizandoId === u.id}
+              <span class="material-symbols-outlined spin"
+                >progress_activity</span
+              >
+            {:else}
+              <span class="material-symbols-outlined">
+                {u.status ? "block" : "check_circle"}
+              </span>
+            {/if}
           </button>
         </div>
       </div>

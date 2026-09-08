@@ -77,6 +77,7 @@
                             type="button"
                             class="btn-secondary"
                             on:click={onCancelar}
+                            disabled={carregando}
                         >
                             <span class="material-symbols-outlined">close</span>
                             Cancelar
