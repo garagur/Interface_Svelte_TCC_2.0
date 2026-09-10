@@ -1,4 +1,5 @@
 <script>
+    //Grade mensal de agendamentos
     export let agendamentos = [];
     export let carregandoLista = false;
     export let hojeStr = "";

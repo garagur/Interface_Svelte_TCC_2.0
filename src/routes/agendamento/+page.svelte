@@ -1,4 +1,5 @@
 <script>
+    // Página de agendamento
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
     import AgendamentoCard from "$lib/components/agendamento/AgendamentoCard.svelte";
@@ -101,23 +102,27 @@
             erro = "Erro ao carregar dados iniciais.";
         }
     }
-
     async function carregarAgendamentos(id) {
         carregandoLista = true;
         erro = "";
         try {
             if (modo === "sala") {
-                agendamentos = (
-                    await carregarAgendamentosSalas(token, id)
-                ).filter((agendamento) => agendamento.status !== "inativo");
+                agendamentos = (await carregarAgendamentosSalas(token, id))
+                    .filter((agendamento) => agendamento.status !== "inativo")
+                    .map((agendamento) => ({ ...agendamento, tipo: "sala" }));
             } else {
                 // O endpoint de equipamentos retorna todos. Precisamos filtrar pelo selecionado no front:
                 const todos = await carregarAgendamentosEquipamentos(token);
-                agendamentos = todos.filter(
-                    (agendamento) =>
-                        agendamento.equipamento_id === id &&
-                        agendamento.status !== "inativo",
-                );
+                agendamentos = todos
+                    .filter(
+                        (agendamento) =>
+                            agendamento.equipamento_id === id &&
+                            agendamento.status !== "inativo",
+                    )
+                    .map((agendamento) => ({
+                        ...agendamento,
+                        tipo: "equipamento",
+                    }));
             }
         } catch (e) {
             erro = e?.message || "Erro ao carregar agendamentos.";

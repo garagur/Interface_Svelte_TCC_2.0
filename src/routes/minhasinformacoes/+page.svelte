@@ -1,4 +1,5 @@
 <script>
+    //+page
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
     import MinhasInformacoesCard from "$lib/components/meusagendamentos/MinhasInformacoesCard.svelte";
@@ -129,18 +130,26 @@
     }
 
     function montarEstatisticas() {
-        const todos = [...agendamentosSala, ...agendamentosEquipamento];
+        // Estatísticas consideram só agendamentos ativos (não cancelados),
+        // senão um cancelamento não mudaria os números até dar F5.
+        const salasAtivas = agendamentosSala.filter(
+            (a) => a.status !== "inativo",
+        );
+        const equipamentosAtivos = agendamentosEquipamento.filter(
+            (a) => a.status !== "inativo",
+        );
+        const todos = [...salasAtivas, ...equipamentosAtivos];
 
         estatisticas = {
-            totalSala: agendamentosSala.length,
-            totalEquipamento: agendamentosEquipamento.length,
+            totalSala: salasAtivas.length,
+            totalEquipamento: equipamentosAtivos.length,
             salaMaisAgendada: itemMaisFrequente(
-                agendamentosSala,
+                salasAtivas,
                 "sala_nome",
                 "sala_id",
             ),
             equipamentoMaisAgendado: itemMaisFrequente(
-                agendamentosEquipamento,
+                equipamentosAtivos,
                 "equipamento_nome",
                 "equipamento_id",
             ),
@@ -164,18 +173,35 @@
                     ag.justificativa || "",
                 );
             }
+
+            // Atualiza o status do item em vez de removê-lo da lista,
+            // já que "Meus Agendamentos" também exibe cancelados.
             if (ag.tipo === "equipamento") {
-                agendamentosEquipamento = agendamentosEquipamento.filter(
-                    (a) => a.id !== ag.id,
+                agendamentosEquipamento = agendamentosEquipamento.map((a) =>
+                    a.id === ag.id
+                        ? {
+                              ...a,
+                              status: "inativo",
+                              justificativa: ag.justificativa || "",
+                          }
+                        : a,
                 );
             } else {
-                agendamentosSala = agendamentosSala.filter(
-                    (a) => a.id !== ag.id,
+                agendamentosSala = agendamentosSala.map((a) =>
+                    a.id === ag.id
+                        ? {
+                              ...a,
+                              status: "inativo",
+                              justificativa: ag.justificativa || "",
+                          }
+                        : a,
                 );
             }
+
             montarEstatisticas();
         } catch (e) {
             erro = e?.message || "Erro ao deletar agendamento.";
+            throw e; // repropaga para o MinhasInformacoesCard saber que falhou
         }
     }
 </script>

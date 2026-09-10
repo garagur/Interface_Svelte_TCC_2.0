@@ -1,4 +1,5 @@
 <script>
+    //AgendamentoCard
     import GradeSemanal from "$lib/components/SemanalGrade/GradeSemanal.svelte";
     import BlocoCard from "$lib/components/Card/BlocoHorarioCard.svelte";
     import CalendarioAgendamentos from "$lib/components/MesGrade/GradeMensal.svelte";
@@ -61,21 +62,25 @@
     ];
 
     let agendamentoParaDeletar = null;
+    let cancelandoId = null; // ex: "sala-12" ou "equipamento-7" — null quando nada está em andamento
 
     $: agendamentosVisiveis = agendamentos.filter(
         (a) => a.status !== "inativo",
     );
 
     function abrirModalDeletar(ag) {
+        if (cancelandoId) return; // já tem um cancelamento em andamento, ignora
         agendamentoParaDeletar = ag;
     }
 
     function fecharModalDeletar() {
+        if (cancelandoId) return; // não deixa fechar no meio da requisição
         agendamentoParaDeletar = null;
     }
 
     async function confirmarDeletar(ag) {
-        fecharModalDeletar();
+        cancelandoId = `${ag.tipo}-${ag.id}`;
+        erro = "";
         try {
             if (ag.tipo === "sala") {
                 await deletarAgendamentoSala(
@@ -93,8 +98,11 @@
             agendamentos = agendamentos.filter(
                 (a) => a.id !== ag.id || a.tipo !== ag.tipo,
             );
+            agendamentoParaDeletar = null;
         } catch (e) {
             erro = e?.message || "Erro ao deletar agendamento.";
+        } finally {
+            cancelandoId = null;
         }
     }
 
@@ -125,6 +133,7 @@
         agendamento={agendamentoParaDeletar}
         onConfirmar={confirmarDeletar}
         onCancelar={fecharModalDeletar}
+        processando={!!cancelandoId}
     />
 
     <ConfirmarRecorrenciaModal

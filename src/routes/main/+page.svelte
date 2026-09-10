@@ -1,4 +1,5 @@
 <script>
+  //main page
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
   import MainCard from "$lib/components/main/MainCard.svelte";

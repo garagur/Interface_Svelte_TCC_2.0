@@ -3,7 +3,8 @@
     export let agendamento = null;
     export let onConfirmar;
     export let onCancelar;
-
+    export let processando = false;
+    //ConfirmarDelecaoModal.svelte
     let justificativa = "";
     $: ehEquipamento = agendamento?.tipo === "equipamento";
     $: recursoNome = ehEquipamento
@@ -30,15 +31,21 @@
     }
 
     function confirmar() {
+        if (processando) return;
         onConfirmar({ ...agendamento, justificativa: justificativa.trim() });
+    }
+
+    function cancelar() {
+        if (processando) return;
+        onCancelar();
     }
 </script>
 
 {#if agendamento}
     <div
         class="modal-overlay"
-        on:click={onCancelar}
-        on:keydown={(e) => e.key === "Escape" && onCancelar()}
+        on:click={cancelar}
+        on:keydown={(e) => e.key === "Escape" && cancelar()}
         role="button"
         tabindex="-1"
         aria-label="Fechar modal"
@@ -76,15 +83,31 @@
                     bind:value={justificativa}
                     placeholder="Descreva o motivo do cancelamento..."
                     rows="3"
+                    disabled={processando}
                 ></textarea>
             </div>
 
             <div class="modal-acoes">
-                <button class="btn-secondary" on:click={onCancelar}>
+                <button
+                    class="btn-secondary"
+                    on:click={cancelar}
+                    disabled={processando}
+                >
                     Cancelar
                 </button>
-                <button class="btn-danger" on:click={confirmar}>
-                    Confirmar exclusão
+                <button
+                    class="btn-danger"
+                    on:click={confirmar}
+                    disabled={processando}
+                >
+                    {#if processando}
+                        <span class="material-symbols-outlined spin"
+                            >progress_activity</span
+                        >
+                        Cancelando...
+                    {:else}
+                        Confirmar exclusão
+                    {/if}
                 </button>
             </div>
         </div>
@@ -205,6 +228,11 @@
             0 0 0 2px rgba(179, 38, 30, 0.2);
     }
 
+    .modal-campo textarea:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
     .modal-acoes {
         display: flex;
         justify-content: flex-end;
@@ -221,6 +249,9 @@
         font-weight: 600;
         font-family: "Inter", Arial, sans-serif;
         cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
         transition:
             box-shadow 0.15s ease,
             transform 0.1s ease;
@@ -265,5 +296,29 @@
         box-shadow:
             inset 3px 3px 6px rgba(0, 0, 0, 0.35),
             inset -2px -2px 5px rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-secondary:disabled,
+    .btn-danger:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+    }
+
+    .spin {
+        display: inline-block;
+        animation: spin 0.8s linear infinite;
+        font-size: 1.1rem;
+        line-height: 1;
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
     }
 </style>

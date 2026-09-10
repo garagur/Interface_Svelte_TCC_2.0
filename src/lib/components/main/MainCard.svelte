@@ -1,4 +1,5 @@
 <script>
+    //mainCard
     import { goto } from "$app/navigation";
     import { onMount } from "svelte";
     import { tick } from "svelte";
@@ -20,6 +21,7 @@
     let token = "";
     let usuarioId = null;
     let agendamentoParaDeletar = null;
+    let cancelandoId = null; // ex: "sala-12" ou "equipamento-7" — null quando nada está em andamento
     let mostrarMenuUsuario = false;
 
     function irParaDetalhes(ag) {
@@ -31,15 +33,18 @@
     }
 
     function abrirModalDeletar(ag) {
+        if (cancelandoId) return; // já tem um cancelamento em andamento, ignora
         agendamentoParaDeletar = ag;
     }
 
     function fecharModalDeletar() {
+        if (cancelandoId) return; // não deixa fechar no meio da requisição
         agendamentoParaDeletar = null;
     }
 
     async function confirmarDeletar(ag) {
-        fecharModalDeletar();
+        cancelandoId = `${ag.tipo}-${ag.id}`;
+        erro = "";
         try {
             if (ag.tipo === "sala") {
                 await deletarAgendamentoSala(
@@ -57,8 +62,11 @@
             agendamentos = agendamentos.filter(
                 (a) => a.id !== ag.id || a.tipo !== ag.tipo,
             );
+            agendamentoParaDeletar = null;
         } catch (e) {
             erro = e?.message || "Erro ao deletar agendamento.";
+        } finally {
+            cancelandoId = null;
         }
     }
 
@@ -107,6 +115,7 @@
     agendamento={agendamentoParaDeletar}
     onConfirmar={confirmarDeletar}
     onCancelar={fecharModalDeletar}
+    processando={!!cancelandoId}
 />
 
 <div class="scaffold">
@@ -238,6 +247,10 @@
             <div class="badge">{totalRegistros} registros</div>
         </div>
 
+        {#if erro}
+            <p class="msg-erro">{erro}</p>
+        {/if}
+
         <div class="calendario-scroll-area">
             <CalendarioAgendamentos
                 agendamentos={agendamentosVisiveis}
@@ -266,3 +279,15 @@
         </div>
     </main>
 </div>
+
+<style>
+    .msg-erro {
+        color: var(--cancel-dark, #b3261e);
+        background: rgba(217, 45, 32, 0.08);
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-family: "Inter", Arial, sans-serif;
+        font-size: 0.9rem;
+        margin: 0 0 0.75rem 0;
+    }
+</style>

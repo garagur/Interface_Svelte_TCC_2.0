@@ -34,10 +34,11 @@
     export let carregandoAgendamentos = false;
     export let erro = "";
     export let onSair;
-    /** @type {((ag: any) => void) | null} */
+    /** @type {((ag: any) => Promise<void> | void) | null} */
     export let onDeletar = null;
 
     let agendamentoParaDeletar = null;
+    let processando = false;
 
     const dias = [
         "segunda",
@@ -134,16 +135,26 @@
     }
 
     function abrirModal(ag) {
+        if (processando) return;
         agendamentoParaDeletar = ag;
     }
 
     function fecharModal() {
+        if (processando) return;
         agendamentoParaDeletar = null;
     }
 
-    function confirmarDelecao(ag) {
-        fecharModal();
-        onDeletar?.(ag);
+    async function confirmarDelecao(ag) {
+        if (processando) return;
+        processando = true;
+        try {
+            await onDeletar?.(ag);
+            agendamentoParaDeletar = null;
+        } catch (e) {
+            erro = e?.message || "Erro ao deletar agendamento.";
+        } finally {
+            processando = false;
+        }
     }
 
     function iniciais(nome) {
@@ -261,6 +272,7 @@
     agendamento={agendamentoParaDeletar}
     onConfirmar={confirmarDelecao}
     onCancelar={fecharModal}
+    {processando}
 />
 
 <div class="minhas-informacoes">
@@ -606,6 +618,7 @@
                                             class="btn-deletar-ag"
                                             on:click={() => abrirModal(ag)}
                                             title="Deletar agendamento"
+                                            disabled={processando}
                                         >
                                             <span
                                                 class="material-symbols-outlined"
@@ -625,4 +638,9 @@
 
 <style>
     @import "$lib/styles/minhas-informacoes.css";
+
+    .btn-deletar-ag:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
 </style>
