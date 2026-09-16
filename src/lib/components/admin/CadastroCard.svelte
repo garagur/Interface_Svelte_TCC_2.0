@@ -1,3 +1,4 @@
+<!-- CadastroCard.svelte -->
 <script>
     export let titulo = "";
     export let subtitulo = "";
@@ -16,6 +17,13 @@
     export let sucesso = "";
     export let iconeForm = "add_circle";
 
+    // popup do formulário (novo)
+    export let mostrarFormulario = false;
+    export let tituloNovoRegistro = "Novo registro";
+    export let tituloEditarRegistro = "Editar registro";
+    /** @type {(() => void) | null} */
+    export let onNovo = null;
+
     // tabela
     export let tituloTabela = "";
     export let iconeTabela = "list";
@@ -24,7 +32,7 @@
     export let estadoVazioTexto = "Nenhum registro encontrado.";
     export let carregandoTexto = "Carregando...";
 
-    // busca e ordenação (novo)
+    // busca e ordenação
     export let mostrarPesquisa = false;
     export let pesquisa = "";
     export let placeholderPesquisa = "Pesquisar...";
@@ -32,6 +40,35 @@
     export let onOrdenarChange = (value) => {};
     export let labelOrdenacaoAsc = "Nome (A-Z)";
     export let labelOrdenacaoDesc = "Nome (Z-A)";
+
+    // Abre o popup automaticamente sempre que a tela entrar em modo edição
+    $: if (editando) {
+        mostrarFormulario = true;
+    }
+
+    function abrirNovo() {
+        if (onNovo) onNovo();
+        mostrarFormulario = true;
+    }
+
+    function fecharFormulario() {
+        if (carregando) return;
+        if (onCancelar) onCancelar();
+        mostrarFormulario = false;
+    }
+
+    function onOverlayKeydown(e) {
+        if (e.key === "Escape") fecharFormulario();
+    }
+
+    // Fecha automaticamente um instante depois de salvar com sucesso
+    let ultimoSucesso = "";
+    $: if (sucesso && sucesso !== ultimoSucesso) {
+        ultimoSucesso = sucesso;
+        setTimeout(() => {
+            mostrarFormulario = false;
+        }, 900);
+    }
 </script>
 
 <div class="scaffold">
@@ -52,54 +89,7 @@
     </header>
 
     <main class="body-content">
-        <div class="card form-card">
-            <div class="card-header">
-                <span class="material-symbols-outlined icon-large"
-                    >{iconeForm}</span
-                >
-            </div>
-
-            <form on:submit|preventDefault={onSubmit}>
-                <slot name="campos" />
-
-                {#if temToggle}
-                    <div class="field field-toggle">
-                        <slot name="toggle" />
-                    </div>
-                {/if}
-
-                {#if erro}<p class="msg-erro">{erro}</p>{/if}
-                {#if sucesso}<p class="msg-sucesso">{sucesso}</p>{/if}
-
-                <div class="bottom-action">
-                    {#if editando && onCancelar}
-                        <button
-                            type="button"
-                            class="btn-secondary"
-                            on:click={onCancelar}
-                            disabled={carregando}
-                        >
-                            <span class="material-symbols-outlined">close</span>
-                            Cancelar
-                        </button>
-                    {/if}
-                    <button
-                        type="submit"
-                        class="btn-primary"
-                        disabled={carregando}
-                    >
-                        <span class="material-symbols-outlined">save</span>
-                        {carregando
-                            ? "Salvando..."
-                            : editando
-                              ? "Atualizar"
-                              : "Salvar"}
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <div class="card table-card">
+        <div class="card table-card table-card-full">
             <div class="table-header-title">
                 <div class="title-left">
                     <span class="material-symbols-outlined text-blue"
@@ -154,8 +144,94 @@
                     {/if}
                 </div>
             </div>
+
+            <div class="table-footer">
+                <button
+                    type="button"
+                    class="btn-adicionar"
+                    on:click={abrirNovo}
+                >
+                    <span class="material-symbols-outlined">add</span>
+                    Adicionar
+                </button>
+            </div>
         </div>
     </main>
+
+    {#if mostrarFormulario}
+        <div
+            class="modal-overlay"
+            on:click={fecharFormulario}
+            on:keydown={onOverlayKeydown}
+            role="button"
+            tabindex="-1"
+            aria-label="Fechar formulário"
+        >
+            <div
+                class="card form-card form-card-modal"
+                on:click|stopPropagation
+                on:keydown|stopPropagation
+                role="dialog"
+                aria-modal="true"
+                tabindex="-1"
+            >
+                <button
+                    type="button"
+                    class="btn-fechar-modal"
+                    on:click={fecharFormulario}
+                    title="Fechar"
+                >
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+
+                <div class="card-header">
+                    <span class="material-symbols-outlined icon-large"
+                        >{iconeForm}</span
+                    >
+                    <h3 class="form-titulo">
+                        {editando ? tituloEditarRegistro : tituloNovoRegistro}
+                    </h3>
+                </div>
+
+                <form on:submit|preventDefault={onSubmit}>
+                    <slot name="campos" />
+
+                    {#if temToggle}
+                        <div class="field field-toggle">
+                            <slot name="toggle" />
+                        </div>
+                    {/if}
+
+                    {#if erro}<p class="msg-erro">{erro}</p>{/if}
+                    {#if sucesso}<p class="msg-sucesso">{sucesso}</p>{/if}
+
+                    <div class="bottom-action">
+                        <button
+                            type="button"
+                            class="btn-secondary"
+                            on:click={fecharFormulario}
+                            disabled={carregando}
+                        >
+                            <span class="material-symbols-outlined">close</span>
+                            Cancelar
+                        </button>
+                        <button
+                            type="submit"
+                            class="btn-primary"
+                            disabled={carregando}
+                        >
+                            <span class="material-symbols-outlined">save</span>
+                            {carregando
+                                ? "Salvando..."
+                                : editando
+                                  ? "Atualizar"
+                                  : "Salvar"}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {/if}
 </div>
 
 <style>

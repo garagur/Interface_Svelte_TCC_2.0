@@ -108,26 +108,27 @@
                                                 <slot {ag} />
                                             </div>
                                         {/each}
-                                    </div>
-                                    {#if ags.length > LIMITE_VISIVEL || expandido}
-                                        <button
-                                            type="button"
-                                            class="btn-expandir"
-                                            title={expandido
-                                                ? "Recolher"
-                                                : "Ver todos os agendamentos"}
-                                            on:click={() =>
-                                                toggleExpandir(chave)}
-                                        >
-                                            <span
-                                                class="material-symbols-outlined"
+
+                                        {#if ags.length > LIMITE_VISIVEL || expandido}
+                                            <button
+                                                type="button"
+                                                class="btn-expandir"
+                                                title={expandido
+                                                    ? "Recolher"
+                                                    : "Ver todos os agendamentos"}
+                                                on:click={() =>
+                                                    toggleExpandir(chave)}
                                             >
-                                                {expandido
-                                                    ? "expand_less"
-                                                    : "expand_more"}
-                                            </span>
-                                        </button>
-                                    {/if}
+                                                <span
+                                                    class="material-symbols-outlined"
+                                                >
+                                                    {expandido
+                                                        ? "expand_less"
+                                                        : "expand_more"}
+                                                </span>
+                                            </button>
+                                        {/if}
+                                    </div>
                                 {/if}
                             </div>
                         {/each}
