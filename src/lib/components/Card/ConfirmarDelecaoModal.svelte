@@ -205,15 +205,15 @@
         font-family: "Inter", Arial, sans-serif;
         font-size: 0.9rem;
         color: var(--text-dark, #2b2f38);
-        background: var(--neu-bg);
+        background: #e6e9ef;
         border: none;
-        border-radius: 14px;
-        padding: 12px 14px;
+        border-radius: 20px;
+        padding: 14px 16px;
         resize: none;
         outline: none;
         box-shadow:
-            inset 3px 3px 6px var(--neu-shadow-dark),
-            inset -3px -3px 6px var(--neu-shadow-light);
+            inset 6px 6px 12px #a3b1c6,
+            inset -6px -6px 12px #ffffff;
         transition: box-shadow 0.2s ease;
     }
 
@@ -223,9 +223,9 @@
 
     .modal-campo textarea:focus {
         box-shadow:
-            inset 4px 4px 8px var(--neu-shadow-dark),
-            inset -4px -4px 8px var(--neu-shadow-light),
-            0 0 0 2px rgba(179, 38, 30, 0.2);
+            inset 7px 7px 14px #a3b1c6,
+            inset -7px -7px 14px #ffffff,
+            0 0 0 2px rgba(179, 38, 30, 0.15);
     }
 
     .modal-campo textarea:disabled {

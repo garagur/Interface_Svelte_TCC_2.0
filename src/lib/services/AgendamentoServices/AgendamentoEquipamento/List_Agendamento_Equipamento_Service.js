@@ -36,6 +36,7 @@ export async function carregarAgendamentosEquipamentos(token) {
     return lista.map(s => ({
         id: s.id,
         user_id: s.user_id || '',
+        usuario_nome: s.usuario_nome || '',
         equipamento_id: s.equipamento_id || '',
         equipamento_nome: s.equipamento_nome || '',
         data_hora_inicio: s.data_hora_inicio || '',

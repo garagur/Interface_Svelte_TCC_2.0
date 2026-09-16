@@ -9,6 +9,12 @@
 
     $: proprio = usuarioId != null && ag.user_id == usuarioId;
     $: podeDeletar = cargo === "admin" || proprio;
+
+    $: ehEquipamento = ag.tipo === "equipamento";
+    $: recursoNome = ehEquipamento
+        ? ag.equipamento_nome || ag.equipamento_id
+        : ag.sala_nome || ag.sala_id;
+    $: recursoIcone = ehEquipamento ? "devices" : "meeting_room";
 </script>
 
 <div class="ag-bloco-inner {proprio ? 'proprio' : 'outro'}">
@@ -16,10 +22,11 @@
         {ag.data_hora_inicio?.slice(11, 16)} - {ag.data_hora_fim?.slice(11, 16)}
     </span>
 
-    {#if ag.sala_nome}
+    {#if recursoNome}
         <div class="ag-info">
-            <span class="material-symbols-outlined ag-icon">meeting_room</span>
-            <span class="ag-label">{ag.sala_nome}</span>
+            <span class="material-symbols-outlined ag-icon">{recursoIcone}</span
+            >
+            <span class="ag-label">{recursoNome}</span>
         </div>
     {/if}
 
