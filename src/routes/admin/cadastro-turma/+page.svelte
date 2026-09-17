@@ -1,3 +1,4 @@
+<!--+page.svelte de cadastro turma-->
 <script>
     import { onMount } from "svelte";
     import CadastroCard from "$lib/components/admin/CadastroCard.svelte";
@@ -7,7 +8,12 @@
     import { goto } from "$app/navigation";
 
     let token = "";
-    let novaTurma = { nome: "", ano_letivo: null };
+
+    // campos do formulário (separados no front, unidos no envio)
+    let novaSerie = null; // 1 a 10
+    let novaLetra = ""; // A a Z
+    let novoAnoLetivo = null;
+
     let turmas = [];
     let carregando = false;
     let carregandoLista = false;
@@ -43,28 +49,42 @@
         }
     }
 
+    // força a letra a ficar sempre maiúscula e com 1 caractere
+    function normalizarLetra() {
+        if (!novaLetra) return;
+        novaLetra = novaLetra.trim().slice(-1).toUpperCase();
+    }
+
     async function salvarTurma() {
         erro = "";
         sucesso = "";
 
-        if (!novaTurma.nome || !novaTurma.ano_letivo) {
+        if (!novaSerie || !novaLetra || !novoAnoLetivo) {
             erro = "Preencha todos os campos do formulário.";
             return;
         }
 
-        if (!/^\d/.test(novaTurma.nome.trim())) {
-            erro =
-                "O nome da turma deve começar com um número (ex: 1A, 9º Ano A).";
+        const serieNum = Number(novaSerie);
+        if (!Number.isInteger(serieNum) || serieNum < 1 || serieNum > 10) {
+            erro = "A série deve ser um número entre 1 e 10.";
             return;
         }
+
+        if (!/^[A-Za-z]$/.test(novaLetra)) {
+            erro = "A turma deve ser uma única letra de A a Z.";
+            return;
+        }
+
+        const nome = `${serieNum}${novaLetra.toUpperCase()}`;
+        const payload = { nome, ano_letivo: novoAnoLetivo };
 
         carregando = true;
         try {
             if (editando && turmaEditandoId) {
-                await atualizarTurma(turmaEditandoId, novaTurma, token);
+                await atualizarTurma(turmaEditandoId, payload, token);
                 sucesso = "Turma atualizada com sucesso.";
             } else {
-                await cadastrarTurma(novaTurma, token);
+                await cadastrarTurma(payload, token);
                 sucesso = "Turma cadastrada com sucesso.";
             }
             resetForm();
@@ -77,7 +97,17 @@
     }
 
     function editarTurma(turma) {
-        novaTurma = { ...turma };
+        const match = (turma.nome || "").match(
+            /^(\d{1,2})\s*[ºo°]?\s*([A-Za-z])/i,
+        );
+        if (match) {
+            novaSerie = Number(match[1]);
+            novaLetra = match[2].toUpperCase();
+        } else {
+            novaSerie = null;
+            novaLetra = "";
+        }
+        novoAnoLetivo = turma.ano_letivo;
         turmaEditandoId = turma.id;
         editando = true;
         sucesso = "";
@@ -85,7 +115,9 @@
     }
 
     function resetForm() {
-        novaTurma = { nome: "", ano_letivo: null };
+        novaSerie = null;
+        novaLetra = "";
+        novoAnoLetivo = null;
         editando = false;
         turmaEditandoId = null;
     }
@@ -94,7 +126,7 @@
         ordenacao = novoValor;
     }
 
-    // extrai o número inicial do nome da turma (ex: "1A" -> "1", "9º Ano A" -> "9")
+    // extrai o número inicial do nome da turma (ex: "9A" -> "9")
     function extrairSerie(nome) {
         const match = (nome || "").match(/^\d+/);
         return match ? match[0] : null;
@@ -161,24 +193,38 @@
 >
     <svelte:fragment slot="campos">
         <div class="field">
-            <label for="nome-turma">Nome da Turma</label>
+            <label for="serie-turma">Série</label>
             <input
-                id="nome-turma"
-                type="text"
-                bind:value={novaTurma.nome}
-                placeholder="Ex: 9º Ano A"
+                id="serie-turma"
+                type="number"
+                min="1"
+                max="10"
+                bind:value={novaSerie}
+                placeholder="Ex: 9"
                 required
             />
-            <small class="dica-campo"
-                >Deve começar com um número (ex: 1A, 9º Ano A).</small
-            >
+            <small class="dica-campo">Número de 1 a 10.</small>
+        </div>
+        <div class="field">
+            <label for="letra-turma">Turma</label>
+            <input
+                id="letra-turma"
+                type="text"
+                maxlength="1"
+                style="text-transform: uppercase;"
+                bind:value={novaLetra}
+                on:input={normalizarLetra}
+                placeholder="Ex: A"
+                required
+            />
+            <small class="dica-campo">Letra de A a Z.</small>
         </div>
         <div class="field">
             <label for="ano-letivo">Ano Letivo</label>
             <input
                 id="ano-letivo"
                 type="number"
-                bind:value={novaTurma.ano_letivo}
+                bind:value={novoAnoLetivo}
                 placeholder="Ex: 2026"
                 required
             />
