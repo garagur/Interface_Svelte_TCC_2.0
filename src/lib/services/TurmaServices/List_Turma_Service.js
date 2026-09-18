@@ -13,7 +13,7 @@ async function parseJson(response) {
 
 /**
  * @param {string} token
- * @returns {Promise<any[]>}
+ * @returns {Promise<Array<{id: number, serie: number, turma: string, turno: string, grau: string, ano_letivo: number, nome: string}>>}
  */
 export async function carregarTurmas(token) {
     if (!token) {
@@ -24,6 +24,7 @@ export async function carregarTurmas(token) {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
+            // 'Authorization': `Bearer ${token}` // Descomente se precisar passar o token aqui
         },
     })
     if (!resp) return [];
@@ -38,7 +39,11 @@ export async function carregarTurmas(token) {
     // @ts-ignore
     return lista.map(s => ({
         id: s.id,
-        nome: s.nome || '',
+        serie: s.serie || '',
+        turma: s.turma || '',
+        turno: s.turno || '',
+        grau: s.grau || '',
         ano_letivo: s.ano_letivo || '',
+        nome: s.nome || '',
     }))
 }

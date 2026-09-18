@@ -13,7 +13,7 @@ async function parseJson(response) {
 
 /**
  * @param {number} id
- * @param {{ nome: string, ano_letivo: number }} dadosTurma
+ * @param {{ serie: number, turma: string, turno: string, grau: string, ano_letivo: number }} dadosTurma
  * @param {string} token
  * @returns {Promise<any>}
  */
@@ -22,7 +22,14 @@ export async function atualizarTurma(id, dadosTurma, token) {
         throw new Error('Token de autenticação não encontrado. Faça login novamente.')
     }
 
-    if (!dadosTurma?.nome || !dadosTurma?.ano_letivo) {
+    // Validação atualizada para os novos campos
+    if (
+        !dadosTurma?.serie ||
+        !dadosTurma?.turma ||
+        !dadosTurma?.turno ||
+        !dadosTurma?.grau ||
+        !dadosTurma?.ano_letivo
+    ) {
         throw new Error('Dados da turma incompletos.')
     }
 
@@ -31,12 +38,17 @@ export async function atualizarTurma(id, dadosTurma, token) {
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
+            // 'Authorization': `Bearer ${token}` // Descomente se sua apiFetch não insere o token automaticamente
         },
         body: JSON.stringify({
-            nome: dadosTurma.nome,
+            serie: dadosTurma.serie,
+            turma: dadosTurma.turma,
+            turno: dadosTurma.turno,
+            grau: dadosTurma.grau,
             ano_letivo: dadosTurma.ano_letivo,
         })
     })
+
     if (!resp) return;
     const dados = await parseJson(resp)
 
@@ -44,7 +56,7 @@ export async function atualizarTurma(id, dadosTurma, token) {
         if (dados?.errors) {
             throw new Error(Object.values(dados.errors).flat().join(' '))
         }
-        throw new Error(dados?.message || dados?.error || 'Erro ao atualizar.')
+        throw new Error(dados?.message || dados?.error || 'Erro ao atualizar turma.')
     }
 
     return dados?.data || dados || {}

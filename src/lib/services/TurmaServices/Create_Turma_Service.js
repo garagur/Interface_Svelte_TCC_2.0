@@ -12,7 +12,7 @@ async function parseJson(response) {
 }
 
 /**
- * @param {{ nome: string, ano_letivo: number}} novaTurma
+ * @param {{ serie: number, turma: string, turno: string, grau: string, ano_letivo: number}} novaTurma
  * @param {string} token
  * @returns {Promise<any>}
  */
@@ -21,7 +21,14 @@ export async function cadastrarTurma(novaTurma, token) {
         throw new Error('Token de autenticação não encontrado. Faça login novamente.')
     }
 
-    if (!novaTurma?.nome || !novaTurma?.ano_letivo) {
+    // Validação atualizada para os novos campos obrigatórios
+    if (
+        !novaTurma?.serie ||
+        !novaTurma?.turma ||
+        !novaTurma?.turno ||
+        !novaTurma?.grau ||
+        !novaTurma?.ano_letivo
+    ) {
         throw new Error('Dados da turma incompletos.')
     }
 
@@ -30,12 +37,17 @@ export async function cadastrarTurma(novaTurma, token) {
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
+            // Certifique-se de estar enviando o token no header (ex: 'Authorization': `Bearer ${token}`) caso sua API exija
         },
         body: JSON.stringify({
-            nome: novaTurma.nome,
+            serie: novaTurma.serie,
+            turma: novaTurma.turma,
+            turno: novaTurma.turno,
+            grau: novaTurma.grau,
             ano_letivo: novaTurma.ano_letivo,
         }),
     })
+
     if (!resp) return;
     const dados = await parseJson(resp)
 
@@ -43,7 +55,7 @@ export async function cadastrarTurma(novaTurma, token) {
         if (dados?.errors) {
             throw new Error(Object.values(dados.errors).flat().join(' '))
         }
-        throw new Error(dados?.message || dados?.error || 'Erro ao cadastrar sala.')
+        throw new Error(dados?.message || dados?.error || 'Erro ao cadastrar turma.')
     }
 
     return dados?.data || dados || {}

@@ -9,10 +9,15 @@
 
     let token = "";
 
-    // campos do formulário (separados no front, unidos no envio)
+    // campos do formulário
     let novaSerie = null; // 1 a 10
     let novaLetra = ""; // A a Z
+    let novoTurno = "";
+    let novoGrau = "";
     let novoAnoLetivo = null;
+
+    const TURNOS = ["matutino", "vespertino", "noturno", "integral"];
+    const GRAUS = ["fundamental", "medio", "superior"];
 
     let turmas = [];
     let carregando = false;
@@ -59,7 +64,13 @@
         erro = "";
         sucesso = "";
 
-        if (!novaSerie || !novaLetra || !novoAnoLetivo) {
+        if (
+            !novaSerie ||
+            !novaLetra ||
+            !novoTurno ||
+            !novoGrau ||
+            !novoAnoLetivo
+        ) {
             erro = "Preencha todos os campos do formulário.";
             return;
         }
@@ -75,8 +86,13 @@
             return;
         }
 
-        const nome = `${serieNum}${novaLetra.toUpperCase()}`;
-        const payload = { nome, ano_letivo: novoAnoLetivo };
+        const payload = {
+            serie: serieNum,
+            turma: novaLetra.toUpperCase(),
+            turno: novoTurno,
+            grau: novoGrau,
+            ano_letivo: novoAnoLetivo,
+        };
 
         carregando = true;
         try {
@@ -97,16 +113,10 @@
     }
 
     function editarTurma(turma) {
-        const match = (turma.nome || "").match(
-            /^(\d{1,2})\s*[ºo°]?\s*([A-Za-z])/i,
-        );
-        if (match) {
-            novaSerie = Number(match[1]);
-            novaLetra = match[2].toUpperCase();
-        } else {
-            novaSerie = null;
-            novaLetra = "";
-        }
+        novaSerie = turma.serie || null;
+        novaLetra = turma.turma || "";
+        novoTurno = turma.turno || "";
+        novoGrau = turma.grau || "";
         novoAnoLetivo = turma.ano_letivo;
         turmaEditandoId = turma.id;
         editando = true;
@@ -117,6 +127,8 @@
     function resetForm() {
         novaSerie = null;
         novaLetra = "";
+        novoTurno = "";
+        novoGrau = "";
         novoAnoLetivo = null;
         editando = false;
         turmaEditandoId = null;
@@ -126,19 +138,13 @@
         ordenacao = novoValor;
     }
 
-    // extrai o número inicial do nome da turma (ex: "9A" -> "9")
-    function extrairSerie(nome) {
-        const match = (nome || "").match(/^\d+/);
-        return match ? match[0] : null;
-    }
-
     // opções dinâmicas geradas a partir dos dados carregados
     $: anosDisponiveis = [
         ...new Set(turmas.map((t) => t.ano_letivo).filter(Boolean)),
     ].sort((a, b) => b - a); // mais recente primeiro
 
     $: seriesDisponiveis = [
-        ...new Set(turmas.map((t) => extrairSerie(t.nome)).filter(Boolean)),
+        ...new Set(turmas.map((t) => t.serie).filter(Boolean)),
     ].sort((a, b) => Number(a) - Number(b));
 
     // pipeline: pesquisa -> filtro ano -> filtro série -> ordenação
@@ -148,6 +154,8 @@
             const termo = pesquisa.toLowerCase();
             return (
                 t.nome?.toLowerCase().includes(termo) ||
+                t.turno?.toLowerCase().includes(termo) ||
+                t.grau?.toLowerCase().includes(termo) ||
                 String(t.ano_letivo ?? "").includes(termo)
             );
         })
@@ -157,7 +165,7 @@
         })
         .filter((t) => {
             if (filtroSerie === "todos") return true;
-            return extrairSerie(t.nome) === filtroSerie;
+            return String(t.serie) === filtroSerie;
         })
         .sort((a, b) => {
             const nomeA = (a.nome || "").toLowerCase();
@@ -187,7 +195,7 @@
     carregandoTexto="Carregando turmas..."
     mostrarPesquisa={true}
     bind:pesquisa
-    placeholderPesquisa="Pesquisar por nome ou ano..."
+    placeholderPesquisa="Pesquisar por nome, turno, grau ou ano..."
     {ordenacao}
     onOrdenarChange={mudarOrdenacao}
 >
@@ -220,6 +228,28 @@
             <small class="dica-campo">Letra de A a Z.</small>
         </div>
         <div class="field">
+            <label for="turno-turma">Turno</label>
+            <select id="turno-turma" bind:value={novoTurno} required>
+                <option value="" disabled selected>Selecione o turno</option>
+                {#each TURNOS as t}
+                    <option value={t}
+                        >{t.charAt(0).toUpperCase() + t.slice(1)}</option
+                    >
+                {/each}
+            </select>
+        </div>
+        <div class="field">
+            <label for="grau-turma">Grau</label>
+            <select id="grau-turma" bind:value={novoGrau} required>
+                <option value="" disabled selected>Selecione o grau</option>
+                {#each GRAUS as g}
+                    <option value={g}
+                        >{g.charAt(0).toUpperCase() + g.slice(1)}</option
+                    >
+                {/each}
+            </select>
+        </div>
+        <div class="field">
             <label for="ano-letivo">Ano Letivo</label>
             <input
                 id="ano-letivo"
@@ -242,7 +272,7 @@
         <select class="select-ordenacao" bind:value={filtroSerie}>
             <option value="todos">Todas as séries</option>
             {#each seriesDisponiveis as serie}
-                <option value={serie}>{serie}º</option>
+                <option value={String(serie)}>{serie}º</option>
             {/each}
         </select>
     </svelte:fragment>
@@ -257,6 +287,8 @@
                 >
                 Nome
             </div>
+            <div class="th flex-1">Turno</div>
+            <div class="th flex-1">Grau</div>
             <div class="th flex-1">Ano Letivo</div>
             <div class="th flex-1">Ações</div>
         </div>
@@ -267,6 +299,12 @@
             <div class="table-row {index % 2 === 0 ? 'even' : 'odd'}">
                 <div class="td flex-2">
                     <span class="text-truncate">{t.nome}</span>
+                </div>
+                <div class="td flex-1">
+                    <span class="text-truncate">{t.turno}</span>
+                </div>
+                <div class="td flex-1">
+                    <span class="text-truncate">{t.grau}</span>
                 </div>
                 <div class="td flex-1">
                     <span class="badge-numero">{t.ano_letivo}</span>
