@@ -20,7 +20,14 @@
     import { validarRecorrencia } from "$lib/services/RecorrenciaService/Validar_Recorrencia.js";
     import { gerarDatasRecorrentes } from "$lib/services/RecorrenciaService/Gerar_Datas_Recorrentes.js";
     import { executarLoteAgendamentos } from "$lib/services/RecorrenciaService/Executar_Lote_Agendamentos.js";
+    import ListaAgendamentosCard from "$lib/components/Card/ListaAgendamentosCard.svelte";
 
+    let visao = "calendario"; // "calendario" | "lista"
+
+    function trocarVisao(nova) {
+        visao = nova;
+        localStorage.setItem("visao_agendamentos", nova);
+    }
     let token = "";
 
     // ── Controle de Seleção (Modo) ──
@@ -62,6 +69,7 @@
 
     onMount(async () => {
         token = localStorage.getItem("token") || "";
+
         if (!token) {
             goto("/login");
             return;

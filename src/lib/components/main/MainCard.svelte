@@ -17,7 +17,14 @@
     export let agendamentos = [];
     export let carregando = false;
     export let erro = "";
+    import ListaAgendamentosCard from "$lib/components/Card/ListaAgendamentosCard.svelte";
 
+    let visao = "calendario"; // "calendario" | "lista"
+
+    function trocarVisao(nova) {
+        visao = nova;
+        localStorage.setItem("visao_agendamentos", nova);
+    }
     let token = "";
     let usuarioId = null;
     let agendamentoParaDeletar = null;
@@ -101,6 +108,7 @@
         token = localStorage.getItem("token") || "";
         usuarioId = localStorage.getItem("user_id");
         cargo = localStorage.getItem("cargo");
+        visao = localStorage.getItem("visao_agendamentos") || "calendario";
     });
 
     $: agendamentosVisiveis = agendamentos.filter(
@@ -244,7 +252,36 @@
                 >
                 <h2>Agendamentos — próximos 60 dias</h2>
             </div>
-            <div class="badge">{totalRegistros} registros</div>
+
+            <div
+                class="toggle-visao"
+                role="group"
+                aria-label="Modo de visualização"
+            >
+                <button
+                    type="button"
+                    class:ativo={visao === "calendario"}
+                    on:click={() => trocarVisao("calendario")}
+                    title="Calendário"
+                >
+                    <span class="material-symbols-outlined"
+                        >calendar_view_month</span
+                    >
+                </button>
+                <button
+                    type="button"
+                    class:ativo={visao === "lista"}
+                    on:click={() => trocarVisao("lista")}
+                    title="Lista"
+                >
+                    <span class="material-symbols-outlined">view_list</span>
+                </button>
+            </div>
+
+            <div class="badge">
+                {totalRegistros}
+                {totalRegistros === 1 ? "registro" : "registros"}
+            </div>
         </div>
 
         {#if erro}
@@ -252,20 +289,30 @@
         {/if}
 
         <div class="calendario-scroll-area">
-            <CalendarioAgendamentos
-                agendamentos={agendamentosVisiveis}
-                hojeStr={hoje()}
-                carregandoLista={carregando}
-            >
-                <svelte:fragment let:ag>
-                    <AgendamentoBloco
-                        {ag}
-                        {usuarioId}
-                        {cargo}
-                        onDeletar={abrirModalDeletar}
-                    />
-                </svelte:fragment>
-            </CalendarioAgendamentos>
+            {#if visao === "calendario"}
+                <CalendarioAgendamentos
+                    agendamentos={agendamentosVisiveis}
+                    hojeStr={hoje()}
+                    carregandoLista={carregando}
+                >
+                    <svelte:fragment let:ag>
+                        <AgendamentoBloco
+                            {ag}
+                            {usuarioId}
+                            {cargo}
+                            onDeletar={abrirModalDeletar}
+                        />
+                    </svelte:fragment>
+                </CalendarioAgendamentos>
+            {:else}
+                <ListaAgendamentosCard
+                    agendamentos={agendamentosVisiveis}
+                    {carregando}
+                    {usuarioId}
+                    {cargo}
+                    onDeletar={abrirModalDeletar}
+                />
+            {/if}
         </div>
 
         <div class="bottom-action">

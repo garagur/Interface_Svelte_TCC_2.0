@@ -107,6 +107,7 @@ function _page($$renderer, $$props) {
 		};
 		let usuarios = [];
 		let carregando = false;
+		let atualizandoId = null;
 		let carregandoLista = false;
 		let erro = "";
 		let sucesso = "";
@@ -248,7 +249,15 @@ function _page($$renderer, $$props) {
 							const each_array = ensure_array_like(usuariosFiltrados);
 							for (let index = 0, $$length = each_array.length; index < $$length; index++) {
 								let u = each_array[index];
-								$$renderer.push(`<div${attr_class(`table-row ${index % 2 === 0 ? "even" : "odd"}`)}><div class="td flex-2"><span class="text-truncate">${escape_html(u.nome)}</span></div> <div class="td flex-2"><span class="text-truncate">${escape_html(u.email)}</span></div> <div class="td flex-1"><span class="badge-cargo">${escape_html(u.cargo)}</span></div> <div class="td flex-1"><span class="badge-matricula">${escape_html(u.matricula)}</span></div> <div class="td flex-1"><span${attr_class(`badge-status ${u.status ? "ativo" : "inativo"}`)}>${escape_html(u.status ? "Habilitado" : "Desabilitado")}</span></div> <div class="td flex-1 action-cell"><button class="btn-action edit" title="Editar"><span class="material-symbols-outlined">edit</span></button> <button${attr_class(`btn-action ${u.status ? "delete" : "edit"}`)}${attr("title", u.status ? "Desabilitar usuário" : "Habilitar usuário")}><span class="material-symbols-outlined">${escape_html(u.status ? "block" : "check_circle")}</span></button></div></div>`);
+								$$renderer.push(`<div${attr_class(`table-row ${index % 2 === 0 ? "even" : "odd"}`)}><div class="td flex-2"><span class="text-truncate">${escape_html(u.nome)}</span></div> <div class="td flex-2"><span class="text-truncate">${escape_html(u.email)}</span></div> <div class="td flex-1"><span class="badge-cargo">${escape_html(u.cargo)}</span></div> <div class="td flex-1"><span class="badge-matricula">${escape_html(u.matricula)}</span></div> <div class="td flex-1"><span${attr_class(`badge-status ${u.status ? "ativo" : "inativo"}`)}>${escape_html(u.status ? "Habilitado" : "Desabilitado")}</span></div> <div class="td flex-1 action-cell"><button class="btn-action edit" title="Editar"${attr("disabled", false, true)}><span class="material-symbols-outlined">edit</span></button> <button${attr_class(`btn-action ${u.status ? "delete" : "edit"}`)}${attr("title", u.status ? "Desabilitar usuário" : "Habilitar usuário")}${attr("disabled", false, true)}>`);
+								if (atualizandoId === u.id) {
+									$$renderer.push("<!--[0-->");
+									$$renderer.push(`<span class="material-symbols-outlined spin">progress_activity</span>`);
+								} else {
+									$$renderer.push("<!--[-1-->");
+									$$renderer.push(`<span class="material-symbols-outlined">${escape_html(u.status ? "block" : "check_circle")}</span>`);
+								}
+								$$renderer.push(`<!--]--></button></div></div>`);
 							}
 							$$renderer.push(`<!--]-->`);
 						}

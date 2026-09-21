@@ -1,8 +1,8 @@
 import "../../../chunks/internal.js";
-import { S as escape_html, n as bind_props, ot as fallback, tt as invalid_default_snippet, x as attr } from "../../../chunks/server.js";
+import { S as escape_html, n as bind_props, ot as fallback, t as attr_class, tt as invalid_default_snippet, x as attr } from "../../../chunks/server.js";
 import { t as goto } from "../../../chunks/client.js";
 import "../../../chunks/navigation.js";
-import { n as GradeMensal, t as BlocoAgendamentoCard } from "../../../chunks/BlocoAgendamentoCard.js";
+import { n as BlocoAgendamentoCard, r as GradeMensal } from "../../../chunks/ListaAgendamentosCard.js";
 import { a as deletarAgendamentoSala, r as deletarAgendamentoEquipamento, s as ConfirmarDelecaoModal } from "../../../chunks/List_Agendamento_Equipamento_Service.js";
 //#region src/lib/components/main/MainCard.svelte
 function MainCard($$renderer, $$props) {
@@ -19,24 +19,31 @@ function MainCard($$renderer, $$props) {
 		let token = "";
 		let usuarioId = null;
 		let agendamentoParaDeletar = null;
+		let cancelandoId = null;
 		let mostrarMenuUsuario = false;
 		function hoje() {
 			return (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
 		}
 		function abrirModalDeletar(ag) {
+			if (cancelandoId) return;
 			agendamentoParaDeletar = ag;
 		}
 		function fecharModalDeletar() {
+			if (cancelandoId) return;
 			agendamentoParaDeletar = null;
 		}
 		async function confirmarDeletar(ag) {
-			fecharModalDeletar();
+			cancelandoId = `${ag.tipo}-${ag.id}`;
+			erro = "";
 			try {
 				if (ag.tipo === "sala") await deletarAgendamentoSala(ag.id, token, ag.justificativa || "");
 				else if (ag.tipo === "equipamento") await deletarAgendamentoEquipamento(ag.id, token, ag.justificativa || "");
 				agendamentos = agendamentos.filter((a) => a.id !== ag.id || a.tipo !== ag.tipo);
+				agendamentoParaDeletar = null;
 			} catch (e) {
 				erro = e?.message || "Erro ao deletar agendamento.";
+			} finally {
+				cancelandoId = null;
 			}
 		}
 		$: agendamentosVisiveis = agendamentos.filter((a) => a.status !== "inativo");
@@ -44,7 +51,8 @@ function MainCard($$renderer, $$props) {
 		ConfirmarDelecaoModal($$renderer, {
 			agendamento: agendamentoParaDeletar,
 			onConfirmar: confirmarDeletar,
-			onCancelar: fecharModalDeletar
+			onCancelar: fecharModalDeletar,
+			processando: !!cancelandoId
 		});
 		$$renderer.push(`<!----> <div class="scaffold"><header class="app-bar"><div class="title-section"><h1>${escape_html(titulo)}</h1> <span>Matrícula: ${escape_html(matricula)}</span></div> <nav class="nav-menu">`);
 		if (cargo === "admin") {
@@ -53,7 +61,14 @@ function MainCard($$renderer, $$props) {
 		} else $$renderer.push("<!--[-1-->");
 		$$renderer.push(`<!--]--></nav> <div class="actions-section"><div class="user-menu"><button class="btn-icon" title="Minha conta" aria-haspopup="true"${attr("aria-expanded", mostrarMenuUsuario)}><span class="material-symbols-outlined">account_circle</span></button> `);
 		$$renderer.push("<!--[-1-->");
-		$$renderer.push(`<!--]--></div></div></header> <main class="body-content"><div class="grade-header-title"><div class="title-left"><span class="material-symbols-outlined text-primary">calendar_month</span> <h2>Agendamentos — próximos 60 dias</h2></div> <div class="badge">${escape_html(totalRegistros)} registros</div></div> <div class="calendario-scroll-area">`);
+		$$renderer.push(`<!--]--></div></div></header> <main class="body-content"><div class="grade-header-title"><div class="title-left"><span class="material-symbols-outlined text-primary">calendar_month</span> <h2>Agendamentos — próximos 60 dias</h2></div> <div class="toggle-visao" role="group" aria-label="Modo de visualização"><button type="button" title="Calendário"${attr_class("", void 0, { "ativo": true })}><span class="material-symbols-outlined">calendar_view_month</span></button> <button type="button" title="Lista"${attr_class("", void 0, { "ativo": false })}><span class="material-symbols-outlined">view_list</span></button></div> <div class="badge">${escape_html(totalRegistros)}
+                ${escape_html(totalRegistros === 1 ? "registro" : "registros")}</div></div> `);
+		if (erro) {
+			$$renderer.push("<!--[0-->");
+			$$renderer.push(`<p class="msg-erro svelte-o17hi9">${escape_html(erro)}</p>`);
+		} else $$renderer.push("<!--[-1-->");
+		$$renderer.push(`<!--]--> <div class="calendario-scroll-area">`);
+		$$renderer.push("<!--[0-->");
 		GradeMensal($$renderer, {
 			agendamentos: agendamentosVisiveis,
 			hojeStr: hoje(),
@@ -68,7 +83,7 @@ function MainCard($$renderer, $$props) {
 				});
 			} }
 		});
-		$$renderer.push(`<!----></div> <div class="bottom-action"><button class="btn-primary btn-novo-agendamento"><span class="material-symbols-outlined">add_circle</span> Novo Agendamento</button></div></main></div>`);
+		$$renderer.push(`<!--]--></div> <div class="bottom-action"><button class="btn-primary btn-novo-agendamento"><span class="material-symbols-outlined">add_circle</span> Novo Agendamento</button></div></main></div>`);
 		bind_props($$props, {
 			titulo,
 			matricula,

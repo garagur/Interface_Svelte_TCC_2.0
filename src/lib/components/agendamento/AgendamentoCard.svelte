@@ -6,6 +6,7 @@
     import AgendamentoBloco from "$lib/components/Card/BlocoAgendamentoCard.svelte";
     import ConfirmarDelecaoModal from "$lib/components/Card/ConfirmarDelecaoModal.svelte";
     import ConfirmarRecorrenciaModal from "$lib/components/Card/ConfirmarRecorrenciaModal.svelte";
+    import ListaAgendamentosCard from "$lib/components/Card/ListaAgendamentosCard.svelte";
     import { deletarAgendamentoSala } from "$lib/services/AgendamentoServices/AgendamentoSala/Deleted_Agendamento_Sala_Service.js";
     import { deletarAgendamentoEquipamento } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/Deleted_Agendamento_equipamento.js";
 
@@ -63,6 +64,11 @@
 
     let agendamentoParaDeletar = null;
     let cancelandoId = null; // ex: "sala-12" ou "equipamento-7" — null quando nada está em andamento
+    let visao = "calendario";
+
+    function trocarVisao(novaVisao) {
+        visao = novaVisao;
+    }
 
     $: agendamentosVisiveis = agendamentos.filter(
         (a) => a.status !== "inativo",
@@ -228,23 +234,51 @@
                 <div class="card calendario-card">
                     <div class="grade-header-title">
                         <div class="title-left">
-                            <span
-                                class="material-symbols-outlined text-primary"
+                            <span class="material-symbols-outlined text-primary"
+                                >calendar_month</span
                             >
-                                calendar_month
-                            </span>
                             <h3>Agendamentos — próximos 60 dias</h3>
                         </div>
-                        <span class="badge"
-                            >{agendamentosVisiveis.length} registros</span
-                        >
-                    </div>
 
+                        <div
+                            class="toggle-visao"
+                            role="group"
+                            aria-label="Modo de visualização"
+                        >
+                            <button
+                                type="button"
+                                class:ativo={visao === "calendario"}
+                                on:click={() => trocarVisao("calendario")}
+                                title="Calendário"
+                            >
+                                <span class="material-symbols-outlined"
+                                    >calendar_view_month</span
+                                >
+                            </button>
+                            <button
+                                type="button"
+                                class:ativo={visao === "lista"}
+                                on:click={() => trocarVisao("lista")}
+                                title="Lista"
+                            >
+                                <span class="material-symbols-outlined"
+                                    >view_list</span
+                                >
+                            </button>
+                        </div>
+
+                        <span class="badge">
+                            {agendamentosVisiveis.length}
+                            {agendamentosVisiveis.length === 1
+                                ? "registro"
+                                : "registros"}
+                        </span>
+                    </div>
                     {#if !sala_id}
                         <p class="estado-vazio">
                             Selecione uma sala para ver os agendamentos.
                         </p>
-                    {:else}
+                    {:else if visao === "calendario"}
                         <CalendarioAgendamentos
                             agendamentos={agendamentosVisiveis}
                             {hojeStr}
@@ -259,6 +293,16 @@
                                 />
                             </svelte:fragment>
                         </CalendarioAgendamentos>
+                    {:else}
+                        <ListaAgendamentosCard
+                            agendamentos={agendamentosVisiveis}
+                            carregando={carregandoLista}
+                            {usuarioId}
+                            {cargo}
+                            onDeletar={abrirModalDeletar}
+                            embutido
+                            recursoUnico
+                        />
                     {/if}
                 </div>
 
@@ -342,8 +386,14 @@
 
                         {#if tipo !== "avulso"}
                             <div class="field dias-semana-field">
-                                <label>Dias da semana</label>
-                                <div class="dias-semana">
+                                <div class="dias-semana-label">
+                                    Dias da semana
+                                </div>
+                                <div
+                                    class="dias-semana"
+                                    role="group"
+                                    aria-label="Dias da semana"
+                                >
                                     {#each diasSemanaOpcoes as d}
                                         <button
                                             type="button"

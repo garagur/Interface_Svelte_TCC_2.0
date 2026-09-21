@@ -6,7 +6,7 @@ import { t as apiFetch } from "../../../chunks/api.js";
 import "../../../chunks/List_Equipamento_Service.js";
 import { a as BlocoHorarioCard, o as GradeSemanal, r as carregarHorariosSala } from "../../../chunks/List_Horario_Service.js";
 import "../../../chunks/List_Sala_Service.js";
-import { n as GradeMensal, t as BlocoAgendamentoCard } from "../../../chunks/BlocoAgendamentoCard.js";
+import { n as BlocoAgendamentoCard, r as GradeMensal } from "../../../chunks/ListaAgendamentosCard.js";
 import { a as deletarAgendamentoSala, i as AGENDAMENTOEQUIPAMENTO_ROUTE, n as carregarAgendamentosSalas, o as AGENDAMENTOSALA_ROUTE, r as deletarAgendamentoEquipamento, s as ConfirmarDelecaoModal, t as carregarAgendamentosEquipamentos } from "../../../chunks/List_Agendamento_Equipamento_Service.js";
 //#region src/lib/components/Card/ConfirmarRecorrenciaModal.svelte
 function ConfirmarRecorrenciaModal($$renderer, $$props) {
@@ -145,20 +145,27 @@ function AgendamentoCard($$renderer, $$props) {
 			}
 		];
 		let agendamentoParaDeletar = null;
+		let cancelandoId = null;
 		function abrirModalDeletar(ag) {
+			if (cancelandoId) return;
 			agendamentoParaDeletar = ag;
 		}
 		function fecharModalDeletar() {
+			if (cancelandoId) return;
 			agendamentoParaDeletar = null;
 		}
 		async function confirmarDeletar(ag) {
-			fecharModalDeletar();
+			cancelandoId = `${ag.tipo}-${ag.id}`;
+			erro = "";
 			try {
 				if (ag.tipo === "sala") await deletarAgendamentoSala(ag.id, token, ag.justificativa || "");
 				else if (ag.tipo === "equipamento") await deletarAgendamentoEquipamento(ag.id, token, ag.justificativa || "");
 				agendamentos = agendamentos.filter((a) => a.id !== ag.id || a.tipo !== ag.tipo);
+				agendamentoParaDeletar = null;
 			} catch (e) {
 				erro = e?.message || "Erro ao deletar agendamento.";
+			} finally {
+				cancelandoId = null;
 			}
 		}
 		$: agendamentosVisiveis = agendamentos.filter((a) => a.status !== "inativo");
@@ -166,7 +173,8 @@ function AgendamentoCard($$renderer, $$props) {
 		ConfirmarDelecaoModal($$renderer, {
 			agendamento: agendamentoParaDeletar,
 			onConfirmar: confirmarDeletar,
-			onCancelar: fecharModalDeletar
+			onCancelar: fecharModalDeletar,
+			processando: !!cancelandoId
 		});
 		$$renderer.push(`<!----> `);
 		ConfirmarRecorrenciaModal($$renderer, {
@@ -221,12 +229,13 @@ function AgendamentoCard($$renderer, $$props) {
 			});
 			$$renderer.push(`<!----></div>`);
 		} else $$renderer.push("<!--[-1-->");
-		$$renderer.push(`<!--]--> <div class="conteudo-principal"><div class="card calendario-card"><div class="grade-header-title"><div class="title-left"><span class="material-symbols-outlined text-primary">calendar_month</span> <h3>Agendamentos — próximos 60 dias</h3></div> <span class="badge">${escape_html(agendamentosVisiveis.length)} registros</span></div> `);
+		$$renderer.push(`<!--]--> <div class="conteudo-principal"><div class="card calendario-card"><div class="grade-header-title"><div class="title-left"><span class="material-symbols-outlined text-primary">calendar_month</span> <h3>Agendamentos — próximos 60 dias</h3></div> <div class="toggle-visao" role="group" aria-label="Modo de visualização"><button type="button" title="Calendário"${attr_class("", void 0, { "ativo": true })}><span class="material-symbols-outlined">calendar_view_month</span></button> <button type="button" title="Lista"${attr_class("", void 0, { "ativo": false })}><span class="material-symbols-outlined">view_list</span></button></div> <span class="badge">${escape_html(agendamentosVisiveis.length)}
+                            ${escape_html(agendamentosVisiveis.length === 1 ? "registro" : "registros")}</span></div> `);
 		if (!sala_id) {
 			$$renderer.push("<!--[0-->");
 			$$renderer.push(`<p class="estado-vazio">Selecione uma sala para ver os agendamentos.</p>`);
 		} else {
-			$$renderer.push("<!--[-1-->");
+			$$renderer.push("<!--[1-->");
 			GradeMensal($$renderer, {
 				agendamentos: agendamentosVisiveis,
 				hojeStr,
@@ -245,7 +254,7 @@ function AgendamentoCard($$renderer, $$props) {
 		$$renderer.push(`<!--]--></div> <div class="card form-card"><div class="card-header"><span class="material-symbols-outlined icon-large">calendar_add_on</span></div> <div class="tabs-recorrencia"><button type="button"${attr_class(`tab-btn ${tipo === "avulso" ? "ativo" : ""}`)}>Avulso</button> <button type="button"${attr_class(`tab-btn ${tipo === "semanal" ? "ativo" : ""}`)}>Semanal</button> <button type="button"${attr_class(`tab-btn ${tipo === "quinzenal" ? "ativo" : ""}`)}>Quinzenal</button></div> <form><div class="form-fields"><div class="field"><label for="data-agendamento">${escape_html(tipo === "avulso" ? "Data" : "Data de início")}</label> <input id="data-agendamento" type="date"${attr("value", dataAgendamento)}${attr("min", hojeStr)} required=""/></div> <div class="field"><label for="hora-inicio">Hora de Início</label> <input id="hora-inicio" type="time"${attr("value", horaInicio)} required=""/></div> <div class="field"><label for="hora-fim">Hora de Fim</label> <input id="hora-fim" type="time"${attr("value", horaFim)} required=""/></div> <div class="field"><label for="obs">Observação</label> <input id="obs" type="text"${attr("value", obs)} placeholder="Ex: Aula de reposição"/></div></div> `);
 		if (tipo !== "avulso") {
 			$$renderer.push("<!--[0-->");
-			$$renderer.push(`<div class="field dias-semana-field"><label>Dias da semana</label> <div class="dias-semana"><!--[-->`);
+			$$renderer.push(`<div class="field dias-semana-field"><div class="dias-semana-label">Dias da semana</div> <div class="dias-semana" role="group" aria-label="Dias da semana"><!--[-->`);
 			const each_array_1 = ensure_array_like(diasSemanaOpcoes);
 			for (let $$index_1 = 0, $$length = each_array_1.length; $$index_1 < $$length; $$index_1++) {
 				let d = each_array_1[$$index_1];
@@ -537,8 +546,14 @@ function _page($$renderer, $$props) {
 			carregandoLista = true;
 			erro = "";
 			try {
-				if (modo === "sala") agendamentos = (await carregarAgendamentosSalas(token, id)).filter((agendamento) => agendamento.status !== "inativo");
-				else agendamentos = (await carregarAgendamentosEquipamentos(token)).filter((agendamento) => agendamento.equipamento_id === id && agendamento.status !== "inativo");
+				if (modo === "sala") agendamentos = (await carregarAgendamentosSalas(token, id)).filter((agendamento) => agendamento.status !== "inativo").map((agendamento) => ({
+					...agendamento,
+					tipo: "sala"
+				}));
+				else agendamentos = (await carregarAgendamentosEquipamentos(token)).filter((agendamento) => agendamento.equipamento_id === id && agendamento.status !== "inativo").map((agendamento) => ({
+					...agendamento,
+					tipo: "equipamento"
+				}));
 			} catch (e) {
 				erro = e?.message || "Erro ao carregar agendamentos.";
 			} finally {

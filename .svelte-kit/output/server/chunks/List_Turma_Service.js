@@ -20,7 +20,7 @@ async function parseJson(response) {
 }
 /**
 * @param {string} token
-* @returns {Promise<any[]>}
+* @returns {Promise<Array<{id: number, serie: number, turma: string, turno: string, grau: string, ano_letivo: number, nome: string}>>}
 */
 async function carregarTurmas(token) {
 	if (!token) throw new Error("Token de autenticação não encontrado. Faça login novamente.");
@@ -33,8 +33,12 @@ async function carregarTurmas(token) {
 	if (!resp.ok) throw new Error(dados?.message || dados?.error || "Erro ao carregar turmas.");
 	return (Array.isArray(dados) ? dados : dados?.turmas || dados?.data || []).map((s) => ({
 		id: s.id,
-		nome: s.nome || "",
-		ano_letivo: s.ano_letivo || ""
+		serie: s.serie || "",
+		turma: s.turma || "",
+		turno: s.turno || "",
+		grau: s.grau || "",
+		ano_letivo: s.ano_letivo || "",
+		nome: s.nome || ""
 	}));
 }
 //#endregion

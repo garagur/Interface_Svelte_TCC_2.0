@@ -9,7 +9,7 @@ import { a as deletarAgendamentoSala, r as deletarAgendamentoEquipamento, s as C
 //#region src/lib/components/meusagendamentos/MinhasInformacoesCard.svelte
 function MinhasInformacoesCard($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
-		let semanasHeatmap, rotulosMeses, totalGeral, agendamentosOrdenados;
+		let semanasHeatmap, rotulosMeses, totalGeral, agendamentosFiltrados;
 		let usuario = fallback($$props["usuario"], null);
 		let carregandoUsuario = fallback($$props["carregandoUsuario"], false);
 		let estatisticas = fallback($$props["estatisticas"], () => ({
@@ -28,6 +28,7 @@ function MinhasInformacoesCard($$renderer, $$props) {
 		let onSair = $$props["onSair"];
 		let onDeletar = fallback($$props["onDeletar"], null);
 		let agendamentoParaDeletar = null;
+		let processando = false;
 		const dias = [
 			"segunda",
 			"terca",
@@ -82,12 +83,35 @@ function MinhasInformacoesCard($$renderer, $$props) {
 			if (status === "futuro") return "Agendado";
 			return "Concluído";
 		}
+		/**
+		* Normaliza o tipo do agendamento ("sala" | "equipamento").
+		* @param {any} ag
+		*/
+		function tipoAgendamento(ag) {
+			return ag.tipo === "equipamento" ? "equipamento" : "sala";
+		}
+		/**
+		* Nome de exibição do recurso agendado, usado na ordenação A-Z/Z-A.
+		* @param {any} ag
+		*/
+		function nomeAgendamento(ag) {
+			return tipoAgendamento(ag) === "equipamento" ? ag.equipamento_nome || "" : ag.sala_nome || "";
+		}
 		function fecharModal() {
+			if (processando) return;
 			agendamentoParaDeletar = null;
 		}
-		function confirmarDelecao(ag) {
-			fecharModal();
-			onDeletar?.(ag);
+		async function confirmarDelecao(ag) {
+			if (processando) return;
+			processando = true;
+			try {
+				await onDeletar?.(ag);
+				agendamentoParaDeletar = null;
+			} catch (e) {
+				erro = e?.message || "Erro ao deletar agendamento.";
+			} finally {
+				processando = false;
+			}
 		}
 		function iniciais(nome) {
 			if (!nome) return "?";
@@ -125,6 +149,10 @@ function MinhasInformacoesCard($$renderer, $$props) {
 			for (let i = 0; i < diasArr.length; i += 7) semanas.push(diasArr.slice(i, i + 7));
 			return semanas;
 		}
+		let pesquisaAg = "";
+		let filtroStatusAg = "todos";
+		let filtroTipoAg = "todos";
+		let ordenacaoAg = "recente";
 		$: semanasHeatmap = montarSemanas(estatisticas?.heatmap, anoSelecionado);
 		$: rotulosMeses = semanasHeatmap.map((semana, idx) => {
 			const primeiroDia = semana[0];
@@ -134,16 +162,23 @@ function MinhasInformacoesCard($$renderer, $$props) {
 			return primeiroDia.mes !== mesAnterior ? NOMES_MESES[primeiroDia.mes] : "";
 		});
 		$: totalGeral = (estatisticas?.totalSala || 0) + (estatisticas?.totalEquipamento || 0);
-		$: agendamentosOrdenados = [...agendamentos].sort((a, b) => {
-			const fa = isFuturo(a.data_hora_inicio);
-			const fb = isFuturo(b.data_hora_inicio);
-			if (fa !== fb) return fb ? 1 : -1;
-			return new Date(a.data_hora_inicio).getTime() - new Date(b.data_hora_inicio).getTime();
+		$: agendamentosFiltrados = agendamentos.filter((ag) => {
+			if (!pesquisaAg.trim()) return true;
+			const termo = pesquisaAg.toLowerCase();
+			return nomeAgendamento(ag).toLowerCase().includes(termo) || (ag.obs || "").toLowerCase().includes(termo);
+		}).filter((ag) => {
+			return true;
+		}).filter((ag) => {
+			return true;
+		}).sort((a, b) => {
+			const dataA = new Date(a.data_hora_inicio).getTime();
+			return new Date(b.data_hora_inicio).getTime() - dataA;
 		});
 		ConfirmarDelecaoModal($$renderer, {
 			agendamento: agendamentoParaDeletar,
 			onConfirmar: confirmarDelecao,
-			onCancelar: fecharModal
+			onCancelar: fecharModal,
+			processando
 		});
 		$$renderer.push(`<!----> <div class="minhas-informacoes"><div class="scaffold"><header class="app-bar"><div class="title-section"><h1>Portal de Agendamento</h1> <span>Meu Perfil</span></div> <button class="btn-icon" title="Voltar"><span class="material-symbols-outlined">arrow_back</span></button></header> <main class="page-content">`);
 		if (erro) {
@@ -186,7 +221,7 @@ function MinhasInformacoesCard($$renderer, $$props) {
 				const each_array_2 = ensure_array_like(semana);
 				for (let $$index_1 = 0, $$length = each_array_2.length; $$index_1 < $$length; $$index_1++) {
 					let dia = each_array_2[$$index_1];
-					$$renderer.push(`<div${attr_class(`heatmap-dia nivel-${stringify(nivelHeatmap(dia.quantidade))}`, void 0, { "fora-do-ano": dia.foraDoAno })}${attr("title", `${stringify(dia.data)}: ${stringify(dia.quantidade)} agendamento(s)`)}></div>`);
+					$$renderer.push(`<div${attr_class(`heatmap-dia nivel-${stringify(nivelHeatmap(dia.quantidade))}`, "svelte-viwrfp", { "fora-do-ano": dia.foraDoAno })}${attr("title", `${stringify(dia.data)}: ${stringify(dia.quantidade)} agendamento(s)`)}></div>`);
 				}
 				$$renderer.push(`<!--]-->`);
 			}
@@ -211,17 +246,69 @@ function MinhasInformacoesCard($$renderer, $$props) {
 				} }
 			});
 		}
-		$$renderer.push(`<!--]--></div> <div class="card" id="agendamentos"><div class="card-header"><span class="material-symbols-outlined">event_available</span> <h3>Meus Agendamentos</h3></div> `);
+		$$renderer.push(`<!--]--></div> <div class="card" id="agendamentos"><div class="card-header"><span class="material-symbols-outlined">event_available</span> <h3>Meus Agendamentos</h3></div> <div class="agendamentos-toolbar"><div class="campo-pesquisa-ag"><span class="material-symbols-outlined">search</span> <input type="text" placeholder="Pesquisar por sala ou equipamento..."${attr("value", pesquisaAg)}/></div> <div class="filtro-grupo"><span class="filtro-grupo-label">Status</span> `);
+		$$renderer.select({
+			class: "select-filtro-ag",
+			value: filtroStatusAg
+		}, ($$renderer) => {
+			$$renderer.option({ value: "todos" }, ($$renderer) => {
+				$$renderer.push(`Todos`);
+			});
+			$$renderer.option({ value: "ativo" }, ($$renderer) => {
+				$$renderer.push(`Ativos`);
+			});
+			$$renderer.option({ value: "cancelado" }, ($$renderer) => {
+				$$renderer.push(`Cancelados`);
+			});
+			$$renderer.option({ value: "finalizado" }, ($$renderer) => {
+				$$renderer.push(`Finalizados`);
+			});
+		});
+		$$renderer.push(`</div> <div class="filtro-grupo"><span class="filtro-grupo-label">Tipo</span> `);
+		$$renderer.select({
+			class: "select-filtro-ag",
+			value: filtroTipoAg
+		}, ($$renderer) => {
+			$$renderer.option({ value: "todos" }, ($$renderer) => {
+				$$renderer.push(`Todos`);
+			});
+			$$renderer.option({ value: "sala" }, ($$renderer) => {
+				$$renderer.push(`Salas`);
+			});
+			$$renderer.option({ value: "equipamento" }, ($$renderer) => {
+				$$renderer.push(`Equipamentos`);
+			});
+		});
+		$$renderer.push(`</div> <div class="filtro-grupo"><span class="filtro-grupo-label">Ordenar</span> `);
+		$$renderer.select({
+			class: "select-filtro-ag",
+			value: ordenacaoAg
+		}, ($$renderer) => {
+			$$renderer.option({ value: "recente" }, ($$renderer) => {
+				$$renderer.push(`Mais recente`);
+			});
+			$$renderer.option({ value: "antigo" }, ($$renderer) => {
+				$$renderer.push(`Mais antigo`);
+			});
+			$$renderer.option({ value: "az" }, ($$renderer) => {
+				$$renderer.push(`Nome (A-Z)`);
+			});
+			$$renderer.option({ value: "za" }, ($$renderer) => {
+				$$renderer.push(`Nome (Z-A)`);
+			});
+		});
+		$$renderer.push(`</div></div> `);
 		if (carregandoAgendamentos) {
 			$$renderer.push("<!--[0-->");
 			$$renderer.push(`<p class="estado-vazio">Carregando agendamentos...</p>`);
-		} else if (agendamentosOrdenados.length === 0) {
+		} else if (agendamentosFiltrados.length === 0) {
 			$$renderer.push("<!--[1-->");
-			$$renderer.push(`<p class="estado-vazio">Nenhum agendamento de sala encontrado.</p>`);
+			$$renderer.push(`<p class="estado-vazio">Nenhum agendamento encontrado com os filtros
+                        selecionados.</p>`);
 		} else {
 			$$renderer.push("<!--[-1-->");
 			$$renderer.push(`<div class="agendamentos-lista"><!--[-->`);
-			const each_array_3 = ensure_array_like(agendamentosOrdenados);
+			const each_array_3 = ensure_array_like(agendamentosFiltrados);
 			for (let $$index_3 = 0, $$length = each_array_3.length; $$index_3 < $$length; $$index_3++) {
 				let ag = each_array_3[$$index_3];
 				const status = statusExibicao(ag);
@@ -243,10 +330,10 @@ function MinhasInformacoesCard($$renderer, $$props) {
 					$$renderer.push(`<p class="agendamento-cancelador"><span class="material-symbols-outlined">person</span> Cancelado por:
                                             ${escape_html(ag.cancelador_nome || "Nome não informado")}</p>`);
 				} else $$renderer.push("<!--[-1-->");
-				$$renderer.push(`<!--]--></div> <div class="agendamento-status"><span${attr_class(`badge-status ${stringify(status)}`)}>${escape_html(rotuloStatus(status))}</span> `);
+				$$renderer.push(`<!--]--></div> <div class="agendamento-status"><span${attr_class(`badge-status ${stringify(status)}`, "svelte-viwrfp")}>${escape_html(rotuloStatus(status))}</span> `);
 				if (status === "futuro" && onDeletar) {
 					$$renderer.push("<!--[0-->");
-					$$renderer.push(`<button class="btn-deletar-ag" title="Deletar agendamento"><span class="material-symbols-outlined">delete</span></button>`);
+					$$renderer.push(`<button class="btn-deletar-ag svelte-viwrfp" title="Deletar agendamento"${attr("disabled", processando, true)}><span class="material-symbols-outlined">delete</span></button>`);
 				} else $$renderer.push("<!--[-1-->");
 				$$renderer.push(`<!--]--></div></div>`);
 			}
@@ -316,12 +403,14 @@ function _page($$renderer, $$props) {
 			}));
 		}
 		function montarEstatisticas() {
-			const todos = [...agendamentosSala, ...agendamentosEquipamento];
+			const salasAtivas = agendamentosSala.filter((a) => a.status !== "inativo");
+			const equipamentosAtivos = agendamentosEquipamento.filter((a) => a.status !== "inativo");
+			const todos = [...salasAtivas, ...equipamentosAtivos];
 			estatisticas = {
-				totalSala: agendamentosSala.length,
-				totalEquipamento: agendamentosEquipamento.length,
-				salaMaisAgendada: itemMaisFrequente(agendamentosSala, "sala_nome", "sala_id"),
-				equipamentoMaisAgendado: itemMaisFrequente(agendamentosEquipamento, "equipamento_nome", "equipamento_id"),
+				totalSala: salasAtivas.length,
+				totalEquipamento: equipamentosAtivos.length,
+				salaMaisAgendada: itemMaisFrequente(salasAtivas, "sala_nome", "sala_id"),
+				equipamentoMaisAgendado: itemMaisFrequente(equipamentosAtivos, "equipamento_nome", "equipamento_id"),
 				heatmap: montarHeatmap(todos)
 			};
 			carregandoEstatisticas = false;
@@ -330,11 +419,20 @@ function _page($$renderer, $$props) {
 			try {
 				if (ag.tipo === "equipamento") await deletarAgendamentoEquipamento(ag.id, token, ag.justificativa || "");
 				else await deletarAgendamentoSala(ag.id, token, ag.justificativa || "");
-				if (ag.tipo === "equipamento") agendamentosEquipamento = agendamentosEquipamento.filter((a) => a.id !== ag.id);
-				else agendamentosSala = agendamentosSala.filter((a) => a.id !== ag.id);
+				if (ag.tipo === "equipamento") agendamentosEquipamento = agendamentosEquipamento.map((a) => a.id === ag.id ? {
+					...a,
+					status: "inativo",
+					justificativa: ag.justificativa || ""
+				} : a);
+				else agendamentosSala = agendamentosSala.map((a) => a.id === ag.id ? {
+					...a,
+					status: "inativo",
+					justificativa: ag.justificativa || ""
+				} : a);
 				montarEstatisticas();
 			} catch (e) {
 				erro = e?.message || "Erro ao deletar agendamento.";
+				throw e;
 			}
 		}
 		MinhasInformacoesCard($$renderer, {

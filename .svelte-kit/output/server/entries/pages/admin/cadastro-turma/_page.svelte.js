@@ -16,13 +16,13 @@ async function parseJson$1(response) {
 	}
 }
 /**
-* @param {{ nome: string, ano_letivo: number}} novaTurma
+* @param {{ serie: number, turma: string, turno: string, grau: string, ano_letivo: number}} novaTurma
 * @param {string} token
 * @returns {Promise<any>}
 */
 async function cadastrarTurma(novaTurma, token) {
 	if (!token) throw new Error("Token de autenticação não encontrado. Faça login novamente.");
-	if (!novaTurma?.nome || !novaTurma?.ano_letivo) throw new Error("Dados da turma incompletos.");
+	if (!novaTurma?.serie || !novaTurma?.turma || !novaTurma?.turno || !novaTurma?.grau || !novaTurma?.ano_letivo) throw new Error("Dados da turma incompletos.");
 	const resp = await apiFetch(TURMA_ROUTES.cadastrar, {
 		method: "POST",
 		headers: {
@@ -30,7 +30,10 @@ async function cadastrarTurma(novaTurma, token) {
 			"Accept": "application/json"
 		},
 		body: JSON.stringify({
-			nome: novaTurma.nome,
+			serie: novaTurma.serie,
+			turma: novaTurma.turma,
+			turno: novaTurma.turno,
+			grau: novaTurma.grau,
 			ano_letivo: novaTurma.ano_letivo
 		})
 	});
@@ -38,7 +41,7 @@ async function cadastrarTurma(novaTurma, token) {
 	const dados = await parseJson$1(resp);
 	if (!resp.ok) {
 		if (dados?.errors) throw new Error(Object.values(dados.errors).flat().join(" "));
-		throw new Error(dados?.message || dados?.error || "Erro ao cadastrar sala.");
+		throw new Error(dados?.message || dados?.error || "Erro ao cadastrar turma.");
 	}
 	return dados?.data || dados || {};
 }
@@ -55,13 +58,13 @@ async function parseJson(response) {
 }
 /**
 * @param {number} id
-* @param {{ nome: string, ano_letivo: number }} dadosTurma
+* @param {{ serie: number, turma: string, turno: string, grau: string, ano_letivo: number }} dadosTurma
 * @param {string} token
 * @returns {Promise<any>}
 */
 async function atualizarTurma(id, dadosTurma, token) {
 	if (!token) throw new Error("Token de autenticação não encontrado. Faça login novamente.");
-	if (!dadosTurma?.nome || !dadosTurma?.ano_letivo) throw new Error("Dados da turma incompletos.");
+	if (!dadosTurma?.serie || !dadosTurma?.turma || !dadosTurma?.turno || !dadosTurma?.grau || !dadosTurma?.ano_letivo) throw new Error("Dados da turma incompletos.");
 	const resp = await apiFetch(TURMA_ROUTES.atualizar(id), {
 		method: "PUT",
 		headers: {
@@ -69,7 +72,10 @@ async function atualizarTurma(id, dadosTurma, token) {
 			"Accept": "application/json"
 		},
 		body: JSON.stringify({
-			nome: dadosTurma.nome,
+			serie: dadosTurma.serie,
+			turma: dadosTurma.turma,
+			turno: dadosTurma.turno,
+			grau: dadosTurma.grau,
 			ano_letivo: dadosTurma.ano_letivo
 		})
 	});
@@ -77,7 +83,7 @@ async function atualizarTurma(id, dadosTurma, token) {
 	const dados = await parseJson(resp);
 	if (!resp.ok) {
 		if (dados?.errors) throw new Error(Object.values(dados.errors).flat().join(" "));
-		throw new Error(dados?.message || dados?.error || "Erro ao atualizar.");
+		throw new Error(dados?.message || dados?.error || "Erro ao atualizar turma.");
 	}
 	return dados?.data || dados || {};
 }
@@ -87,10 +93,22 @@ function _page($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
 		let anosDisponiveis, seriesDisponiveis, turmasFiltradas;
 		let token = "";
-		let novaTurma = {
-			nome: "",
-			ano_letivo: null
-		};
+		let novaSerie = null;
+		let novaLetra = "";
+		let novoTurno = "";
+		let novoGrau = "";
+		let novoAnoLetivo = null;
+		const TURNOS = [
+			"matutino",
+			"vespertino",
+			"noturno",
+			"integral"
+		];
+		const GRAUS = [
+			"fundamental",
+			"medio",
+			"superior"
+		];
 		let turmas = [];
 		let carregando = false;
 		let carregandoLista = false;
@@ -116,21 +134,33 @@ function _page($$renderer, $$props) {
 		async function salvarTurma() {
 			erro = "";
 			sucesso = "";
-			if (!novaTurma.nome || !novaTurma.ano_letivo) {
+			if (!novaSerie || !novaLetra || !novoTurno || !novoGrau || !novoAnoLetivo) {
 				erro = "Preencha todos os campos do formulário.";
 				return;
 			}
-			if (!/^\d/.test(novaTurma.nome.trim())) {
-				erro = "O nome da turma deve começar com um número (ex: 1A, 9º Ano A).";
+			const serieNum = Number(novaSerie);
+			if (!Number.isInteger(serieNum) || serieNum < 1 || serieNum > 10) {
+				erro = "A série deve ser um número entre 1 e 10.";
 				return;
 			}
+			if (!/^[A-Za-z]$/.test(novaLetra)) {
+				erro = "A turma deve ser uma única letra de A a Z.";
+				return;
+			}
+			const payload = {
+				serie: serieNum,
+				turma: novaLetra.toUpperCase(),
+				turno: novoTurno,
+				grau: novoGrau,
+				ano_letivo: novoAnoLetivo
+			};
 			carregando = true;
 			try {
 				if (editando && turmaEditandoId) {
-					await atualizarTurma(turmaEditandoId, novaTurma, token);
+					await atualizarTurma(turmaEditandoId, payload, token);
 					sucesso = "Turma atualizada com sucesso.";
 				} else {
-					await cadastrarTurma(novaTurma, token);
+					await cadastrarTurma(payload, token);
 					sucesso = "Turma cadastrada com sucesso.";
 				}
 				resetForm();
@@ -142,26 +172,23 @@ function _page($$renderer, $$props) {
 			}
 		}
 		function resetForm() {
-			novaTurma = {
-				nome: "",
-				ano_letivo: null
-			};
+			novaSerie = null;
+			novaLetra = "";
+			novoTurno = "";
+			novoGrau = "";
+			novoAnoLetivo = null;
 			editando = false;
 			turmaEditandoId = null;
 		}
 		function mudarOrdenacao(novoValor) {
 			ordenacao = novoValor;
 		}
-		function extrairSerie(nome) {
-			const match = (nome || "").match(/^\d+/);
-			return match ? match[0] : null;
-		}
 		$: anosDisponiveis = [...new Set(turmas.map((t) => t.ano_letivo).filter(Boolean))].sort((a, b) => b - a);
-		$: seriesDisponiveis = [...new Set(turmas.map((t) => extrairSerie(t.nome)).filter(Boolean))].sort((a, b) => Number(a) - Number(b));
+		$: seriesDisponiveis = [...new Set(turmas.map((t) => t.serie).filter(Boolean))].sort((a, b) => Number(a) - Number(b));
 		$: turmasFiltradas = turmas.filter((t) => {
 			if (!pesquisa.trim()) return true;
 			const termo = pesquisa.toLowerCase();
-			return t.nome?.toLowerCase().includes(termo) || String(t.ano_letivo ?? "").includes(termo);
+			return t.nome?.toLowerCase().includes(termo) || t.turno?.toLowerCase().includes(termo) || t.grau?.toLowerCase().includes(termo) || String(t.ano_letivo ?? "").includes(termo);
 		}).filter((t) => {
 			return true;
 		}).filter((t) => {
@@ -192,7 +219,7 @@ function _page($$renderer, $$props) {
 				estadoVazioTexto: "Nenhuma turma encontrada.",
 				carregandoTexto: "Carregando turmas...",
 				mostrarPesquisa: true,
-				placeholderPesquisa: "Pesquisar por nome ou ano...",
+				placeholderPesquisa: "Pesquisar por nome, turno, grau ou ano...",
 				ordenacao,
 				onOrdenarChange: mudarOrdenacao,
 				get pesquisa() {
@@ -204,7 +231,53 @@ function _page($$renderer, $$props) {
 				},
 				$$slots: {
 					campos: ($$renderer) => {
-						$$renderer.push(`<div class="field"><label for="nome-turma">Nome da Turma</label> <input id="nome-turma" type="text"${attr("value", novaTurma.nome)} placeholder="Ex: 9º Ano A" required=""/> <small class="dica-campo">Deve começar com um número (ex: 1A, 9º Ano A).</small></div> <div class="field"><label for="ano-letivo">Ano Letivo</label> <input id="ano-letivo" type="number"${attr("value", novaTurma.ano_letivo)} placeholder="Ex: 2026" required=""/></div>`);
+						$$renderer.push(`<div class="field"><label for="serie-turma">Série</label> <input id="serie-turma" type="number" min="1" max="10"${attr("value", novaSerie)} placeholder="Ex: 9" required=""/> <small class="dica-campo">Número de 1 a 10.</small></div> <div class="field"><label for="letra-turma">Turma</label> <input id="letra-turma" type="text" maxlength="1" style="text-transform: uppercase;"${attr("value", novaLetra)} placeholder="Ex: A" required=""/> <small class="dica-campo">Letra de A a Z.</small></div> <div class="field"><label for="turno-turma">Turno</label> `);
+						$$renderer.select({
+							id: "turno-turma",
+							value: novoTurno,
+							required: true
+						}, ($$renderer) => {
+							$$renderer.option({
+								value: "",
+								disabled: true,
+								selected: true
+							}, ($$renderer) => {
+								$$renderer.push(`Selecione o turno`);
+							});
+							$$renderer.push(`<!--[-->`);
+							const each_array = ensure_array_like(TURNOS);
+							for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
+								let t = each_array[$$index];
+								$$renderer.option({ value: t }, ($$renderer) => {
+									$$renderer.push(`${escape_html(t.charAt(0).toUpperCase() + t.slice(1))}`);
+								});
+							}
+							$$renderer.push(`<!--]-->`);
+						});
+						$$renderer.push(`</div> <div class="field"><label for="grau-turma">Grau</label> `);
+						$$renderer.select({
+							id: "grau-turma",
+							value: novoGrau,
+							required: true
+						}, ($$renderer) => {
+							$$renderer.option({
+								value: "",
+								disabled: true,
+								selected: true
+							}, ($$renderer) => {
+								$$renderer.push(`Selecione o grau`);
+							});
+							$$renderer.push(`<!--[-->`);
+							const each_array_1 = ensure_array_like(GRAUS);
+							for (let $$index_1 = 0, $$length = each_array_1.length; $$index_1 < $$length; $$index_1++) {
+								let g = each_array_1[$$index_1];
+								$$renderer.option({ value: g }, ($$renderer) => {
+									$$renderer.push(`${escape_html(g.charAt(0).toUpperCase() + g.slice(1))}`);
+								});
+							}
+							$$renderer.push(`<!--]-->`);
+						});
+						$$renderer.push(`</div> <div class="field"><label for="ano-letivo">Ano Letivo</label> <input id="ano-letivo" type="number"${attr("value", novoAnoLetivo)} placeholder="Ex: 2026" required=""/></div>`);
 					},
 					"filtros-extra": ($$renderer) => {
 						$$renderer.select({
@@ -215,9 +288,9 @@ function _page($$renderer, $$props) {
 								$$renderer.push(`Todos os anos`);
 							});
 							$$renderer.push(`<!--[-->`);
-							const each_array = ensure_array_like(anosDisponiveis);
-							for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
-								let ano = each_array[$$index];
+							const each_array_2 = ensure_array_like(anosDisponiveis);
+							for (let $$index_2 = 0, $$length = each_array_2.length; $$index_2 < $$length; $$index_2++) {
+								let ano = each_array_2[$$index_2];
 								$$renderer.option({ value: String(ano) }, ($$renderer) => {
 									$$renderer.push(`${escape_html(ano)}`);
 								});
@@ -233,10 +306,10 @@ function _page($$renderer, $$props) {
 								$$renderer.push(`Todas as séries`);
 							});
 							$$renderer.push(`<!--[-->`);
-							const each_array_1 = ensure_array_like(seriesDisponiveis);
-							for (let $$index_1 = 0, $$length = each_array_1.length; $$index_1 < $$length; $$index_1++) {
-								let serie = each_array_1[$$index_1];
-								$$renderer.option({ value: serie }, ($$renderer) => {
+							const each_array_3 = ensure_array_like(seriesDisponiveis);
+							for (let $$index_3 = 0, $$length = each_array_3.length; $$index_3 < $$length; $$index_3++) {
+								let serie = each_array_3[$$index_3];
+								$$renderer.option({ value: String(serie) }, ($$renderer) => {
 									$$renderer.push(`${escape_html(serie)}º`);
 								});
 							}
@@ -244,15 +317,15 @@ function _page($$renderer, $$props) {
 						});
 					},
 					"tabela-header": ($$renderer) => {
-						$$renderer.push(`<div class="table-header"><div class="th flex-2"><span class="material-symbols-outlined" style="font-size:16px; margin-right:4px; vertical-align:middle">groups</span> Nome</div> <div class="th flex-1">Ano Letivo</div> <div class="th flex-1">Ações</div></div>`);
+						$$renderer.push(`<div class="table-header"><div class="th flex-2"><span class="material-symbols-outlined" style="font-size:16px; margin-right:4px; vertical-align:middle">groups</span> Nome</div> <div class="th flex-1">Turno</div> <div class="th flex-1">Grau</div> <div class="th flex-1">Ano Letivo</div> <div class="th flex-1">Ações</div></div>`);
 					},
 					"tabela-body": ($$renderer) => {
 						{
 							$$renderer.push(`<!--[-->`);
-							const each_array_2 = ensure_array_like(turmasFiltradas);
-							for (let index = 0, $$length = each_array_2.length; index < $$length; index++) {
-								let t = each_array_2[index];
-								$$renderer.push(`<div${attr_class(`table-row ${index % 2 === 0 ? "even" : "odd"}`)}><div class="td flex-2"><span class="text-truncate">${escape_html(t.nome)}</span></div> <div class="td flex-1"><span class="badge-numero">${escape_html(t.ano_letivo)}</span></div> <div class="td flex-1 action-cell"><button class="btn-action edit" title="Editar"><span class="material-symbols-outlined">edit</span></button></div></div>`);
+							const each_array_4 = ensure_array_like(turmasFiltradas);
+							for (let index = 0, $$length = each_array_4.length; index < $$length; index++) {
+								let t = each_array_4[index];
+								$$renderer.push(`<div${attr_class(`table-row ${index % 2 === 0 ? "even" : "odd"}`)}><div class="td flex-2"><span class="text-truncate">${escape_html(t.nome)}</span></div> <div class="td flex-1"><span class="text-truncate">${escape_html(t.turno)}</span></div> <div class="td flex-1"><span class="text-truncate">${escape_html(t.grau)}</span></div> <div class="td flex-1"><span class="badge-numero">${escape_html(t.ano_letivo)}</span></div> <div class="td flex-1 action-cell"><button class="btn-action edit" title="Editar"><span class="material-symbols-outlined">edit</span></button></div></div>`);
 							}
 							$$renderer.push(`<!--]-->`);
 						}

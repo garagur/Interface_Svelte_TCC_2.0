@@ -2,7 +2,7 @@
     import GradeSemanal from "$lib/components/SemanalGrade/GradeSemanal.svelte";
     import BlocoCard from "$lib/components/Card/BlocoHorarioCard.svelte";
     import ConfirmarDelecaoModal from "$lib/components/Card/ConfirmarDelecaoModal.svelte";
-
+    import ListaAgendamentosCard from "$lib/components/Card/ListaAgendamentosCard.svelte";
     // Dados pessoais
     /** @type {{ nome?: string, email?: string, matricula?: string, foto_url?: string } | null} */
     export let usuario = null;
@@ -497,140 +497,15 @@
                     <h3>Meus Agendamentos</h3>
                 </div>
 
-                <div class="agendamentos-toolbar">
-                    <div class="campo-pesquisa-ag">
-                        <span class="material-symbols-outlined">search</span>
-                        <input
-                            type="text"
-                            placeholder="Pesquisar por sala ou equipamento..."
-                            bind:value={pesquisaAg}
-                        />
-                    </div>
-
-                    <div class="filtro-grupo">
-                        <span class="filtro-grupo-label">Status</span>
-                        <select
-                            class="select-filtro-ag"
-                            bind:value={filtroStatusAg}
-                        >
-                            <option value="todos">Todos</option>
-                            <option value="ativo">Ativos</option>
-                            <option value="cancelado">Cancelados</option>
-                            <option value="finalizado">Finalizados</option>
-                        </select>
-                    </div>
-
-                    <div class="filtro-grupo">
-                        <span class="filtro-grupo-label">Tipo</span>
-                        <select
-                            class="select-filtro-ag"
-                            bind:value={filtroTipoAg}
-                        >
-                            <option value="todos">Todos</option>
-                            <option value="sala">Salas</option>
-                            <option value="equipamento">Equipamentos</option>
-                        </select>
-                    </div>
-
-                    <div class="filtro-grupo">
-                        <span class="filtro-grupo-label">Ordenar</span>
-                        <select
-                            class="select-filtro-ag"
-                            bind:value={ordenacaoAg}
-                        >
-                            <option value="recente">Mais recente</option>
-                            <option value="antigo">Mais antigo</option>
-                            <option value="az">Nome (A-Z)</option>
-                            <option value="za">Nome (Z-A)</option>
-                        </select>
-                    </div>
-                </div>
-
-                {#if carregandoAgendamentos}
-                    <p class="estado-vazio">Carregando agendamentos...</p>
-                {:else if agendamentosFiltrados.length === 0}
-                    <p class="estado-vazio">
-                        Nenhum agendamento encontrado com os filtros
-                        selecionados.
-                    </p>
-                {:else}
-                    <div class="agendamentos-lista">
-                        {#each agendamentosFiltrados as ag}
-                            {@const status = statusExibicao(ag)}
-                            <div
-                                class="agendamento-item"
-                                class:cancelado={status === "cancelado"}
-                            >
-                                <div class="agendamento-faixa"></div>
-                                <div class="agendamento-body">
-                                    <div class="agendamento-data-hora">
-                                        <span class="material-symbols-outlined"
-                                            >schedule</span
-                                        >
-                                        {formatarDataHora(ag.data_hora_inicio)}
-                                        &nbsp;→&nbsp;
-                                        {formatarDataHora(ag.data_hora_fim)}
-                                    </div>
-                                    <div class="agendamento-sala">
-                                        <span class="material-symbols-outlined"
-                                            >{ag.tipo === "equipamento"
-                                                ? "devices"
-                                                : "meeting_room"}</span
-                                        >
-                                        {ag.tipo === "equipamento"
-                                            ? ag.equipamento_nome ||
-                                              ag.equipamento_id ||
-                                              "Equipamento não informado"
-                                            : ag.sala_nome ||
-                                              ag.sala_id ||
-                                              "Sala não informada"}
-                                    </div>
-                                    {#if ag.obs}
-                                        <p class="agendamento-obs">{ag.obs}</p>
-                                    {/if}
-                                    {#if status === "cancelado" && ag.justificativa}
-                                        <p class="agendamento-justificativa">
-                                            <span
-                                                class="material-symbols-outlined"
-                                                >info</span
-                                            >
-                                            Motivo do cancelamento: {ag.justificativa}
-                                        </p>
-                                    {/if}
-                                    {#if status === "cancelado"}
-                                        <p class="agendamento-cancelador">
-                                            <span
-                                                class="material-symbols-outlined"
-                                                >person</span
-                                            >
-                                            Cancelado por:
-                                            {ag.cancelador_nome ||
-                                                "Nome não informado"}
-                                        </p>
-                                    {/if}
-                                </div>
-                                <div class="agendamento-status">
-                                    <span class="badge-status {status}">
-                                        {rotuloStatus(status)}
-                                    </span>
-                                    {#if status === "futuro" && onDeletar}
-                                        <button
-                                            class="btn-deletar-ag"
-                                            on:click={() => abrirModal(ag)}
-                                            title="Deletar agendamento"
-                                            disabled={processando}
-                                        >
-                                            <span
-                                                class="material-symbols-outlined"
-                                                >delete</span
-                                            >
-                                        </button>
-                                    {/if}
-                                </div>
-                            </div>
-                        {/each}
-                    </div>
-                {/if}
+                <ListaAgendamentosCard
+                    {agendamentos}
+                    carregando={carregandoAgendamentos}
+                    onDeletar={abrirModal}
+                    {processando}
+                    semCard
+                    listaPropria
+                    mostrarCancelados
+                />
             </div>
         </main>
     </div>

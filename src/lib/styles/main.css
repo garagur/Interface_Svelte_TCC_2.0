@@ -419,3 +419,27 @@
 .user-menu-sair {
     color: var(--cancel) !important;
 }
+
+.toggle-visao {
+    display: flex;
+    gap: 4px;
+    margin-left: auto;
+    margin-right: 0.75rem;
+}
+
+.toggle-visao button {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: transparent;
+    color: inherit;
+}
+
+.toggle-visao button.ativo {
+    background: var(--primary, #16a34a);
+    color: #fff;
+}

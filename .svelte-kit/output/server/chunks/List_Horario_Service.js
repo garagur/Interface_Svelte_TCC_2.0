@@ -68,15 +68,15 @@ function BlocoHorarioCard($$renderer, $$props) {
 		/** @type {((bloco: any) => void) | null} */
 		let onRemover = fallback($$props["onRemover"], null);
 		let mostrarTurma = fallback($$props["mostrarTurma"], false);
-		$$renderer.push(`<div class="bloco-card svelte-3lov78"><div class="bloco-horario svelte-3lov78">${escape_html(bloco.hora_inicio)} - ${escape_html(bloco.hora_fim)}</div> <div class="bloco-disciplina svelte-3lov78">${escape_html(bloco.disciplina)}</div> <div class="bloco-professor svelte-3lov78"><span class="material-symbols-outlined icon-tiny">person</span> ${escape_html(bloco.professor?.name ?? bloco.professor_id)}</div> `);
+		$$renderer.push(`<div class="bloco-card svelte-3lov78"><div class="bloco-horario svelte-3lov78">${escape_html(bloco.hora_inicio)} - ${escape_html(bloco.hora_fim)}</div> <div class="bloco-disciplina svelte-3lov78">${escape_html(bloco.disciplina)}</div> <div class="bloco-professor svelte-3lov78"><span class="material-symbols-outlined icon-tiny svelte-3lov78">person</span> ${escape_html(bloco.professor?.name ?? bloco.professor_id)}</div> `);
 		if (mostrarTurma) {
 			$$renderer.push("<!--[0-->");
-			$$renderer.push(`<div class="bloco-turma svelte-3lov78"><span class="material-symbols-outlined icon-tiny">groups</span> ${escape_html(bloco.turma_nome ?? bloco.turma_id ?? "—")}</div>`);
+			$$renderer.push(`<div class="bloco-turma svelte-3lov78"><span class="material-symbols-outlined icon-tiny svelte-3lov78">groups</span> ${escape_html(bloco.turma_nome ?? bloco.turma_id ?? "—")}</div>`);
 		} else $$renderer.push("<!--[-1-->");
 		$$renderer.push(`<!--]--> `);
 		if (onRemover) {
 			$$renderer.push("<!--[0-->");
-			$$renderer.push(`<div class="bloco-actions svelte-3lov78"><button class="btn-action delete svelte-3lov78" title="Remover"><span class="material-symbols-outlined">delete</span></button></div>`);
+			$$renderer.push(`<div class="bloco-actions svelte-3lov78"><button class="btn-action delete svelte-3lov78" title="Remover"><span class="material-symbols-outlined svelte-3lov78">delete</span></button></div>`);
 		} else $$renderer.push("<!--[-1-->");
 		$$renderer.push(`<!--]--></div>`);
 		bind_props($$props, {

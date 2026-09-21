@@ -1,4 +1,4 @@
-import { S as escape_html, n as bind_props, ot as fallback } from "./server.js";
+import { S as escape_html, n as bind_props, ot as fallback, x as attr } from "./server.js";
 import { t as apiFetch } from "./api.js";
 //#region src/lib/components/Card/ConfirmarDelecaoModal.svelte
 function ConfirmarDelecaoModal($$renderer, $$props) {
@@ -7,6 +7,7 @@ function ConfirmarDelecaoModal($$renderer, $$props) {
 		let agendamento = fallback($$props["agendamento"], null);
 		let onConfirmar = $$props["onConfirmar"];
 		let onCancelar = $$props["onCancelar"];
+		let processando = fallback($$props["processando"], false);
 		let justificativa = "";
 		function formatarDataHora(iso) {
 			if (!iso) return "—";
@@ -28,16 +29,25 @@ function ConfirmarDelecaoModal($$renderer, $$props) {
 			$$renderer.push(`<div class="modal-overlay svelte-ojso7o" role="button" tabindex="-1" aria-label="Fechar modal"><div class="modal-box svelte-ojso7o" role="dialog" aria-modal="true" tabindex="-1"><div class="modal-header svelte-ojso7o"><span class="icon-wrapper svelte-ojso7o"><span class="material-symbols-outlined svelte-ojso7o">warning</span></span> <h3 class="svelte-ojso7o">Confirmar cancelamento</h3></div> <p class="modal-descricao svelte-ojso7o">Deseja cancelar o agendamento do
                 ${escape_html(ehEquipamento ? "equipamento" : "sala")} <strong>${escape_html(recursoNome)}</strong>?</p> <p class="modal-horario svelte-ojso7o">${escape_html(formatarDataHora(agendamento.data_hora_inicio))}
                  → 
-                ${escape_html(formatarDataHora(agendamento.data_hora_fim))}</p> <div class="modal-campo svelte-ojso7o"><label for="justificativa" class="svelte-ojso7o">Justificativa do cancelamento</label> <textarea id="justificativa" placeholder="Descreva o motivo do cancelamento..." rows="3" class="svelte-ojso7o">`);
+                ${escape_html(formatarDataHora(agendamento.data_hora_fim))}</p> <div class="modal-campo svelte-ojso7o"><label for="justificativa" class="svelte-ojso7o">Justificativa do cancelamento</label> <textarea id="justificativa" placeholder="Descreva o motivo do cancelamento..." rows="3"${attr("disabled", processando, true)} class="svelte-ojso7o">`);
 			const $$body = escape_html(justificativa);
 			if ($$body) $$renderer.push(`${$$body}`);
-			$$renderer.push(`</textarea></div> <div class="modal-acoes svelte-ojso7o"><button class="btn-secondary svelte-ojso7o">Cancelar</button> <button class="btn-danger svelte-ojso7o">Confirmar exclusão</button></div></div></div>`);
+			$$renderer.push(`</textarea></div> <div class="modal-acoes svelte-ojso7o"><button class="btn-secondary svelte-ojso7o"${attr("disabled", processando, true)}>Cancelar</button> <button class="btn-danger svelte-ojso7o"${attr("disabled", processando, true)}>`);
+			if (processando) {
+				$$renderer.push("<!--[0-->");
+				$$renderer.push(`<span class="material-symbols-outlined spin svelte-ojso7o">progress_activity</span> Cancelando...`);
+			} else {
+				$$renderer.push("<!--[-1-->");
+				$$renderer.push(`Confirmar exclusão`);
+			}
+			$$renderer.push(`<!--]--></button></div></div></div>`);
 		} else $$renderer.push("<!--[-1-->");
 		$$renderer.push(`<!--]-->`);
 		bind_props($$props, {
 			agendamento,
 			onConfirmar,
-			onCancelar
+			onCancelar,
+			processando
 		});
 	});
 }
@@ -197,7 +207,9 @@ async function carregarAgendamentosEquipamentos(token) {
 	return (Array.isArray(dados) ? dados : dados?.data || []).map((s) => ({
 		id: s.id,
 		user_id: s.user_id || "",
+		usuario_nome: s.usuario_nome || "",
 		equipamento_id: s.equipamento_id || "",
+		equipamento_nome: s.equipamento_nome || "",
 		data_hora_inicio: s.data_hora_inicio || "",
 		data_hora_fim: s.data_hora_fim || "",
 		obs: s.obs || "",

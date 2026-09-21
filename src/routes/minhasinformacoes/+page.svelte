@@ -1,5 +1,5 @@
 <script>
-    //+page
+    //+page de minhas informações, que mostra os dados do usuário logado, sua grade de aulas e seus agendamentos
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
     import MinhasInformacoesCard from "$lib/components/meusagendamentos/MinhasInformacoesCard.svelte";
@@ -82,12 +82,12 @@
                 carregarAgendamentosEquipamentos(token),
             ]);
 
-            agendamentosSala = todasSalas.filter(
-                (ag) => String(ag.user_id) === String(professor_id),
-            );
-            agendamentosEquipamento = todosEquipamentos.filter(
-                (ag) => String(ag.user_id) === String(professor_id),
-            );
+            agendamentosSala = todasSalas
+                .filter((ag) => String(ag.user_id) === String(professor_id))
+                .map((ag) => ({ ...ag, tipo: "sala" }));
+            agendamentosEquipamento = todosEquipamentos
+                .filter((ag) => String(ag.user_id) === String(professor_id))
+                .map((ag) => ({ ...ag, tipo: "equipamento" }));
         } catch (e) {
             erro = e?.message || "Erro ao carregar agendamentos.";
         } finally {
