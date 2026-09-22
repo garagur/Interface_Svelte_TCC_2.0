@@ -24,8 +24,8 @@
 }
 
 .escopo-login input:focus {
-    border-color: #464646;
-    background: #fff;
+    border-color: var(--primary-dark);
+    background: var(--white);
 }
 
 .btn-novo-agendamento {

@@ -8,10 +8,6 @@
     font-family: "Inter", Arial, sans-serif;
     background-color: var(--gray-50);
 
-    /* Tokens neumórficos locais do escopo */
-    --neu-bg: var(--gray-50);
-    --neu-shadow-dark: rgba(163, 177, 198, 0.55);
-    --neu-shadow-light: rgba(255, 255, 255, 0.85);
 }
 
 .escopo-main .app-bar {
@@ -21,7 +17,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 2px 8px var(--shadow-dark-medium);
 }
 
 .escopo-main .title-section {
@@ -59,7 +55,7 @@
 }
 
 .escopo-main .btn-icon:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--overlay-light);
 }
 
 /* ── Menu de navegação ── */
@@ -85,15 +81,15 @@
     transition: all 0.3s ease;
     flex-shrink: 0;
 
-    box-shadow: 12px 12px 24px rgba(0, 0, 0, 0.4),
-        -12px -12px 24px rgba(255, 255, 255, 0.08);
+    box-shadow: 12px 12px 24px var(--shadow-dark-heavy),
+        -12px -12px 24px var(--shadow-light-soft);
 }
 
 .escopo-main .menu-card:hover {
     background-color: var(--primary);
 
-    box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.4),
-        inset -4px -4px 8px rgba(255, 255, 255, 0.08);
+    box-shadow: inset 4px 4px 8px var(--shadow-dark-heavy),
+        inset -4px -4px 8px var(--shadow-light-soft);
 
     transform: none;
 }
@@ -317,8 +313,8 @@
 
 .escopo-main .btn-primary:hover {
     box-shadow:
-        inset 3px 3px 6px rgba(0, 0, 0, 0.3),
-        inset -3px -3px 6px rgba(255, 255, 255, 0.05);
+        inset 3px 3px 6px var(--shadow-dark-medium),
+        inset -3px -3px 6px var(--shadow-light-faint);
 }
 
 .escopo-main .grade-header-title {
@@ -349,22 +345,22 @@
     height: 42px;
     background: var(--primary);
     box-shadow:
-        4px 4px 8px rgba(0, 0, 0, 0.35),
-        -4px -4px 8px rgba(255, 255, 255, 0.06);
+        4px 4px 8px var(--shadow-dark-strong),
+        -4px -4px 8px var(--shadow-light-soft);
     transition: box-shadow 0.15s ease;
 }
 
 .user-menu .btn-icon:hover {
     background: var(--primary);
     box-shadow:
-        2px 2px 5px rgba(0, 0, 0, 0.35),
-        -2px -2px 5px rgba(255, 255, 255, 0.06);
+        2px 2px 5px var(--shadow-dark-strong),
+        -2px -2px 5px var(--shadow-light-soft);
 }
 
 .user-menu .btn-icon[aria-expanded="true"] {
     box-shadow:
-        inset 3px 3px 6px rgba(0, 0, 0, 0.4),
-        inset -3px -3px 6px rgba(255, 255, 255, 0.06);
+        inset 3px 3px 6px var(--shadow-dark-heavy),
+        inset -3px -3px 6px var(--shadow-light-soft);
 }
 
 .user-menu .btn-icon .material-symbols-outlined {
@@ -381,7 +377,7 @@
     list-style: none;
     background: var(--primary-dark);
     border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 8px 24px var(--shadow-dark-strong);
     z-index: 50;
 }
 
@@ -402,7 +398,7 @@
 }
 
 .user-menu-dropdown li button:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--shadow-light-soft);
 }
 
 .user-menu-dropdown li button .material-symbols-outlined {
@@ -412,7 +408,7 @@
 
 .user-menu-separador {
     height: 1px;
-    background: rgba(255, 255, 255, 0.12);
+    background: var(--overlay-medium);
     margin: 6px 4px;
 }
 
@@ -440,6 +436,6 @@
 }
 
 .toggle-visao button.ativo {
-    background: var(--primary, #16a34a);
-    color: #fff;
+    background: var(--primary);
+    color: var(--white);
 }

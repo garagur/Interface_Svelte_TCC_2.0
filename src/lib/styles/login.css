@@ -5,20 +5,20 @@
     justify-content: center;
     align-items: center;
     font-family: "Inter", sans-serif;
-    background: #3a3f47;
+    background: var(--primary-dark);
 }
 
 .escopo-login .card {
-    background: #ffffff;
+    background: var(--white);
     padding: 2.5rem;
     border-radius: 24px;
     width: 100%;
     max-width: 400px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 20px 40px var(--shadow-dark-strong);
 }
 
 .escopo-login .card h2 {
-    color: #1e293b;
+    color: var(--text-dark);
     text-align: center;
     margin-bottom: 1.5rem;
 }
@@ -38,60 +38,60 @@
 .escopo-login .field label {
     font-weight: 600;
     font-size: 0.9rem;
-    color: #64748b;
+    color: var(--text-muted);
 }
 
 .escopo-login .field input {
     padding: 0.75rem;
-    background: #f1f5f9;
+    background: var(--bg-input);
     border: none;
-    color: #1e293b;
+    color: var(--text-dark);
     border-radius: 8px;
-    box-shadow: inset 4px 4px 8px rgba(163, 177, 198, 0.5),
-        inset -4px -4px 8px rgba(255, 255, 255, 0.9);
+    box-shadow: inset 4px 4px 8px var(--neu-shadow-dark),
+        inset -4px -4px 8px var(--shadow-light-heavy);
     outline: none;
     transition: box-shadow 0.2s;
 }
 
 .escopo-login .field input::placeholder {
-    color: #94a3b8;
+    color: var(--disabled-text);
 }
 
 .escopo-login .field input:focus {
     outline: none;
-    box-shadow: inset 5px 5px 10px rgba(163, 177, 198, 0.6),
-        inset -5px -5px 10px rgba(255, 255, 255, 1);
+    box-shadow: inset 5px 5px 10px var(--neu-shadow-dark),
+        inset -5px -5px 10px var(--white);
 }
 
 .escopo-login .btn-main {
-    background: #16a34a;
-    color: #ffffff;
+    background: var(--confirm);
+    color: var(--white);
     border: none;
     padding: 0.8rem;
     border-radius: 12px;
     cursor: pointer;
     font-weight: bold;
-    box-shadow: 6px 6px 12px rgba(163, 177, 198, 0.5),
-        -6px -6px 12px rgba(255, 255, 255, 0.6);
+    box-shadow: 6px 6px 12px var(--neu-shadow-dark),
+        -6px -6px 12px var(--shadow-light-medium);
     transition: all 0.2s ease;
 }
 
 .escopo-login .btn-main:hover:not(:disabled) {
-    background: #15803d;
-    box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.25),
-        inset -4px -4px 8px rgba(255, 255, 255, 0.15);
+    background: var(--confirm-dark);
+    box-shadow: inset 4px 4px 8px var(--shadow-dark-medium),
+        inset -4px -4px 8px var(--overlay-medium);
 }
 
 .escopo-login .btn-main:disabled {
-    background: #cbd5e1;
-    color: #94a3b8;
+    background: var(--disabled);
+    color: var(--disabled-text);
     cursor: not-allowed;
-    box-shadow: inset 4px 4px 8px rgba(163, 177, 198, 0.5),
-        inset -4px -4px 8px rgba(255, 255, 255, 0.7);
+    box-shadow: inset 4px 4px 8px var(--neu-shadow-dark),
+        inset -4px -4px 8px var(--shadow-light-strong);
 }
 
 .escopo-login .erro {
-    color: #dc2626;
+    color: var(--danger-text);
     margin: 0;
     font-size: 0.9rem;
     text-align: center;
@@ -99,19 +99,19 @@
 
 .escopo-login .info {
     font-size: 0.9rem;
-    color: #64748b;
+    color: var(--text-muted);
     text-align: center;
     margin-bottom: 1rem;
 }
 
 .escopo-login .aviso-sessao {
-    background: #f1f5f9;
-    color: #92400e;
+    background: var(--bg-input);
+    color: var(--warning-text);
     border: none;
     border-radius: 8px;
     padding: 10px 14px;
     margin-bottom: 16px;
     font-size: 0.9rem;
-    box-shadow: inset 3px 3px 6px rgba(163, 177, 198, 0.5),
-        inset -3px -3px 6px rgba(255, 255, 255, 0.9);
+    box-shadow: inset 3px 3px 6px var(--neu-shadow-dark),
+        inset -3px -3px 6px var(--shadow-light-heavy);
 }

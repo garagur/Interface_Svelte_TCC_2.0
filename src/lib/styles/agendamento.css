@@ -5,7 +5,7 @@
     min-height: 100vh;
     width: 100%;
     font-family: Arial, sans-serif;
-    background-color: #e6ecf0;
+    background-color: var(--surface);
     /* Ajustado suavemente para o fundo permitir o contraste do neumorphism */
 }
 
@@ -17,7 +17,7 @@
     justify-content: space-between;
     align-items: center;
     border: none;
-    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.15), -4px -4px 10px rgba(255, 255, 255, 0.2);
+    box-shadow: 4px 4px 10px var(--shadow-dark-soft), -4px -4px 10px var(--shadow-light-soft);
 }
 
 .escopo-agendamento .title-section {
@@ -48,8 +48,8 @@
 }
 
 .escopo-agendamento .btn-icon:hover {
-    background: rgba(255, 255, 255, 0.15);
-    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.2), inset -2px -2px 4px rgba(255, 255, 255, 0.2);
+    background: var(--overlay-medium);
+    box-shadow: inset 2px 2px 4px var(--shadow-dark-medium), inset -2px -2px 4px var(--shadow-light-soft);
 }
 
 .escopo-agendamento .body-content {
@@ -86,8 +86,8 @@
     outline: none;
     cursor: pointer;
     /* Efeito rebaixado (inset) */
-    box-shadow: inset 3px 3px 6px rgba(166, 180, 200, 0.4),
-        inset -3px -3px 6px rgba(255, 255, 255, 0.8);
+    box-shadow: inset 3px 3px 6px var(--neu-shadow-dark),
+        inset -3px -3px 6px var(--shadow-light-strong);
 }
 
 .escopo-agendamento .conteudo-principal {
@@ -103,8 +103,8 @@
     background: var(--white);
     border-radius: 20px;
     border: none;
-    box-shadow: 8px 8px 16px rgba(166, 180, 200, 0.4),
-        -8px -8px 16px rgba(255, 255, 255, 0.8);
+    box-shadow: 8px 8px 16px var(--neu-shadow-dark),
+        -8px -8px 16px var(--shadow-light-strong);
     padding: 20px;
 }
 
@@ -175,14 +175,14 @@
     background: var(--bg-input);
     color: var(--text-dark);
     outline: none;
-    box-shadow: inset 3px 3px 6px rgba(166, 180, 200, 0.4),
-        inset -3px -3px 6px rgba(255, 255, 255, 0.8);
+    box-shadow: inset 3px 3px 6px var(--neu-shadow-dark),
+        inset -3px -3px 6px var(--shadow-light-strong);
     transition: box-shadow 0.2s;
 }
 
 .escopo-agendamento .field input:focus {
-    box-shadow: inset 4px 4px 8px rgba(166, 180, 200, 0.6),
-        inset -4px -4px 8px rgba(255, 255, 255, 0.9);
+    box-shadow: inset 4px 4px 8px var(--neu-shadow-dark),
+        inset -4px -4px 8px var(--shadow-light-heavy);
 }
 
 .escopo-agendamento .bottom-action {
@@ -210,20 +210,20 @@
     justify-content: center;
     gap: 6px;
     cursor: pointer;
-    box-shadow: 5px 5px 12px rgba(0, 0, 0, 0.15),
-        -3px -3px 8px rgba(255, 255, 255, 0.3);
+    box-shadow: 5px 5px 12px var(--shadow-dark-soft),
+        -3px -3px 8px var(--shadow-light-medium);
     transition: transform 0.1s, box-shadow 0.2s, background 0.2s;
     width: auto;
 }
 
 .escopo-agendamento .btn-primary:hover:not(:disabled) {
     background-color: var(--confirm-dark);
-    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2),
-        -2px -2px 6px rgba(255, 255, 255, 0.4);
+    box-shadow: 3px 3px 8px var(--shadow-dark-medium),
+        -2px -2px 6px var(--shadow-light-medium);
 }
 
 .escopo-agendamento .btn-primary:active:not(:disabled) {
-    box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.3);
+    box-shadow: inset 3px 3px 6px var(--shadow-dark-medium);
     transform: translateY(1px);
 }
 
@@ -246,20 +246,20 @@
     justify-content: center;
     gap: 6px;
     cursor: pointer;
-    box-shadow: 5px 5px 12px rgba(0, 0, 0, 0.15),
-        -3px -3px 8px rgba(255, 255, 255, 0.3);
+    box-shadow: 5px 5px 12px var(--shadow-dark-soft),
+        -3px -3px 8px var(--shadow-light-medium);
     transition: transform 0.1s, box-shadow 0.2s, background 0.2s;
     width: auto;
 }
 
 .escopo-agendamento .btn-secondary:hover {
     background-color: var(--cancel-dark);
-    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2),
-        -2px -2px 6px rgba(255, 255, 255, 0.4);
+    box-shadow: 3px 3px 8px var(--shadow-dark-medium),
+        -2px -2px 6px var(--shadow-light-medium);
 }
 
 .escopo-agendamento .btn-secondary:active {
-    box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.3);
+    box-shadow: inset 3px 3px 6px var(--shadow-dark-medium);
     transform: translateY(1px);
 }
 
@@ -306,8 +306,8 @@
     border-radius: 12px;
     font-size: 11px;
     font-weight: bold;
-    box-shadow: 3px 3px 6px rgba(166, 180, 200, 0.3),
-        -3px -3px 6px rgba(255, 255, 255, 0.7);
+    box-shadow: 3px 3px 6px var(--neu-shadow-dark),
+        -3px -3px 6px var(--shadow-light-strong);
 }
 
 .escopo-agendamento .estado-vazio {
@@ -326,8 +326,8 @@
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    box-shadow: 4px 4px 8px rgba(166, 180, 200, 0.3),
-        -4px -4px 8px rgba(255, 255, 255, 0.7);
+    box-shadow: 4px 4px 8px var(--neu-shadow-dark),
+        -4px -4px 8px var(--shadow-light-strong);
 }
 
 .escopo-agendamento .bloco-horario {
@@ -365,8 +365,8 @@
     border-radius: 12px;
     padding: 6px;
     margin-bottom: 12px;
-    box-shadow: inset 3px 3px 6px rgba(166, 180, 200, 0.4),
-        inset -3px -3px 6px rgba(255, 255, 255, 0.8);
+    box-shadow: inset 3px 3px 6px var(--neu-shadow-dark),
+        inset -3px -3px 6px var(--shadow-light-strong);
 }
 
 .escopo-agendamento .tabs-recorrencia .tab-btn {
@@ -385,8 +385,8 @@
 .escopo-agendamento .tabs-recorrencia .tab-btn.ativo {
     background: var(--confirm);
     color: var(--white);
-    box-shadow: 3px 3px 6px rgba(166, 180, 200, 0.3),
-        -3px -3px 6px rgba(255, 255, 255, 0.7);
+    box-shadow: 3px 3px 6px var(--neu-shadow-dark),
+        -3px -3px 6px var(--shadow-light-strong);
 }
 
 .escopo-agendamento .dias-semana-field {
@@ -409,16 +409,16 @@
     font-weight: 600;
     color: var(--text-dark);
     cursor: pointer;
-    box-shadow: 3px 3px 6px rgba(166, 180, 200, 0.4),
-        -3px -3px 6px rgba(255, 255, 255, 0.8);
+    box-shadow: 3px 3px 6px var(--neu-shadow-dark),
+        -3px -3px 6px var(--shadow-light-strong);
     transition: all 0.2s;
 }
 
 .escopo-agendamento .dia-btn.ativo {
     background: var(--confirm);
     color: var(--white);
-    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3),
-        inset -2px -2px 5px rgba(255, 255, 255, 0.2);
+    box-shadow: inset 2px 2px 5px var(--shadow-dark-medium),
+        inset -2px -2px 5px var(--shadow-light-soft);
 }
 
 .escopo-agendamento .aviso-recorrencia {
@@ -431,8 +431,8 @@
     border-radius: 10px;
     padding: 8px 12px;
     margin: 4px 0 0;
-    box-shadow: inset 2px 2px 4px rgba(166, 180, 200, 0.3),
-        inset -2px -2px 4px rgba(255, 255, 255, 0.7);
+    box-shadow: inset 2px 2px 4px var(--neu-shadow-dark),
+        inset -2px -2px 4px var(--shadow-light-strong);
 }
 
 .escopo-agendamento .aviso-recorrencia .material-symbols-outlined {
@@ -448,8 +448,8 @@
     width: 90%;
     max-height: 80vh;
     overflow-y: auto;
-    box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.2),
-        -10px -10px 30px rgba(255, 255, 255, 0.8);
+    box-shadow: 10px 10px 30px var(--shadow-dark-medium),
+        -10px -10px 30px var(--shadow-light-strong);
 }
 
 .escopo-agendamento .modal-recorrencia h3 {
@@ -473,7 +473,7 @@
 .escopo-agendamento .lista-falhas li {
     padding: 8px 0;
     border-bottom: none;
-    box-shadow: 0 2px 0 rgba(166, 180, 200, 0.2);
+    box-shadow: 0 2px 0 var(--neu-shadow-dark);
 }
 
 .escopo-agendamento .aviso-modal {
@@ -485,7 +485,7 @@
 .escopo-agendamento .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--shadow-dark-medium);
     backdrop-filter: blur(2px);
     display: flex;
     align-items: center;
@@ -512,28 +512,28 @@
     padding: 10px 20px;
     border: none;
     border-radius: 12px;
-    background-color: #fff;
-    color: #374151;
+    background-color: var(--white);
+    color: var(--text-dark);
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    box-shadow: 4px 4px 8px rgba(166, 180, 200, 0.4),
-        -4px -4px 8px rgba(255, 255, 255, 0.8);
+    box-shadow: 4px 4px 8px var(--neu-shadow-dark),
+        -4px -4px 8px var(--shadow-light-strong);
     transition: all 0.2s;
 }
 
 .escopo-agendamento .toggle-btn:hover {
-    background-color: #fff;
-    box-shadow: 2px 2px 5px rgba(166, 180, 200, 0.5),
-        -2px -2px 5px rgba(255, 255, 255, 0.9);
+    background-color: var(--white);
+    box-shadow: 2px 2px 5px var(--neu-shadow-dark),
+        -2px -2px 5px var(--shadow-light-heavy);
 }
 
 .escopo-agendamento .toggle-btn.active {
-    background-color: #10b981;
-    color: #fff;
+    background-color: var(--confirm);
+    color: var(--white);
     border: none;
-    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2),
-        inset -2px -2px 5px rgba(255, 255, 255, 0.2);
+    box-shadow: inset 2px 2px 5px var(--shadow-dark-medium),
+        inset -2px -2px 5px var(--shadow-light-soft);
 }
 
 .toggle-visao {

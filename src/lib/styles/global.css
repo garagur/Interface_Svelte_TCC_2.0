@@ -10,8 +10,10 @@
     --primary-light: #cccccc;
     --gray-50: #e2e8f0;
     --white: #edf2f7;
+    --surface: #e6e9ef;
 
     --text-dark: #424242;
+    --text-light: #f8fafc;
     --text-muted: #64748b;
     --bg-input: #e2e8f0;
     --border-input: #cbd5e1;
@@ -25,6 +27,32 @@
     /* Estados auxiliares */
     --warning: #f59e0b;
     --warning-light: #fef3c7;
+    --focus: #3b82f6;
+    --disabled: #cbd5e1;
+    --disabled-text: #94a3b8;
+    --danger-text: #dc2626;
+    --warning-text: #92400e;
+
+    --neu-bg: var(--surface);
+    --neu-shadow-dark: rgba(163, 177, 198, 0.55);
+    --neu-shadow-light: rgba(255, 255, 255, 0.85);
+    --shadow-dark: rgba(0, 0, 0, 0.26);
+    --shadow-dark-soft: rgba(0, 0, 0, 0.15);
+    --shadow-dark-medium: rgba(0, 0, 0, 0.2);
+    --shadow-dark-strong: rgba(0, 0, 0, 0.35);
+    --shadow-dark-heavy: rgba(0, 0, 0, 0.4);
+    --shadow-light-soft: rgba(255, 255, 255, 0.2);
+    --shadow-light-faint: rgba(255, 255, 255, 0.05);
+    --shadow-light-medium: rgba(255, 255, 255, 0.3);
+    --shadow-light-strong: rgba(255, 255, 255, 0.8);
+    --shadow-light-heavy: rgba(255, 255, 255, 0.9);
+    --overlay: rgba(0, 0, 0, 0.45);
+    --overlay-light: rgba(255, 255, 255, 0.1);
+    --overlay-medium: rgba(255, 255, 255, 0.15);
+    --heatmap-1: #9be9a8;
+    --heatmap-2: #40c463;
+    --heatmap-3: #30a14e;
+    --heatmap-4: #216e39;
 
     /* Padronização de tamanhos e sombras */
     --card-radius: 16px;

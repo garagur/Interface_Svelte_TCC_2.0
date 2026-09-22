@@ -14,7 +14,7 @@
     height: 64px;
     background: var(--primary);
     color: var(--white);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 2px 8px var(--shadow-dark-medium);
     position: sticky;
     top: 0;
     z-index: 10;
@@ -46,7 +46,7 @@
 }
 
 .minhas-informacoes .btn-icon:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--overlay-light);
 }
 
 .minhas-informacoes .page-content {
@@ -57,12 +57,6 @@
     max-width: 1400px;
     margin: 0 auto;
     width: 100%;
-}
-
-.minhas-informacoes .scaffold {
-    --neu-bg: var(--gray-50);
-    --neu-shadow-dark: rgba(163, 177, 198, 0.55);
-    --neu-shadow-light: rgba(255, 255, 255, 0.85);
 }
 
 .minhas-informacoes .card {
@@ -354,22 +348,22 @@
 }
 
 .minhas-informacoes .heatmap-dia.nivel-1 {
-    background: #9be9a8;
+    background: var(--heatmap-1);
     box-shadow: none;
 }
 
 .minhas-informacoes .heatmap-dia.nivel-2 {
-    background: #40c463;
+    background: var(--heatmap-2);
     box-shadow: none;
 }
 
 .minhas-informacoes .heatmap-dia.nivel-3 {
-    background: #30a14e;
+    background: var(--heatmap-3);
     box-shadow: none;
 }
 
 .minhas-informacoes .heatmap-dia.nivel-4 {
-    background: #216e39;
+    background: var(--heatmap-4);
     box-shadow: none;
 }
 
@@ -397,7 +391,7 @@
 .minhas-informacoes .msg-erro {
     background: var(--cancel-light);
     color: var(--cancel);
-    border: 1px solid #fecaca;
+    border: 1px solid var(--cancel-light);
     border-radius: 8px;
     padding: 10px 14px;
     font-size: 0.82rem;

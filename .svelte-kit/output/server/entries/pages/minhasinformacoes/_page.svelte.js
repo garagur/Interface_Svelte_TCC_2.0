@@ -5,11 +5,11 @@ import "../../../chunks/navigation.js";
 import "../../../chunks/api.js";
 import "../../../chunks/User_Endpoints.js";
 import { a as BlocoHorarioCard, o as GradeSemanal } from "../../../chunks/List_Horario_Service.js";
-import { a as deletarAgendamentoSala, r as deletarAgendamentoEquipamento, s as ConfirmarDelecaoModal } from "../../../chunks/List_Agendamento_Equipamento_Service.js";
+import { a as deletarAgendamentoSala, c as ConfirmarDelecaoModal, r as deletarAgendamentoEquipamento, s as ListaAgendamentosCard } from "../../../chunks/List_Agendamento_Equipamento_Service.js";
 //#region src/lib/components/meusagendamentos/MinhasInformacoesCard.svelte
 function MinhasInformacoesCard($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
-		let semanasHeatmap, rotulosMeses, totalGeral, agendamentosFiltrados;
+		let semanasHeatmap, rotulosMeses, totalGeral;
 		let usuario = fallback($$props["usuario"], null);
 		let carregandoUsuario = fallback($$props["carregandoUsuario"], false);
 		let estatisticas = fallback($$props["estatisticas"], () => ({
@@ -53,36 +53,6 @@ function MinhasInformacoesCard($$renderer, $$props) {
 			"Dez"
 		];
 		let anoSelecionado = (/* @__PURE__ */ new Date()).getFullYear();
-		function formatarDataHora(iso) {
-			if (!iso) return "—";
-			const d = new Date(iso);
-			return `${d.toLocaleDateString("pt-BR", {
-				day: "2-digit",
-				month: "2-digit",
-				year: "numeric"
-			})} às ${d.toLocaleTimeString("pt-BR", {
-				hour: "2-digit",
-				minute: "2-digit"
-			})}`;
-		}
-		function isFuturo(iso) {
-			if (!iso) return false;
-			return new Date(iso) >= /* @__PURE__ */ new Date();
-		}
-		/**
-		* Determina o status de exibição do agendamento.
-		* @param {any} ag
-		* @returns {"cancelado" | "futuro" | "passado"}
-		*/
-		function statusExibicao(ag) {
-			if (ag.status === "inativo") return "cancelado";
-			return isFuturo(ag.data_hora_inicio) ? "futuro" : "passado";
-		}
-		function rotuloStatus(status) {
-			if (status === "cancelado") return "Cancelado";
-			if (status === "futuro") return "Agendado";
-			return "Concluído";
-		}
 		/**
 		* Normaliza o tipo do agendamento ("sala" | "equipamento").
 		* @param {any} ag
@@ -96,6 +66,10 @@ function MinhasInformacoesCard($$renderer, $$props) {
 		*/
 		function nomeAgendamento(ag) {
 			return tipoAgendamento(ag) === "equipamento" ? ag.equipamento_nome || "" : ag.sala_nome || "";
+		}
+		function abrirModal(ag) {
+			if (processando) return;
+			agendamentoParaDeletar = ag;
 		}
 		function fecharModal() {
 			if (processando) return;
@@ -150,9 +124,6 @@ function MinhasInformacoesCard($$renderer, $$props) {
 			return semanas;
 		}
 		let pesquisaAg = "";
-		let filtroStatusAg = "todos";
-		let filtroTipoAg = "todos";
-		let ordenacaoAg = "recente";
 		$: semanasHeatmap = montarSemanas(estatisticas?.heatmap, anoSelecionado);
 		$: rotulosMeses = semanasHeatmap.map((semana, idx) => {
 			const primeiroDia = semana[0];
@@ -162,7 +133,7 @@ function MinhasInformacoesCard($$renderer, $$props) {
 			return primeiroDia.mes !== mesAnterior ? NOMES_MESES[primeiroDia.mes] : "";
 		});
 		$: totalGeral = (estatisticas?.totalSala || 0) + (estatisticas?.totalEquipamento || 0);
-		$: agendamentosFiltrados = agendamentos.filter((ag) => {
+		$: agendamentos.filter((ag) => {
 			if (!pesquisaAg.trim()) return true;
 			const termo = pesquisaAg.toLowerCase();
 			return nomeAgendamento(ag).toLowerCase().includes(termo) || (ag.obs || "").toLowerCase().includes(termo);
@@ -246,100 +217,17 @@ function MinhasInformacoesCard($$renderer, $$props) {
 				} }
 			});
 		}
-		$$renderer.push(`<!--]--></div> <div class="card" id="agendamentos"><div class="card-header"><span class="material-symbols-outlined">event_available</span> <h3>Meus Agendamentos</h3></div> <div class="agendamentos-toolbar"><div class="campo-pesquisa-ag"><span class="material-symbols-outlined">search</span> <input type="text" placeholder="Pesquisar por sala ou equipamento..."${attr("value", pesquisaAg)}/></div> <div class="filtro-grupo"><span class="filtro-grupo-label">Status</span> `);
-		$$renderer.select({
-			class: "select-filtro-ag",
-			value: filtroStatusAg
-		}, ($$renderer) => {
-			$$renderer.option({ value: "todos" }, ($$renderer) => {
-				$$renderer.push(`Todos`);
-			});
-			$$renderer.option({ value: "ativo" }, ($$renderer) => {
-				$$renderer.push(`Ativos`);
-			});
-			$$renderer.option({ value: "cancelado" }, ($$renderer) => {
-				$$renderer.push(`Cancelados`);
-			});
-			$$renderer.option({ value: "finalizado" }, ($$renderer) => {
-				$$renderer.push(`Finalizados`);
-			});
+		$$renderer.push(`<!--]--></div> <div class="card" id="agendamentos"><div class="card-header"><span class="material-symbols-outlined">event_available</span> <h3>Meus Agendamentos</h3></div> `);
+		ListaAgendamentosCard($$renderer, {
+			agendamentos,
+			carregando: carregandoAgendamentos,
+			onDeletar: abrirModal,
+			processando,
+			semCard: true,
+			listaPropria: true,
+			mostrarCancelados: true
 		});
-		$$renderer.push(`</div> <div class="filtro-grupo"><span class="filtro-grupo-label">Tipo</span> `);
-		$$renderer.select({
-			class: "select-filtro-ag",
-			value: filtroTipoAg
-		}, ($$renderer) => {
-			$$renderer.option({ value: "todos" }, ($$renderer) => {
-				$$renderer.push(`Todos`);
-			});
-			$$renderer.option({ value: "sala" }, ($$renderer) => {
-				$$renderer.push(`Salas`);
-			});
-			$$renderer.option({ value: "equipamento" }, ($$renderer) => {
-				$$renderer.push(`Equipamentos`);
-			});
-		});
-		$$renderer.push(`</div> <div class="filtro-grupo"><span class="filtro-grupo-label">Ordenar</span> `);
-		$$renderer.select({
-			class: "select-filtro-ag",
-			value: ordenacaoAg
-		}, ($$renderer) => {
-			$$renderer.option({ value: "recente" }, ($$renderer) => {
-				$$renderer.push(`Mais recente`);
-			});
-			$$renderer.option({ value: "antigo" }, ($$renderer) => {
-				$$renderer.push(`Mais antigo`);
-			});
-			$$renderer.option({ value: "az" }, ($$renderer) => {
-				$$renderer.push(`Nome (A-Z)`);
-			});
-			$$renderer.option({ value: "za" }, ($$renderer) => {
-				$$renderer.push(`Nome (Z-A)`);
-			});
-		});
-		$$renderer.push(`</div></div> `);
-		if (carregandoAgendamentos) {
-			$$renderer.push("<!--[0-->");
-			$$renderer.push(`<p class="estado-vazio">Carregando agendamentos...</p>`);
-		} else if (agendamentosFiltrados.length === 0) {
-			$$renderer.push("<!--[1-->");
-			$$renderer.push(`<p class="estado-vazio">Nenhum agendamento encontrado com os filtros
-                        selecionados.</p>`);
-		} else {
-			$$renderer.push("<!--[-1-->");
-			$$renderer.push(`<div class="agendamentos-lista"><!--[-->`);
-			const each_array_3 = ensure_array_like(agendamentosFiltrados);
-			for (let $$index_3 = 0, $$length = each_array_3.length; $$index_3 < $$length; $$index_3++) {
-				let ag = each_array_3[$$index_3];
-				const status = statusExibicao(ag);
-				$$renderer.push(`<div${attr_class("agendamento-item", void 0, { "cancelado": status === "cancelado" })}><div class="agendamento-faixa"></div> <div class="agendamento-body"><div class="agendamento-data-hora"><span class="material-symbols-outlined">schedule</span> ${escape_html(formatarDataHora(ag.data_hora_inicio))}
-                                         → 
-                                        ${escape_html(formatarDataHora(ag.data_hora_fim))}</div> <div class="agendamento-sala"><span class="material-symbols-outlined">${escape_html(ag.tipo === "equipamento" ? "devices" : "meeting_room")}</span> ${escape_html(ag.tipo === "equipamento" ? ag.equipamento_nome || ag.equipamento_id || "Equipamento não informado" : ag.sala_nome || ag.sala_id || "Sala não informada")}</div> `);
-				if (ag.obs) {
-					$$renderer.push("<!--[0-->");
-					$$renderer.push(`<p class="agendamento-obs">${escape_html(ag.obs)}</p>`);
-				} else $$renderer.push("<!--[-1-->");
-				$$renderer.push(`<!--]--> `);
-				if (status === "cancelado" && ag.justificativa) {
-					$$renderer.push("<!--[0-->");
-					$$renderer.push(`<p class="agendamento-justificativa"><span class="material-symbols-outlined">info</span> Motivo do cancelamento: ${escape_html(ag.justificativa)}</p>`);
-				} else $$renderer.push("<!--[-1-->");
-				$$renderer.push(`<!--]--> `);
-				if (status === "cancelado") {
-					$$renderer.push("<!--[0-->");
-					$$renderer.push(`<p class="agendamento-cancelador"><span class="material-symbols-outlined">person</span> Cancelado por:
-                                            ${escape_html(ag.cancelador_nome || "Nome não informado")}</p>`);
-				} else $$renderer.push("<!--[-1-->");
-				$$renderer.push(`<!--]--></div> <div class="agendamento-status"><span${attr_class(`badge-status ${stringify(status)}`, "svelte-viwrfp")}>${escape_html(rotuloStatus(status))}</span> `);
-				if (status === "futuro" && onDeletar) {
-					$$renderer.push("<!--[0-->");
-					$$renderer.push(`<button class="btn-deletar-ag svelte-viwrfp" title="Deletar agendamento"${attr("disabled", processando, true)}><span class="material-symbols-outlined">delete</span></button>`);
-				} else $$renderer.push("<!--[-1-->");
-				$$renderer.push(`<!--]--></div></div>`);
-			}
-			$$renderer.push(`<!--]--></div>`);
-		}
-		$$renderer.push(`<!--]--></div></main></div></div>`);
+		$$renderer.push(`<!----></div></main></div></div>`);
 		bind_props($$props, {
 			usuario,
 			carregandoUsuario,
