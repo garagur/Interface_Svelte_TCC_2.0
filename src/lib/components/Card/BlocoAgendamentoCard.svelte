@@ -7,10 +7,19 @@
     export let usuarioId = null;
     export let cargo = null;
 
-    $: proprio = usuarioId != null && ag.user_id == usuarioId;
-    $: podeDeletar = cargo === "admin" || proprio;
-
     $: ehEquipamento = ag.tipo === "equipamento";
+
+    $: proprio = usuarioId != null && ag.user_id == usuarioId;
+    // AJUSTAR: espelhe a mesma regra de permissão do backend (DeletedAgendamentoXController)
+    $: responsavelId = ehEquipamento
+        ? ag.equipamento_responsavel_id
+        : ag.sala_responsavel_id;
+    $: ehResponsavel =
+        usuarioId != null &&
+        responsavelId != null &&
+        String(responsavelId) === String(usuarioId);
+    $: podeDeletar = cargo === "admin" || proprio || ehResponsavel;
+
     $: recursoNome = ehEquipamento
         ? ag.equipamento_nome || ag.equipamento_id
         : ag.sala_nome || ag.sala_id;

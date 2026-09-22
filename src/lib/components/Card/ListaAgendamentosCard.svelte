@@ -73,15 +73,29 @@
             : ag.sala_nome || ag.sala_id || "";
     }
 
-    // AJUSTAR: nome do campo com quem fez o agendamento (a 3ª linha do bloco do calendário)
+    // Nome de quem fez o agendamento (3ª linha do bloco do calendário)
     function nomeResponsavel(ag) {
         return ag.user_nome || ag.usuario_nome || ag.professor_nome || "";
     }
 
-    // AJUSTAR: espelhe a mesma regra de permissão do BlocoAgendamentoCard
+    // Nome do responsável pelo recurso (sala/equipamento), não do solicitante
+    function nomeResponsavelRecurso(ag) {
+        return tipoAgendamento(ag) === "equipamento"
+            ? ag.equipamento_responsavel_nome || ""
+            : ag.sala_responsavel_nome || "";
+    }
+
+    function responsavelId(ag) {
+        return tipoAgendamento(ag) === "equipamento"
+            ? ag.equipamento_responsavel_id
+            : ag.sala_responsavel_id;
+    }
     function podeDeletar(ag, status) {
         if (!onDeletar || status !== "futuro") return false;
-        return cargo === "admin" || String(ag.user_id) === String(usuarioId);
+        if (cargo === "admin") return true;
+        if (String(ag.user_id) === String(usuarioId)) return true;
+        const respId = responsavelId(ag);
+        return respId != null && String(respId) === String(usuarioId);
     }
 
     $: agendamentosFiltrados = agendamentos
