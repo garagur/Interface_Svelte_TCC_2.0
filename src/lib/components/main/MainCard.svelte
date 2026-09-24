@@ -3,7 +3,7 @@
     import { goto } from "$app/navigation";
     import { onMount } from "svelte";
     import { tick } from "svelte";
-    import CalendarioAgendamentos from "$lib/components/MesGrade/GradeMensal.svelte";
+    import CalendarioAgendamentos from "$lib/components/Grades/GradeMensal.svelte";
     import AgendamentoBloco from "$lib/components/Card/BlocoAgendamentoCard.svelte";
     import ConfirmarDelecaoModal from "$lib/components/Card/ConfirmarDelecaoModal.svelte";
     import { deletarAgendamentoSala } from "$lib/services/AgendamentoServices/AgendamentoSala/Deleted_Agendamento_Sala_Service.js";
@@ -81,21 +81,20 @@
         mostrarMenuUsuario = !mostrarMenuUsuario;
     }
 
-    function fecharMenuUsuario() {
+    function fecharMenuUsuario(event) {
+        if (event?.target?.closest?.(".user-menu")) return;
         mostrarMenuUsuario = false;
     }
 
     async function irPara(rota) {
         fecharMenuUsuario();
         const [caminho, hash] = rota.split("#");
-        await goto(caminho);
+        await goto(hash ? `${caminho}#${hash}` : caminho);
         await tick();
 
         if (hash) {
-            document.getElementById(hash)?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-            });
+            const destino = document.getElementById(hash);
+            destino?.scrollIntoView({ behavior: "smooth", block: "start" });
         }
     }
 
@@ -175,7 +174,7 @@
         </nav>
 
         <div class="actions-section">
-            <div class="user-menu" on:click|stopPropagation>
+            <div class="user-menu">
                 <button
                     class="btn-icon"
                     on:click={alternarMenuUsuario}
@@ -193,7 +192,7 @@
                             <button
                                 role="menuitem"
                                 on:click={() =>
-                                    irPara("/minhasinformacoes#dados")}
+                                    irPara("/minhas_informacoes#dados")}
                             >
                                 <span class="material-symbols-outlined"
                                     >person</span
@@ -205,7 +204,7 @@
                             <button
                                 role="menuitem"
                                 on:click={() =>
-                                    irPara("/minhasinformacoes#estatisticas")}
+                                    irPara("/minhas_informacoes#estatisticas")}
                             >
                                 <span class="material-symbols-outlined"
                                     >query_stats</span
@@ -217,7 +216,7 @@
                             <button
                                 role="menuitem"
                                 on:click={() =>
-                                    irPara("/minhasinformacoes#agendamentos")}
+                                    irPara("/minhas_informacoes#agendamentos")}
                             >
                                 <span class="material-symbols-outlined"
                                     >event_available</span
@@ -225,6 +224,20 @@
                                 Meus Agendamentos
                             </button>
                         </li>
+                        {#if cargo === "educador"}
+                            <li role="none">
+                                <button
+                                    role="menuitem"
+                                    on:click={() =>
+                                        irPara("/minhas_informacoes#grade")}
+                                >
+                                    <span class="material-symbols-outlined"
+                                        >calendar_month</span
+                                    >
+                                    Minha Grade de Aulas
+                                </button>
+                            </li>
+                        {/if}
                         <li class="user-menu-separador" role="none"></li>
                         <li role="none">
                             <button

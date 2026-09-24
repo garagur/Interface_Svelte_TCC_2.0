@@ -1,5 +1,5 @@
 <script>
-    import GradeSemanal from "$lib/components/SemanalGrade/GradeSemanal.svelte";
+    import GradeSemanal from "$lib/components/Grades/GradeSemanal.svelte";
     import BlocoCard from "$lib/components/Card/BlocoHorarioCard.svelte";
     export let turmas = [];
     export let salas = [];

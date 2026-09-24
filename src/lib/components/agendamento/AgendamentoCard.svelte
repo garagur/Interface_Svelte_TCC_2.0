@@ -1,8 +1,8 @@
 <script>
     //AgendamentoCard
-    import GradeSemanal from "$lib/components/SemanalGrade/GradeSemanal.svelte";
+    import GradeSemanal from "$lib/components/Grades/GradeSemanal.svelte";
     import BlocoCard from "$lib/components/Card/BlocoHorarioCard.svelte";
-    import CalendarioAgendamentos from "$lib/components/MesGrade/GradeMensal.svelte";
+    import CalendarioAgendamentos from "$lib/components/Grades/GradeMensal.svelte";
     import AgendamentoBloco from "$lib/components/Card/BlocoAgendamentoCard.svelte";
     import ConfirmarDelecaoModal from "$lib/components/Card/ConfirmarDelecaoModal.svelte";
     import ConfirmarRecorrenciaModal from "$lib/components/Card/ConfirmarRecorrenciaModal.svelte";

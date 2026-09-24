@@ -1,5 +1,5 @@
 import { S as escape_html, c as stringify, i as ensure_array_like, n as bind_props, ot as fallback, s as slot, t as attr_class, x as attr } from "./server.js";
-//#region src/lib/components/MesGrade/GradeMensal.svelte
+//#region src/lib/components/Grades/GradeMensal.svelte
 function GradeMensal($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
 		let agendamentosPorData, dias, semanas;

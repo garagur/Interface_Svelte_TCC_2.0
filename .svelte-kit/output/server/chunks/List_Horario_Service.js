@@ -1,6 +1,6 @@
 import { S as escape_html, i as ensure_array_like, n as bind_props, ot as fallback, s as slot, t as attr_class } from "./server.js";
 import { t as apiFetch } from "./api.js";
-//#region src/lib/components/SemanalGrade/GradeSemanal.svelte
+//#region src/lib/components/Grades/GradeSemanal.svelte
 function GradeSemanal($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
 		let dias = fallback($$props["dias"], () => [], true);
@@ -26,14 +26,14 @@ function GradeSemanal($$renderer, $$props) {
 		}
 		if (carregandoLista) {
 			$$renderer.push("<!--[0-->");
-			$$renderer.push(`<p class="estado-vazio svelte-n39eg1">Carregando horários...</p>`);
+			$$renderer.push(`<p class="estado-vazio">Carregando horários...</p>`);
 		} else {
 			$$renderer.push("<!--[-1-->");
-			$$renderer.push(`<div class="grade-wrapper svelte-n39eg1"><!--[-->`);
+			$$renderer.push(`<div class="grade-wrapper"><!--[-->`);
 			const each_array = ensure_array_like(dias);
 			for (let $$index_1 = 0, $$length = each_array.length; $$index_1 < $$length; $$index_1++) {
 				let dia = each_array[$$index_1];
-				$$renderer.push(`<div${attr_class(`dia-coluna ${diasFimDeSemana.includes(dia) ? "fds" : ""}`, "svelte-n39eg1")}><div class="dia-header svelte-n39eg1">${escape_html(diasLabels[dia])}</div> <div class="dia-blocos svelte-n39eg1">`);
+				$$renderer.push(`<div${attr_class(`dia-coluna ${diasFimDeSemana.includes(dia) ? "fds" : ""}`)}><div class="dia-header">${escape_html(diasLabels[dia])}</div> <div class="dia-blocos">`);
 				const each_array_1 = ensure_array_like(blocosOrdenados(dia));
 				if (each_array_1.length !== 0) {
 					$$renderer.push("<!--[-->");
@@ -45,7 +45,7 @@ function GradeSemanal($$renderer, $$props) {
 					}
 				} else {
 					$$renderer.push("<!--[!-->");
-					$$renderer.push(`<div class="bloco-vazio svelte-n39eg1">—</div>`);
+					$$renderer.push(`<div class="bloco-vazio">—</div>`);
 				}
 				$$renderer.push(`<!--]--></div></div>`);
 			}
