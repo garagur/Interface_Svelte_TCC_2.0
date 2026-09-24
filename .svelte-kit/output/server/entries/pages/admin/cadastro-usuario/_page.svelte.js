@@ -6,12 +6,13 @@ import { t as CadastroCard } from "../../../../chunks/CadastroCard.js";
 import { t as apiFetch } from "../../../../chunks/api.js";
 import { t as USER_ROUTES } from "../../../../chunks/User_Endpoints.js";
 import { t as carregarUsuarios } from "../../../../chunks/List_User_Service.js";
+import { t as atualizarUsuario } from "../../../../chunks/Update_User_Service.js";
 //#region src/lib/services/UserServices/Create_User_Service.js
 /**
 * @param {Response} response
 * @returns {Promise<any|null>}
 */
-async function parseJson$1(response) {
+async function parseJson(response) {
 	const text = await response.text();
 	if (!text) return null;
 	try {
@@ -43,52 +44,10 @@ async function cadastrarUsuario(novoUsuario, token) {
 		})
 	});
 	if (!resp) return;
-	const dados = await parseJson$1(resp);
-	if (!resp.ok) {
-		if (dados?.errors) throw new Error(Object.values(dados.errors).flat().join(" "));
-		throw new Error(dados?.message || dados?.error || "Erro ao cadastrar.");
-	}
-	return dados?.data || dados || {};
-}
-//#endregion
-//#region src/lib/services/UserServices/Update_User_Service.js
-async function parseJson(response) {
-	const text = await response.text();
-	if (!text) return null;
-	try {
-		return JSON.parse(text);
-	} catch {
-		return null;
-	}
-}
-/**
-* @param {number} id
-* @param {{ nome: string, email: string, cargo: string, matricula: string, status: boolean }} dadosUsuario
-* @param {string} token
-* @returns {Promise<any>}
-*/
-async function atualizarUsuario(id, dadosUsuario, token) {
-	if (!token) throw new Error("Token de autenticação não encontrado. Faça login novamente.");
-	if (!dadosUsuario?.nome || !dadosUsuario?.email || !dadosUsuario?.cargo || !dadosUsuario?.matricula || typeof dadosUsuario?.status !== "boolean") throw new Error("Dados do usuário incompletos.");
-	const resp = await apiFetch(USER_ROUTES.atualizar(id), {
-		method: "PUT",
-		headers: {
-			"Content-Type": "application/json",
-			"Accept": "application/json"
-		},
-		body: JSON.stringify({
-			name: dadosUsuario.nome,
-			matricula: dadosUsuario.matricula,
-			cargo: dadosUsuario.cargo,
-			email: dadosUsuario.email,
-			status: dadosUsuario.status
-		})
-	});
-	if (!resp) return;
 	const dados = await parseJson(resp);
 	if (!resp.ok) {
 		if (dados?.errors) throw new Error(Object.values(dados.errors).flat().join(" "));
-		throw new Error(dados?.message || dados?.error || "Erro ao atualizar.");
+		throw new Error(dados?.message || dados?.error || "Erro ao cadastrar.");
 	}
 	return dados?.data || dados || {};
 }

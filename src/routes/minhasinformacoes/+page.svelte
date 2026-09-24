@@ -9,7 +9,7 @@
     import { carregarAgendamentosEquipamentos } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/List_Agendamento_Equipamento_Service.js";
     import { deletarAgendamentoEquipamento } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/Deleted_Agendamento_equipamento.js";
     import { buscarUsuario } from "$lib/services/UserServices/Buscar_Usuario_Service.js";
-
+    import { atualizarUsuario } from "$lib/services/UserServices/Update_User_Service.js";
     let token = "";
     let professor_id = "";
 
@@ -61,7 +61,54 @@
             carregandoUsuario = false;
         }
     }
+    async function salvarPerfil({ nome, email, foto, removerFoto }) {
+        const resposta = await atualizarUsuario(
+            Number(professor_id),
+            { nome, email, foto, removerFoto },
+            token,
+        );
+        if (!resposta) return; // sessão expirada: o apiFetch já redirecionou
 
+        const atualizado =
+            resposta?.user ||
+            resposta?.data?.user ||
+            resposta?.data ||
+            resposta;
+        if (!atualizado) throw new Error("Resposta inesperada do servidor.");
+
+        usuario = {
+            ...usuario,
+            nome: atualizado.name || atualizado.nome || usuario?.nome || "",
+            email: atualizado.email || usuario?.email || "",
+            foto_url:
+                atualizado.foto_url ??
+                atualizado.avatar_url ??
+                atualizado.foto ??
+                null,
+        };
+
+        // mantém o usuário guardado no localStorage em dia (ex.: cabeçalho)
+        try {
+            const salvo = JSON.parse(localStorage.getItem("user") || "null");
+            if (salvo) {
+                localStorage.setItem(
+                    "user",
+                    JSON.stringify({
+                        ...salvo,
+                        name: atualizado.name || atualizado.nome || salvo.name,
+                        email: atualizado.email,
+                        foto_url:
+                            atualizado.foto_url ??
+                            atualizado.avatar_url ??
+                            atualizado.foto ??
+                            null,
+                    }),
+                );
+            }
+        } catch {
+            // localStorage inválido: ignora
+        }
+    }
     async function carregarGrade() {
         carregandoBlocos = true;
         try {
@@ -218,4 +265,5 @@
     {erro}
     onSair={() => goto("/main")}
     onDeletar={deletar}
+    onSalvarPerfil={salvarPerfil}
 />

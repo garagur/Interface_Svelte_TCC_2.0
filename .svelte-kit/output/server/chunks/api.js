@@ -9,12 +9,13 @@ function logout(motivo) {
 }
 async function apiFetch(endpoint, options = {}) {
 	const token = localStorage.getItem("token");
+	const ehFormData = options.body instanceof FormData;
 	let response;
 	try {
 		response = await fetch(`${API_URL}${endpoint}`, {
 			...options,
 			headers: {
-				"Content-Type": "application/json",
+				...ehFormData ? {} : { "Content-Type": "application/json" },
 				...token ? { Authorization: `Bearer ${token}` } : {},
 				...options.headers
 			}

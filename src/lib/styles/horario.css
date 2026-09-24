@@ -32,32 +32,20 @@
 
 /* Botões do Header */
 .escopo-horario .btn-icon {
-    background: var(--neu-bg);
+    background: none;
     border: none;
-    color: var(--text-dark);
+    color: var(--white);
     cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    box-shadow:
-        3px 3px 6px var(--neu-shadow-dark),
-        -3px -3px 6px var(--neu-shadow-light);
-    transition: box-shadow 0.15s ease;
 }
 
 .escopo-horario .btn-icon:hover {
-    box-shadow:
-        1px 1px 3px var(--neu-shadow-dark),
-        -1px -1px 3px var(--neu-shadow-light);
-}
-
-.escopo-horario .btn-icon:active {
-    box-shadow:
-        inset 2px 2px 4px var(--neu-shadow-dark),
-        inset -2px -2px 4px var(--neu-shadow-light);
+    background: var(--overlay-light);
 }
 
 .escopo-horario .horario-content {

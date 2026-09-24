@@ -60,14 +60,13 @@ declare module '$env/static/private' {
 	export const SSH_AUTH_SOCK: string;
 	export const WAYLAND_DISPLAY: string;
 	export const VSCODE_GIT_ASKPASS_MAIN: string;
-	export const INIT_CWD: string;
-	export const GJS_DEBUG_TOPICS: string;
 	export const PWD: string;
 	export const GSETTINGS_SCHEMA_DIR_VSCODE_SNAP_ORIG: string;
 	export const GTK_IM_MODULE_FILE_VSCODE_SNAP_ORIG: string;
 	export const GTK_MODULES: string;
 	export const npm_config_userconfig: string;
 	export const XDG_SESSION_TYPE: string;
+	export const COLOR: string;
 	export const NVM_DIR: string;
 	export const GDK_BACKEND: string;
 	export const npm_package_json: string;
@@ -76,6 +75,8 @@ declare module '$env/static/private' {
 	export const LOCPATH: string;
 	export const npm_config_noproxy: string;
 	export const DEBUGINFOD_URLS: string;
+	export const GJS_DEBUG_TOPICS: string;
+	export const INIT_CWD: string;
 	export const OLDPWD: string;
 	export const LC_TIME: string;
 	export const GIT_ASKPASS: string;
@@ -152,8 +153,6 @@ declare module '$env/static/private' {
 	export const QT_ACCESSIBILITY: string;
 	export const COPILOT_DEBUG_NONCE: string;
 	export const npm_config_init_module: string;
-	export const COLOR: string;
-	export const NO_AT_BRIDGE: string;
 	export const GDMSESSION: string;
 	export const LESSCLOSE: string;
 	export const GJS_DEBUG_OUTPUT: string;
@@ -277,14 +276,13 @@ declare module '$env/dynamic/private' {
 		SSH_AUTH_SOCK: string;
 		WAYLAND_DISPLAY: string;
 		VSCODE_GIT_ASKPASS_MAIN: string;
-		INIT_CWD: string;
-		GJS_DEBUG_TOPICS: string;
 		PWD: string;
 		GSETTINGS_SCHEMA_DIR_VSCODE_SNAP_ORIG: string;
 		GTK_IM_MODULE_FILE_VSCODE_SNAP_ORIG: string;
 		GTK_MODULES: string;
 		npm_config_userconfig: string;
 		XDG_SESSION_TYPE: string;
+		COLOR: string;
 		NVM_DIR: string;
 		GDK_BACKEND: string;
 		npm_package_json: string;
@@ -293,6 +291,8 @@ declare module '$env/dynamic/private' {
 		LOCPATH: string;
 		npm_config_noproxy: string;
 		DEBUGINFOD_URLS: string;
+		GJS_DEBUG_TOPICS: string;
+		INIT_CWD: string;
 		OLDPWD: string;
 		LC_TIME: string;
 		GIT_ASKPASS: string;
@@ -369,8 +369,6 @@ declare module '$env/dynamic/private' {
 		QT_ACCESSIBILITY: string;
 		COPILOT_DEBUG_NONCE: string;
 		npm_config_init_module: string;
-		COLOR: string;
-		NO_AT_BRIDGE: string;
 		GDMSESSION: string;
 		LESSCLOSE: string;
 		GJS_DEBUG_OUTPUT: string;

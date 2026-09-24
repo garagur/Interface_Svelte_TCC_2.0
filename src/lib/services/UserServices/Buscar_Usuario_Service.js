@@ -37,11 +37,13 @@ export async function buscarUsuario(token, id) {
     })
     if (!resp) return null
 
-    const u = await parseJson(resp)
+    const dados = await parseJson(resp)
 
     if (!resp.ok) {
-        throw new Error(u?.message || u?.error || 'Erro ao carregar usuário.')
+        throw new Error(dados?.message || dados?.error || 'Erro ao carregar usuário.')
     }
+
+    const u = dados?.data?.user || dados?.user || dados?.data || dados || {}
 
     return {
         id: u.id,

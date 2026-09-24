@@ -33,7 +33,8 @@ async function carregarUsuarios(token) {
 		email: u.email || "",
 		cargo: u.cargo || "",
 		matricula: u.matricula || "",
-		status: u.status ?? true
+		status: u.status ?? true,
+		fotoUrl: u.foto_url ?? null
 	}));
 }
 //#endregion

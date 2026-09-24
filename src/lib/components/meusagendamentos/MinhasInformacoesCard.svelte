@@ -1,12 +1,22 @@
 <script>
+    import { onDestroy } from "svelte";
     import GradeSemanal from "$lib/components/SemanalGrade/GradeSemanal.svelte";
     import BlocoCard from "$lib/components/Card/BlocoHorarioCard.svelte";
     import ConfirmarDelecaoModal from "$lib/components/Card/ConfirmarDelecaoModal.svelte";
     import ListaAgendamentosCard from "$lib/components/Card/ListaAgendamentosCard.svelte";
     // Dados pessoais
-    /** @type {{ nome?: string, email?: string, matricula?: string, foto_url?: string } | null} */
+    /** @type {{ nome?: string, email?: string, matricula?: string, cargo?: string, foto_url?: string | null } | null} */
     export let usuario = null;
     export let carregandoUsuario = false;
+
+    // Responsabilidades (null = ainda não carregado, a seção fica oculta)
+    /** @type {Array<{ id: number, nome: string }> | null} */
+    export let salasResponsavel = null;
+    /** @type {Array<{ id: number, nome: string }> | null} */
+    export let equipamentosResponsavel = null;
+
+    /** @type {((dados: { nome: string, email: string, foto: File | null, removerFoto: boolean }) => Promise<void>) | null} */
+    export let onSalvarPerfil = null;
 
     // Estatísticas
     /**
@@ -165,7 +175,116 @@
             .map((p) => p[0]?.toUpperCase() ?? "");
         return primeiras.join("") || "?";
     }
+    const FOTO_TIPOS = ["image/jpeg", "image/png", "image/webp"];
+    const FOTO_MAX_BYTES = 2 * 1024 * 1024;
 
+    const ROTULOS_CARGO = {
+        admin: "Administrador",
+        servidor: "Servidor",
+        educador: "Educador",
+    };
+
+    let editandoPerfil = false;
+    let salvandoPerfil = false;
+    let erroPerfil = "";
+    let nomeEdit = "";
+    let emailEdit = "";
+    let fotoArquivo = null;
+    let fotoPreview = "";
+    let removerFoto = false;
+    let inputFoto;
+
+    // foto que aparece no círculo: prévia > foto atual > nada (placeholder)
+    $: fotoExibida = editandoPerfil
+        ? fotoPreview || (removerFoto ? "" : usuario?.foto_url || "")
+        : usuario?.foto_url || "";
+
+    function limparPreview() {
+        if (fotoPreview) URL.revokeObjectURL(fotoPreview);
+        fotoPreview = "";
+    }
+
+    onDestroy(limparPreview);
+
+    function iniciarEdicao() {
+        nomeEdit = usuario?.nome || "";
+        emailEdit = usuario?.email || "";
+        fotoArquivo = null;
+        removerFoto = false;
+        erroPerfil = "";
+        limparPreview();
+        editandoPerfil = true;
+    }
+
+    function cancelarEdicao() {
+        if (salvandoPerfil) return;
+        limparPreview();
+        fotoArquivo = null;
+        removerFoto = false;
+        erroPerfil = "";
+        editandoPerfil = false;
+    }
+
+    function escolherFoto(event) {
+        const input = event.currentTarget;
+        const arquivo = input.files?.[0];
+        if (!arquivo) return;
+
+        if (!FOTO_TIPOS.includes(arquivo.type)) {
+            erroPerfil = "Use uma imagem nos formatos jpg, png ou webp.";
+            input.value = "";
+            return;
+        }
+        if (arquivo.size > FOTO_MAX_BYTES) {
+            erroPerfil = "A imagem pode ter no máximo 2 MB.";
+            input.value = "";
+            return;
+        }
+
+        erroPerfil = "";
+        limparPreview();
+        fotoArquivo = arquivo;
+        fotoPreview = URL.createObjectURL(arquivo);
+        removerFoto = false;
+    }
+
+    // Descarta a prévia; se já existe foto salva, marca para remover no servidor
+    function removerFotoAtual() {
+        limparPreview();
+        fotoArquivo = null;
+        if (inputFoto) inputFoto.value = "";
+        removerFoto = !!usuario?.foto_url;
+    }
+
+    async function salvarPerfil() {
+        if (salvandoPerfil) return;
+
+        const nome = nomeEdit.trim();
+        const email = emailEdit.trim();
+        if (!nome || !email) {
+            erroPerfil = "Nome e e-mail são obrigatórios.";
+            return;
+        }
+
+        salvandoPerfil = true;
+        erroPerfil = "";
+        try {
+            await onSalvarPerfil?.({
+                nome,
+                email,
+                foto: fotoArquivo,
+                removerFoto,
+            });
+            limparPreview();
+            fotoArquivo = null;
+            removerFoto = false;
+            editandoPerfil = false;
+        } catch (e) {
+            erroPerfil = e?.message || "Erro ao salvar o perfil.";
+        } finally {
+            salvandoPerfil = false;
+        }
+    }
     function nivelHeatmap(quantidade) {
         if (!quantidade) return 0;
         if (quantidade === 1) return 1;
@@ -293,44 +412,217 @@
             {/if}
 
             <!-- Dados pessoais -->
+            <!-- Dados pessoais -->
             <div class="card" id="dados">
                 <div class="card-header">
                     <span class="material-symbols-outlined">person</span>
                     <h3>Meus Dados</h3>
+                    {#if !carregandoUsuario && !editandoPerfil && onSalvarPerfil}
+                        <button
+                            type="button"
+                            class="btn-editar-perfil"
+                            on:click={iniciarEdicao}
+                        >
+                            <span class="material-symbols-outlined">edit</span>
+                            Editar
+                        </button>
+                    {/if}
                 </div>
 
                 {#if carregandoUsuario}
                     <p class="estado-vazio">Carregando dados do usuário...</p>
                 {:else}
-                    <div class="perfil-conteudo">
-                        {#if usuario?.foto_url}
-                            <img
-                                class="perfil-foto"
-                                src={usuario.foto_url}
-                                alt="Foto de perfil"
-                            />
-                        {:else}
-                            <div class="perfil-foto-placeholder">
-                                {iniciais(usuario?.nome)}
-                            </div>
-                        {/if}
+                    <div
+                        class="perfil-conteudo"
+                        class:editando={editandoPerfil}
+                    >
+                        <div class="perfil-foto-area">
+                            {#if fotoExibida}
+                                <img
+                                    class="perfil-foto"
+                                    src={fotoExibida}
+                                    alt="Foto de perfil"
+                                />
+                            {:else}
+                                <div class="perfil-foto-placeholder">
+                                    {iniciais(
+                                        editandoPerfil
+                                            ? nomeEdit
+                                            : usuario?.nome,
+                                    )}
+                                </div>
+                            {/if}
+
+                            {#if editandoPerfil}
+                                <input
+                                    bind:this={inputFoto}
+                                    class="input-foto-oculto"
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    on:change={escolherFoto}
+                                />
+                                <div class="foto-acoes">
+                                    <button
+                                        type="button"
+                                        class="btn-perfil-sec"
+                                        disabled={salvandoPerfil}
+                                        on:click={() => inputFoto?.click()}
+                                    >
+                                        <span class="material-symbols-outlined"
+                                            >photo_camera</span
+                                        >
+                                        {fotoExibida
+                                            ? "Trocar foto"
+                                            : "Escolher foto"}
+                                    </button>
+                                    {#if fotoPreview || (usuario?.foto_url && !removerFoto)}
+                                        <button
+                                            type="button"
+                                            class="btn-perfil-sec"
+                                            disabled={salvandoPerfil}
+                                            on:click={removerFotoAtual}
+                                        >
+                                            <span
+                                                class="material-symbols-outlined"
+                                                >delete</span
+                                            >
+                                            Remover foto
+                                        </button>
+                                    {/if}
+                                </div>
+                            {/if}
+                        </div>
 
                         <div class="perfil-dados">
-                            <p class="perfil-nome">{usuario?.nome || "—"}</p>
-                            <div class="perfil-info-linha">
-                                <span class="material-symbols-outlined"
-                                    >mail</span
+                            {#if editandoPerfil}
+                                <form
+                                    class="perfil-form"
+                                    on:submit|preventDefault={salvarPerfil}
                                 >
-                                {usuario?.email || "—"}
-                            </div>
+                                    <label class="campo-perfil">
+                                        <span class="campo-rotulo">Nome</span>
+                                        <input
+                                            type="text"
+                                            maxlength="255"
+                                            bind:value={nomeEdit}
+                                            disabled={salvandoPerfil}
+                                        />
+                                    </label>
+                                    <label class="campo-perfil">
+                                        <span class="campo-rotulo">E-mail</span>
+                                        <input
+                                            type="email"
+                                            bind:value={emailEdit}
+                                            disabled={salvandoPerfil}
+                                        />
+                                    </label>
+                                    {#if emailEdit.trim() !== (usuario?.email || "")}
+                                        <small class="campo-dica">
+                                            O código de login é enviado para
+                                            este e-mail. Confira se está
+                                            correto.
+                                        </small>
+                                    {/if}
+
+                                    {#if erroPerfil}
+                                        <p class="msg-erro">{erroPerfil}</p>
+                                    {/if}
+
+                                    <div class="perfil-acoes">
+                                        <button
+                                            type="submit"
+                                            class="btn-perfil-primario"
+                                            disabled={salvandoPerfil}
+                                        >
+                                            {salvandoPerfil
+                                                ? "Salvando..."
+                                                : "Salvar"}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="btn-perfil-sec"
+                                            disabled={salvandoPerfil}
+                                            on:click={cancelarEdicao}
+                                        >
+                                            Cancelar
+                                        </button>
+                                    </div>
+                                </form>
+                            {:else}
+                                <p class="perfil-nome">
+                                    {usuario?.nome || "—"}
+                                </p>
+                                <div class="perfil-info-linha">
+                                    <span class="material-symbols-outlined"
+                                        >mail</span
+                                    >
+                                    {usuario?.email || "—"}
+                                </div>
+                            {/if}
+
                             <div class="perfil-info-linha">
                                 <span class="material-symbols-outlined"
                                     >badge</span
                                 >
                                 Matrícula: {usuario?.matricula || "—"}
                             </div>
+                            <div class="perfil-info-linha">
+                                <span class="material-symbols-outlined"
+                                    >work</span
+                                >
+                                Cargo: {ROTULOS_CARGO[usuario?.cargo] ||
+                                    usuario?.cargo ||
+                                    "—"}
+                            </div>
                         </div>
                     </div>
+
+                    {#if salasResponsavel && equipamentosResponsavel}
+                        <div class="responsabilidades">
+                            <div class="responsabilidade-bloco">
+                                <span class="responsabilidade-titulo">
+                                    <span class="material-symbols-outlined"
+                                        >meeting_room</span
+                                    >
+                                    Salas sob minha responsabilidade
+                                </span>
+                                {#if salasResponsavel.length}
+                                    <div class="chips">
+                                        {#each salasResponsavel as sala (sala.id)}
+                                            <span class="chip">{sala.nome}</span
+                                            >
+                                        {/each}
+                                    </div>
+                                {:else}
+                                    <span class="responsabilidade-vazio"
+                                        >Nenhuma sala.</span
+                                    >
+                                {/if}
+                            </div>
+
+                            <div class="responsabilidade-bloco">
+                                <span class="responsabilidade-titulo">
+                                    <span class="material-symbols-outlined"
+                                        >devices</span
+                                    >
+                                    Equipamentos sob minha responsabilidade
+                                </span>
+                                {#if equipamentosResponsavel.length}
+                                    <div class="chips">
+                                        {#each equipamentosResponsavel as equipamento (equipamento.id)}
+                                            <span class="chip"
+                                                >{equipamento.nome}</span
+                                            >
+                                        {/each}
+                                    </div>
+                                {:else}
+                                    <span class="responsabilidade-vazio"
+                                        >Nenhum equipamento.</span
+                                    >
+                                {/if}
+                            </div>
+                        </div>
+                    {/if}
                 {/if}
             </div>
 
@@ -501,10 +793,6 @@
                     {agendamentos}
                     carregando={carregandoAgendamentos}
                     onDeletar={abrirModal}
-                    {processando}
-                    semCard
-                    listaPropria
-                    mostrarCancelados
                 />
             </div>
         </main>

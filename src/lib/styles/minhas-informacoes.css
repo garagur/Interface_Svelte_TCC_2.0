@@ -405,3 +405,184 @@
         text-align: left;
     }
 }
+
+.minhas-informacoes .perfil-foto-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.minhas-informacoes .input-foto-oculto {
+    display: none;
+}
+
+.minhas-informacoes .foto-acoes,
+.minhas-informacoes .perfil-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.minhas-informacoes .perfil-conteudo.editando {
+    align-items: flex-start;
+}
+
+.minhas-informacoes .perfil-conteudo.editando .perfil-dados {
+    flex: 1;
+    max-width: 420px;
+    gap: 10px;
+}
+
+.minhas-informacoes .perfil-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.minhas-informacoes .campo-perfil {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.minhas-informacoes .campo-rotulo {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.minhas-informacoes .campo-perfil input {
+    background: var(--neu-bg);
+    border: none;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    outline: none;
+    box-shadow:
+        inset 3px 3px 6px var(--neu-shadow-dark),
+        inset -3px -3px 6px var(--neu-shadow-light);
+}
+
+.minhas-informacoes .campo-perfil input:focus {
+    outline: 2px solid var(--primary-light);
+}
+
+.minhas-informacoes .campo-dica {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
+.minhas-informacoes .card-header .btn-editar-perfil {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--neu-bg);
+    border: none;
+    cursor: pointer;
+    color: var(--primary-dark);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 10px;
+    box-shadow:
+        3px 3px 6px var(--neu-shadow-dark),
+        -3px -3px 6px var(--neu-shadow-light);
+}
+
+.minhas-informacoes .card-header .btn-editar-perfil .material-symbols-outlined {
+    font-size: 18px;
+}
+
+.minhas-informacoes .btn-perfil-sec,
+.minhas-informacoes .btn-perfil-primario {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 10px;
+}
+
+.minhas-informacoes .btn-perfil-sec {
+    background: var(--neu-bg);
+    color: var(--primary-dark);
+    box-shadow:
+        3px 3px 6px var(--neu-shadow-dark),
+        -3px -3px 6px var(--neu-shadow-light);
+}
+
+.minhas-informacoes .btn-perfil-primario {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.minhas-informacoes .btn-perfil-sec .material-symbols-outlined {
+    font-size: 18px;
+}
+
+.minhas-informacoes .btn-perfil-sec:disabled,
+.minhas-informacoes .btn-perfil-primario:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ─── Responsabilidades ────────────────────────────────────────────── */
+.minhas-informacoes .responsabilidades {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--gray-50);
+}
+
+.minhas-informacoes .responsabilidade-bloco {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.minhas-informacoes .responsabilidade-titulo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.minhas-informacoes .responsabilidade-titulo .material-symbols-outlined {
+    font-size: 18px;
+    color: var(--primary-dark);
+}
+
+.minhas-informacoes .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.minhas-informacoes .chip {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 999px;
+}
+
+.minhas-informacoes .responsabilidade-vazio {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}

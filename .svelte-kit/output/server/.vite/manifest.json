@@ -92,6 +92,14 @@
       "_User_Endpoints.js"
     ]
   },
+  "_Update_User_Service.js": {
+    "file": "chunks/Update_User_Service.js",
+    "name": "Update_User_Service",
+    "imports": [
+      "_api.js",
+      "_User_Endpoints.js"
+    ]
+  },
   "_User_Endpoints.js": {
     "file": "chunks/User_Endpoints.js",
     "name": "User_Endpoints"
@@ -264,7 +272,7 @@
       "_server.js"
     ],
     "css": [
-      "_app/immutable/assets/_layout.Di-wg66t.css"
+      "_app/immutable/assets/_layout.DmQzeIfk.css"
     ]
   },
   "src/routes/admin/cadastro-horario/+page.svelte": {
@@ -328,7 +336,8 @@
       "_api.js",
       "_User_Endpoints.js",
       "_CadastroCard.js",
-      "_List_User_Service.js"
+      "_List_User_Service.js",
+      "_Update_User_Service.js"
     ]
   },
   "src/routes/agendamento/+layout.svelte": {
@@ -426,7 +435,7 @@
       "_server.js"
     ],
     "css": [
-      "_app/immutable/assets/_layout.BJkaK0Ok.css"
+      "_app/immutable/assets/_layout.BqmFQ18I.css"
     ]
   },
   "src/routes/minhasinformacoes/+page.svelte": {
@@ -442,10 +451,11 @@
       "_api.js",
       "_List_Agendamento_Equipamento_Service.js",
       "_List_Horario_Service.js",
-      "_User_Endpoints.js"
+      "_User_Endpoints.js",
+      "_Update_User_Service.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.Bh15okJH.css"
+      "_app/immutable/assets/_page.hA9dPKKv.css"
     ]
   },
   "virtual:__sveltekit/env": {

@@ -1,17 +1,21 @@
-import "../../../chunks/internal.js";
+import { i as onDestroy } from "../../../chunks/internal.js";
 import { S as escape_html, c as stringify, i as ensure_array_like, n as bind_props, ot as fallback, t as attr_class, tt as invalid_default_snippet, x as attr } from "../../../chunks/server.js";
 import { t as goto } from "../../../chunks/client.js";
 import "../../../chunks/navigation.js";
 import "../../../chunks/api.js";
 import "../../../chunks/User_Endpoints.js";
 import { a as BlocoHorarioCard, o as GradeSemanal } from "../../../chunks/List_Horario_Service.js";
+import { t as atualizarUsuario } from "../../../chunks/Update_User_Service.js";
 import { a as deletarAgendamentoSala, c as ConfirmarDelecaoModal, r as deletarAgendamentoEquipamento, s as ListaAgendamentosCard } from "../../../chunks/List_Agendamento_Equipamento_Service.js";
 //#region src/lib/components/meusagendamentos/MinhasInformacoesCard.svelte
 function MinhasInformacoesCard($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
-		let semanasHeatmap, rotulosMeses, totalGeral;
+		let fotoExibida, semanasHeatmap, rotulosMeses, totalGeral;
 		let usuario = fallback($$props["usuario"], null);
 		let carregandoUsuario = fallback($$props["carregandoUsuario"], false);
+		let salasResponsavel = fallback($$props["salasResponsavel"], null);
+		let equipamentosResponsavel = fallback($$props["equipamentosResponsavel"], null);
+		let onSalvarPerfil = fallback($$props["onSalvarPerfil"], null);
 		let estatisticas = fallback($$props["estatisticas"], () => ({
 			totalSala: 0,
 			totalEquipamento: 0,
@@ -91,6 +95,18 @@ function MinhasInformacoesCard($$renderer, $$props) {
 			if (!nome) return "?";
 			return nome.trim().split(/\s+/).slice(0, 2).map((p) => p[0]?.toUpperCase() ?? "").join("") || "?";
 		}
+		const ROTULOS_CARGO = {
+			admin: "Administrador",
+			servidor: "Servidor",
+			educador: "Educador"
+		};
+		let editandoPerfil = false;
+		let fotoPreview = "";
+		function limparPreview() {
+			if (fotoPreview) URL.revokeObjectURL(fotoPreview);
+			fotoPreview = "";
+		}
+		onDestroy(limparPreview);
 		function nivelHeatmap(quantidade) {
 			if (!quantidade) return 0;
 			if (quantidade === 1) return 1;
@@ -124,6 +140,7 @@ function MinhasInformacoesCard($$renderer, $$props) {
 			return semanas;
 		}
 		let pesquisaAg = "";
+		$: fotoExibida = usuario?.foto_url || "";
 		$: semanasHeatmap = montarSemanas(estatisticas?.heatmap, anoSelecionado);
 		$: rotulosMeses = semanasHeatmap.map((semana, idx) => {
 			const primeiroDia = semana[0];
@@ -156,21 +173,64 @@ function MinhasInformacoesCard($$renderer, $$props) {
 			$$renderer.push("<!--[0-->");
 			$$renderer.push(`<p class="msg-erro">${escape_html(erro)}</p>`);
 		} else $$renderer.push("<!--[-1-->");
-		$$renderer.push(`<!--]--> <div class="card" id="dados"><div class="card-header"><span class="material-symbols-outlined">person</span> <h3>Meus Dados</h3></div> `);
+		$$renderer.push(`<!--]-->  <div class="card" id="dados"><div class="card-header"><span class="material-symbols-outlined">person</span> <h3>Meus Dados</h3> `);
+		if (!carregandoUsuario && onSalvarPerfil) {
+			$$renderer.push("<!--[0-->");
+			$$renderer.push(`<button type="button" class="btn-editar-perfil"><span class="material-symbols-outlined">edit</span> Editar</button>`);
+		} else $$renderer.push("<!--[-1-->");
+		$$renderer.push(`<!--]--></div> `);
 		if (carregandoUsuario) {
 			$$renderer.push("<!--[0-->");
 			$$renderer.push(`<p class="estado-vazio">Carregando dados do usuário...</p>`);
 		} else {
 			$$renderer.push("<!--[-1-->");
-			$$renderer.push(`<div class="perfil-conteudo">`);
-			if (usuario?.foto_url) {
+			$$renderer.push(`<div${attr_class("perfil-conteudo", void 0, { "editando": editandoPerfil })}><div class="perfil-foto-area">`);
+			if (fotoExibida) {
 				$$renderer.push("<!--[0-->");
-				$$renderer.push(`<img class="perfil-foto"${attr("src", usuario.foto_url)} alt="Foto de perfil"/>`);
+				$$renderer.push(`<img class="perfil-foto"${attr("src", fotoExibida)} alt="Foto de perfil"/>`);
 			} else {
 				$$renderer.push("<!--[-1-->");
 				$$renderer.push(`<div class="perfil-foto-placeholder">${escape_html(iniciais(usuario?.nome))}</div>`);
 			}
-			$$renderer.push(`<!--]--> <div class="perfil-dados"><p class="perfil-nome">${escape_html(usuario?.nome || "—")}</p> <div class="perfil-info-linha"><span class="material-symbols-outlined">mail</span> ${escape_html(usuario?.email || "—")}</div> <div class="perfil-info-linha"><span class="material-symbols-outlined">badge</span> Matrícula: ${escape_html(usuario?.matricula || "—")}</div></div></div>`);
+			$$renderer.push(`<!--]--> `);
+			$$renderer.push("<!--[-1-->");
+			$$renderer.push(`<!--]--></div> <div class="perfil-dados">`);
+			$$renderer.push("<!--[-1-->");
+			$$renderer.push(`<p class="perfil-nome">${escape_html(usuario?.nome || "—")}</p> <div class="perfil-info-linha"><span class="material-symbols-outlined">mail</span> ${escape_html(usuario?.email || "—")}</div>`);
+			$$renderer.push(`<!--]--> <div class="perfil-info-linha"><span class="material-symbols-outlined">badge</span> Matrícula: ${escape_html(usuario?.matricula || "—")}</div> <div class="perfil-info-linha"><span class="material-symbols-outlined">work</span> Cargo: ${escape_html(ROTULOS_CARGO[usuario?.cargo] || usuario?.cargo || "—")}</div></div></div> `);
+			if (salasResponsavel && equipamentosResponsavel) {
+				$$renderer.push("<!--[0-->");
+				$$renderer.push(`<div class="responsabilidades"><div class="responsabilidade-bloco"><span class="responsabilidade-titulo"><span class="material-symbols-outlined">meeting_room</span> Salas sob minha responsabilidade</span> `);
+				if (salasResponsavel.length) {
+					$$renderer.push("<!--[0-->");
+					$$renderer.push(`<div class="chips"><!--[-->`);
+					const each_array = ensure_array_like(salasResponsavel);
+					for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
+						let sala = each_array[$$index];
+						$$renderer.push(`<span class="chip">${escape_html(sala.nome)}</span>`);
+					}
+					$$renderer.push(`<!--]--></div>`);
+				} else {
+					$$renderer.push("<!--[-1-->");
+					$$renderer.push(`<span class="responsabilidade-vazio">Nenhuma sala.</span>`);
+				}
+				$$renderer.push(`<!--]--></div> <div class="responsabilidade-bloco"><span class="responsabilidade-titulo"><span class="material-symbols-outlined">devices</span> Equipamentos sob minha responsabilidade</span> `);
+				if (equipamentosResponsavel.length) {
+					$$renderer.push("<!--[0-->");
+					$$renderer.push(`<div class="chips"><!--[-->`);
+					const each_array_1 = ensure_array_like(equipamentosResponsavel);
+					for (let $$index_1 = 0, $$length = each_array_1.length; $$index_1 < $$length; $$index_1++) {
+						let equipamento = each_array_1[$$index_1];
+						$$renderer.push(`<span class="chip">${escape_html(equipamento.nome)}</span>`);
+					}
+					$$renderer.push(`<!--]--></div>`);
+				} else {
+					$$renderer.push("<!--[-1-->");
+					$$renderer.push(`<span class="responsabilidade-vazio">Nenhum equipamento.</span>`);
+				}
+				$$renderer.push(`<!--]--></div></div>`);
+			} else $$renderer.push("<!--[-1-->");
+			$$renderer.push(`<!--]-->`);
 		}
 		$$renderer.push(`<!--]--></div> <div class="card" id="estatisticas"><div class="card-header"><span class="material-symbols-outlined">query_stats</span> <h3>Minhas Estatísticas</h3></div> `);
 		if (carregandoEstatisticas) {
@@ -179,19 +239,19 @@ function MinhasInformacoesCard($$renderer, $$props) {
 		} else {
 			$$renderer.push("<!--[-1-->");
 			$$renderer.push(`<div class="estatisticas-resumo"><div class="estatistica-item"><span class="estatistica-valor">${escape_html(estatisticas.totalSala)}</span> <span class="estatistica-label">Salas agendadas</span></div> <div class="estatistica-item"><span class="estatistica-valor">${escape_html(estatisticas.totalEquipamento)}</span> <span class="estatistica-label">Equipamentos agendados</span></div> <div class="estatistica-item"><span class="estatistica-valor">${escape_html(totalGeral)}</span> <span class="estatistica-label">Total geral</span></div></div> <div class="estatisticas-destaques"><div class="destaque-item"><div class="destaque-icone"><span class="material-symbols-outlined">meeting_room</span></div> <div class="destaque-texto"><span class="destaque-label">Sala mais agendada</span> <span class="destaque-valor">${escape_html(estatisticas.salaMaisAgendada || "—")}</span></div></div> <div class="destaque-item"><div class="destaque-icone"><span class="material-symbols-outlined">devices</span></div> <div class="destaque-texto"><span class="destaque-label">Equipamento mais agendado</span> <span class="destaque-valor">${escape_html(estatisticas.equipamentoMaisAgendado || "—")}</span></div></div></div> <div class="heatmap-header"><button class="heatmap-nav-btn" title="Ano anterior"><span class="material-symbols-outlined">chevron_left</span></button> <button class="heatmap-ano-btn" title="Ir para o ano atual">${escape_html(anoSelecionado)}</button> <button class="heatmap-nav-btn" title="Próximo ano"><span class="material-symbols-outlined">chevron_right</span></button></div> <div class="heatmap-wrapper"><div class="heatmap-meses"><!--[-->`);
-			const each_array = ensure_array_like(rotulosMeses);
-			for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
-				let rotulo = each_array[$$index];
+			const each_array_2 = ensure_array_like(rotulosMeses);
+			for (let $$index_2 = 0, $$length = each_array_2.length; $$index_2 < $$length; $$index_2++) {
+				let rotulo = each_array_2[$$index_2];
 				$$renderer.push(`<span class="heatmap-mes-label">${escape_html(rotulo)}</span>`);
 			}
 			$$renderer.push(`<!--]--></div> <div class="heatmap-grid"><!--[-->`);
-			const each_array_1 = ensure_array_like(semanasHeatmap);
-			for (let $$index_2 = 0, $$length = each_array_1.length; $$index_2 < $$length; $$index_2++) {
-				let semana = each_array_1[$$index_2];
+			const each_array_3 = ensure_array_like(semanasHeatmap);
+			for (let $$index_4 = 0, $$length = each_array_3.length; $$index_4 < $$length; $$index_4++) {
+				let semana = each_array_3[$$index_4];
 				$$renderer.push(`<!--[-->`);
-				const each_array_2 = ensure_array_like(semana);
-				for (let $$index_1 = 0, $$length = each_array_2.length; $$index_1 < $$length; $$index_1++) {
-					let dia = each_array_2[$$index_1];
+				const each_array_4 = ensure_array_like(semana);
+				for (let $$index_3 = 0, $$length = each_array_4.length; $$index_3 < $$length; $$index_3++) {
+					let dia = each_array_4[$$index_3];
 					$$renderer.push(`<div${attr_class(`heatmap-dia nivel-${stringify(nivelHeatmap(dia.quantidade))}`, "svelte-viwrfp", { "fora-do-ano": dia.foraDoAno })}${attr("title", `${stringify(dia.data)}: ${stringify(dia.quantidade)} agendamento(s)`)}></div>`);
 				}
 				$$renderer.push(`<!--]-->`);
@@ -221,16 +281,15 @@ function MinhasInformacoesCard($$renderer, $$props) {
 		ListaAgendamentosCard($$renderer, {
 			agendamentos,
 			carregando: carregandoAgendamentos,
-			onDeletar: abrirModal,
-			processando,
-			semCard: true,
-			listaPropria: true,
-			mostrarCancelados: true
+			onDeletar: abrirModal
 		});
 		$$renderer.push(`<!----></div></main></div></div>`);
 		bind_props($$props, {
 			usuario,
 			carregandoUsuario,
+			salasResponsavel,
+			equipamentosResponsavel,
+			onSalvarPerfil,
 			estatisticas,
 			carregandoEstatisticas,
 			blocos,
@@ -248,6 +307,7 @@ function MinhasInformacoesCard($$renderer, $$props) {
 function _page($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
 		let token = "";
+		let professor_id = "";
 		let usuario = null;
 		let carregandoUsuario = false;
 		let blocos = [];
@@ -264,6 +324,32 @@ function _page($$renderer, $$props) {
 			equipamentoMaisAgendado: null,
 			heatmap: []
 		};
+		async function salvarPerfil({ nome, email, foto, removerFoto }) {
+			const resposta = await atualizarUsuario(Number(professor_id), {
+				nome,
+				email,
+				foto,
+				removerFoto
+			}, token);
+			if (!resposta) return;
+			const atualizado = resposta?.user || resposta?.data?.user || resposta?.data || resposta;
+			if (!atualizado) throw new Error("Resposta inesperada do servidor.");
+			usuario = {
+				...usuario,
+				nome: atualizado.name || atualizado.nome || usuario?.nome || "",
+				email: atualizado.email || usuario?.email || "",
+				foto_url: atualizado.foto_url ?? atualizado.avatar_url ?? atualizado.foto ?? null
+			};
+			try {
+				const salvo = JSON.parse(localStorage.getItem("user") || "null");
+				if (salvo) localStorage.setItem("user", JSON.stringify({
+					...salvo,
+					name: atualizado.name || atualizado.nome || salvo.name,
+					email: atualizado.email,
+					foto_url: atualizado.foto_url ?? atualizado.avatar_url ?? atualizado.foto ?? null
+				}));
+			} catch {}
+		}
 		function itemMaisFrequente(lista, campoNome, campoId) {
 			const contagem = /* @__PURE__ */ new Map();
 			for (const item of lista) {
@@ -334,7 +420,8 @@ function _page($$renderer, $$props) {
 			carregandoAgendamentos,
 			erro,
 			onSair: () => goto("/main"),
-			onDeletar: deletar
+			onDeletar: deletar,
+			onSalvarPerfil: salvarPerfil
 		});
 	});
 }

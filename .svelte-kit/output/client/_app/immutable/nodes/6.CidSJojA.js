@@ -1,1 +1,0 @@
-import{D as e,T as t,U as n,at as r,b as i}from"../chunks/BD_DilrV.js";import"../chunks/xihTtKlq.js";import"../chunks/DfErf2Zv.js";/* empty css                */var a=e(`<div class="escopo-main"><!></div>`);function o(e,o){var s=a();i(n(s),o,`default`,{},null),r(s),t(e,s)}export{o as component};
