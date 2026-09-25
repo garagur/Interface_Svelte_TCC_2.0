@@ -439,3 +439,29 @@
     background: var(--primary);
     color: var(--white);
 }
+
+@media (max-width: 768px) {
+    .escopo-main .app-bar {
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .escopo-main .title-section {
+        min-width: 0;
+    }
+
+    .escopo-main .nav-menu {
+        order: 3;
+        flex: 1 1 100%;
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding: 4px 2px 8px;
+        scrollbar-width: thin;
+    }
+
+    .escopo-main .menu-card {
+        width: 76px;
+        height: 76px;
+    }
+}

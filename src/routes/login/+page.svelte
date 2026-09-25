@@ -45,6 +45,7 @@
       localStorage.setItem("cargo", data.user?.cargo || "");
       localStorage.setItem("user_id", data.user?.id || "");
       localStorage.setItem("matricula", data.user?.matricula || "");
+      localStorage.setItem("nome", data.user?.nome || data.user?.name || "");
       goto("/main");
     } catch (e) {
       erro = e.message;

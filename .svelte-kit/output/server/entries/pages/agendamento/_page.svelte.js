@@ -168,7 +168,7 @@ function AgendamentoCard($$renderer, $$props) {
 				cancelandoId = null;
 			}
 		}
-		$: agendamentosVisiveis = agendamentos.filter((a) => a.status !== "inativo");
+		$: agendamentosVisiveis = agendamentos;
 		$$renderer.push(`<div class="escopo-agendamento">`);
 		ConfirmarDelecaoModal($$renderer, {
 			agendamento: agendamentoParaDeletar,
@@ -546,11 +546,11 @@ function _page($$renderer, $$props) {
 			carregandoLista = true;
 			erro = "";
 			try {
-				if (modo === "sala") agendamentos = (await carregarAgendamentosSalas(token, id)).filter((agendamento) => agendamento.status !== "inativo").map((agendamento) => ({
+				if (modo === "sala") agendamentos = (await carregarAgendamentosSalas(token, id)).map((agendamento) => ({
 					...agendamento,
 					tipo: "sala"
 				}));
-				else agendamentos = (await carregarAgendamentosEquipamentos(token)).filter((agendamento) => agendamento.equipamento_id === id && agendamento.status !== "inativo").map((agendamento) => ({
+				else agendamentos = (await carregarAgendamentosEquipamentos(token)).filter((agendamento) => agendamento.equipamento_id === id).map((agendamento) => ({
 					...agendamento,
 					tipo: "equipamento"
 				}));

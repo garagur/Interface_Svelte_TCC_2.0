@@ -10,6 +10,7 @@
     import { deletarAgendamentoEquipamento } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/Deleted_Agendamento_equipamento.js";
 
     export let titulo = "";
+    export let nome = "";
     export let matricula = "";
     export let cargo = "";
     export let onSair = () => {};
@@ -19,24 +20,20 @@
     export let erro = "";
     import ListaAgendamentosCard from "$lib/components/Card/ListaAgendamentosCard.svelte";
 
-    let visao = "calendario"; // "calendario" | "lista"
-
-    function trocarVisao(nova) {
-        visao = nova;
-        localStorage.setItem("visao_agendamentos", nova);
-    }
+    let visao = "lista";
     let token = "";
     let usuarioId = null;
     let agendamentoParaDeletar = null;
     let cancelandoId = null; // ex: "sala-12" ou "equipamento-7" — null quando nada está em andamento
     let mostrarMenuUsuario = false;
 
-    function irParaDetalhes(ag) {
-        goto(`/agendamento/${ag.tipo}/${ag.id}`);
+    function trocarVisao(novaVisao) {
+        visao = novaVisao;
+        localStorage.setItem("visao_agendamentos", novaVisao);
     }
 
-    function hoje() {
-        return new Date().toISOString().slice(0, 10);
+    function irParaDetalhes(ag) {
+        goto(`/agendamento/${ag.tipo}/${ag.id}`);
     }
 
     function abrirModalDeletar(ag) {
@@ -107,12 +104,10 @@
         token = localStorage.getItem("token") || "";
         usuarioId = localStorage.getItem("user_id");
         cargo = localStorage.getItem("cargo");
-        visao = localStorage.getItem("visao_agendamentos") || "calendario";
+        visao = localStorage.getItem("visao_agendamentos") || "lista";
     });
 
-    $: agendamentosVisiveis = agendamentos.filter(
-        (a) => a.status !== "inativo",
-    );
+    $: agendamentosVisiveis = agendamentos;
     $: totalRegistros = agendamentosVisiveis.length;
 </script>
 
@@ -129,27 +124,36 @@
     <header class="app-bar">
         <div class="title-section">
             <h1>{titulo}</h1>
-            <span>Matrícula: {matricula}</span>
+            <span>{nome} | Matrícula: {matricula}</span>
         </div>
 
         <nav class="nav-menu">
             {#if cargo === "admin"}
                 <button
+                    type="button"
                     class="menu-card"
+                    title="Gerenciar salas"
+                    aria-label="Gerenciar salas"
                     on:click={() => goto("/admin/cadastro-sala")}
                 >
                     <span class="material-symbols-outlined">meeting_room</span>
                     <span>Gerenciar<br />Salas</span>
                 </button>
                 <button
+                    type="button"
                     class="menu-card"
+                    title="Gerenciar turmas"
+                    aria-label="Gerenciar turmas"
                     on:click={() => goto("/admin/cadastro-turma")}
                 >
                     <span class="material-symbols-outlined">groups</span>
                     <span>Gerenciar<br />Turmas</span>
                 </button>
                 <button
+                    type="button"
                     class="menu-card"
+                    title="Gerenciar horários"
+                    aria-label="Gerenciar horários"
                     on:click={() => goto("/admin/cadastro-horario")}
                 >
                     <span class="material-symbols-outlined">calendar_month</span
@@ -157,14 +161,20 @@
                     <span>Gerenciar<br />Horários</span>
                 </button>
                 <button
+                    type="button"
                     class="menu-card"
+                    title="Gerenciar equipamentos"
+                    aria-label="Gerenciar equipamentos"
                     on:click={() => goto("/admin/cadastro-equipamento")}
                 >
                     <span class="material-symbols-outlined">playlist_add</span>
                     <span>Gerenciar<br />Equipamentos</span>
                 </button>
                 <button
+                    type="button"
                     class="menu-card"
+                    title="Gerenciar usuários"
+                    aria-label="Gerenciar usuários"
                     on:click={() => goto("/admin/cadastro-usuario")}
                 >
                     <span class="material-symbols-outlined">person_add</span>
@@ -273,21 +283,23 @@
             >
                 <button
                     type="button"
+                    class:ativo={visao === "lista"}
+                    on:click={() => trocarVisao("lista")}
+                    title="Lista de agendamentos"
+                    aria-label="Lista de agendamentos"
+                >
+                    <span class="material-symbols-outlined">view_list</span>
+                </button>
+                <button
+                    type="button"
                     class:ativo={visao === "calendario"}
                     on:click={() => trocarVisao("calendario")}
-                    title="Calendário"
+                    title="Grade mensal"
+                    aria-label="Grade mensal"
                 >
                     <span class="material-symbols-outlined"
                         >calendar_view_month</span
                     >
-                </button>
-                <button
-                    type="button"
-                    class:ativo={visao === "lista"}
-                    on:click={() => trocarVisao("lista")}
-                    title="Lista"
-                >
-                    <span class="material-symbols-outlined">view_list</span>
                 </button>
             </div>
 
@@ -302,10 +314,18 @@
         {/if}
 
         <div class="calendario-scroll-area">
-            {#if visao === "calendario"}
+            {#if visao === "lista"}
+                <ListaAgendamentosCard
+                    agendamentos={agendamentosVisiveis}
+                    {carregando}
+                    {usuarioId}
+                    {cargo}
+                    onDeletar={abrirModalDeletar}
+                />
+            {:else}
                 <CalendarioAgendamentos
                     agendamentos={agendamentosVisiveis}
-                    hojeStr={hoje()}
+                    hojeStr={new Date().toISOString().slice(0, 10)}
                     carregandoLista={carregando}
                 >
                     <svelte:fragment let:ag>
@@ -317,14 +337,6 @@
                         />
                     </svelte:fragment>
                 </CalendarioAgendamentos>
-            {:else}
-                <ListaAgendamentosCard
-                    agendamentos={agendamentosVisiveis}
-                    {carregando}
-                    {usuarioId}
-                    {cargo}
-                    onDeletar={abrirModalDeletar}
-                />
             {/if}
         </div>
 

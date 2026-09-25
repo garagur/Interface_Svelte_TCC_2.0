@@ -117,6 +117,7 @@
             const status = statusExibicao(ag);
             if (filtroStatusAg === "ativo") return status === "futuro";
             if (filtroStatusAg === "finalizado") return status === "passado";
+            if (filtroStatusAg === "cancelado") return status === "cancelado";
             return true;
         })
         .sort((a, b) => {
@@ -152,6 +153,7 @@
                 <option value="todos">Todos</option>
                 <option value="ativo">Ativos</option>
                 <option value="finalizado">Finalizados</option>
+                <option value="cancelado">Cancelados</option>
             </select>
         </div>
 

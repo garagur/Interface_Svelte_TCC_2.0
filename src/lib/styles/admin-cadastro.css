@@ -192,9 +192,10 @@
 
 .escopo-admin-cadastro .table-header .th {
     padding: 12px 8px;
-    font-size: 12px;
+    font-size: 0.75rem;
     font-weight: bold;
     text-align: center;
+    white-space: nowrap;
 }
 
 .escopo-admin-cadastro .table-body {
@@ -226,13 +227,14 @@
 }
 
 .escopo-admin-cadastro .td {
-    padding: 12px 6px;
+    padding: 10px 6px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    font-size: 0.8rem;
     color: var(--text-dark);
+    min-width: 0;
 }
 
 .escopo-admin-cadastro .flex-2 {
@@ -253,6 +255,8 @@
     overflow: hidden;
     margin-top: 2px;
     text-align: center;
+    max-width: 100%;
+    overflow-wrap: anywhere;
 }
 
 .escopo-admin-cadastro .icon-tiny {
@@ -426,31 +430,40 @@
     border-radius: 6px;
     font-weight: bold;
     color: var(--primary);
-    font-size: 16px;
+    font-size: 0.75rem;
 }
 
 .escopo-admin-cadastro .badge-status {
     padding: 4px 8px;
     border-radius: 6px;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 0.7rem;
+    white-space: nowrap;
 }
 
 .escopo-admin-cadastro .badge-status.ativo {
     background: var(--confirm-light);
     color: var(--confirm-dark);
-    font-size: 16px;
+    font-size: 0.7rem;
 }
 
 .escopo-admin-cadastro .badge-status.inativo {
     background: var(--cancel-light);
     color: var(--cancel-dark);
-    font-size: 16px;
+    font-size: 0.7rem;
 }
 
 @media (max-width: 900px) {
+    .escopo-admin-cadastro .scaffold {
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+    }
+
     .escopo-admin-cadastro .body-content {
         flex-direction: column;
+        min-height: auto;
+        overflow: visible;
     }
 
     .escopo-admin-cadastro .form-card {
@@ -470,6 +483,39 @@
 
     .escopo-admin-cadastro .table-body {
         overflow-y: visible;
+    }
+
+    .escopo-admin-cadastro .horario-content {
+        min-height: auto;
+        overflow: visible;
+    }
+
+    .escopo-admin-cadastro .table-wrapper {
+        overflow-x: auto;
+        overflow-y: visible;
+    }
+
+    .escopo-admin-cadastro .table-header,
+    .escopo-admin-cadastro .table-row {
+        min-width: 680px;
+    }
+
+    .escopo-admin-cadastro .table-header .th {
+        padding: 10px 6px;
+        font-size: 0.7rem;
+    }
+
+    .escopo-admin-cadastro .td {
+        padding: 9px 5px;
+        font-size: 0.75rem;
+    }
+
+    .escopo-admin-cadastro .btn-action {
+        padding: 6px;
+    }
+
+    .escopo-admin-cadastro .btn-action .material-symbols-outlined {
+        font-size: 1.1rem;
     }
 }
 

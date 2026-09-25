@@ -70,9 +70,7 @@
         visao = novaVisao;
     }
 
-    $: agendamentosVisiveis = agendamentos.filter(
-        (a) => a.status !== "inativo",
-    );
+    $: agendamentosVisiveis = agendamentos;
 
     function abrirModalDeletar(ag) {
         if (cancelandoId) return; // já tem um cancelamento em andamento, ignora

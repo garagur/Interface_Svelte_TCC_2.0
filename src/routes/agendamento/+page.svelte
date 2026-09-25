@@ -115,18 +115,14 @@
         erro = "";
         try {
             if (modo === "sala") {
-                agendamentos = (await carregarAgendamentosSalas(token, id))
-                    .filter((agendamento) => agendamento.status !== "inativo")
-                    .map((agendamento) => ({ ...agendamento, tipo: "sala" }));
+                agendamentos = (await carregarAgendamentosSalas(token, id)).map(
+                    (agendamento) => ({ ...agendamento, tipo: "sala" }),
+                );
             } else {
                 // O endpoint de equipamentos retorna todos. Precisamos filtrar pelo selecionado no front:
                 const todos = await carregarAgendamentosEquipamentos(token);
                 agendamentos = todos
-                    .filter(
-                        (agendamento) =>
-                            agendamento.equipamento_id === id &&
-                            agendamento.status !== "inativo",
-                    )
+                    .filter((agendamento) => agendamento.equipamento_id === id)
                     .map((agendamento) => ({
                         ...agendamento,
                         tipo: "equipamento",

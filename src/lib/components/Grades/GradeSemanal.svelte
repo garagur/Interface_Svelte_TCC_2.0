@@ -33,20 +33,24 @@
 {#if carregandoLista}
     <p class="estado-vazio">Carregando horários...</p>
 {:else}
-    <div class="grade-wrapper">
-        {#each dias as dia}
-            <div
-                class="dia-coluna {diasFimDeSemana.includes(dia) ? 'fds' : ''}"
-            >
-                <div class="dia-header">{diasLabels[dia]}</div>
-                <div class="dia-blocos">
-                    {#each blocosOrdenados(dia) as bloco}
-                        <slot {bloco} />
-                    {:else}
-                        <div class="bloco-vazio">—</div>
-                    {/each}
+    <div class="grade-semanal">
+        <div class="grade-wrapper">
+            {#each dias as dia}
+                <div
+                    class="dia-coluna {diasFimDeSemana.includes(dia)
+                        ? 'fds'
+                        : ''}"
+                >
+                    <div class="dia-header">{diasLabels[dia]}</div>
+                    <div class="dia-blocos">
+                        {#each blocosOrdenados(dia) as bloco}
+                            <slot {bloco} />
+                        {:else}
+                            <div class="bloco-vazio">—</div>
+                        {/each}
+                    </div>
                 </div>
-            </div>
-        {/each}
+            {/each}
+        </div>
     </div>
 {/if}

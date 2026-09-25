@@ -2,11 +2,10 @@ import { i as onDestroy } from "../../../chunks/internal.js";
 import { S as escape_html, c as stringify, i as ensure_array_like, n as bind_props, ot as fallback, t as attr_class, tt as invalid_default_snippet, x as attr } from "../../../chunks/server.js";
 import { t as goto } from "../../../chunks/client.js";
 import "../../../chunks/navigation.js";
-import "../../../chunks/api.js";
-import "../../../chunks/User_Endpoints.js";
 import { a as BlocoHorarioCard, o as GradeSemanal } from "../../../chunks/List_Horario_Service.js";
 import { t as atualizarUsuario } from "../../../chunks/Update_User_Service.js";
 import { a as deletarAgendamentoSala, c as ConfirmarDelecaoModal, r as deletarAgendamentoEquipamento, s as ListaAgendamentosCard } from "../../../chunks/List_Agendamento_Equipamento_Service.js";
+import "../../../chunks/Buscar_Usuario_Service.js";
 //#region src/lib/components/minhas_informacoes/MinhasInformacoesCard.svelte
 function MinhasInformacoesCard($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {

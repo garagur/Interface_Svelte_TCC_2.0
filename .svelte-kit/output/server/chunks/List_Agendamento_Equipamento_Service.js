@@ -143,6 +143,9 @@ function ListaAgendamentosCard($$renderer, $$props) {
 			$$renderer.option({ value: "finalizado" }, ($$renderer) => {
 				$$renderer.push(`Finalizados`);
 			});
+			$$renderer.option({ value: "cancelado" }, ($$renderer) => {
+				$$renderer.push(`Cancelados`);
+			});
 		}, "svelte-1c63qri");
 		$$renderer.push(`</div> `);
 		if (!recursoUnico) {

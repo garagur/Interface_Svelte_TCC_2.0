@@ -1,8 +1,26 @@
+.grade-mensal {
+    background: transparent;
+}
+
 .grade-mensal .grade-wrapper {
     flex: 1;
     overflow-y: auto;
     min-height: 0;
     padding: 0 2px 8px 2px;
+    background: transparent;
+}
+
+@media (max-width: 768px) {
+    .grade-mensal {
+        height: auto;
+        overflow: visible;
+    }
+
+    .grade-mensal .grade-wrapper {
+        overflow: visible;
+        min-height: auto;
+        padding-bottom: 12px;
+    }
 }
 
 .grade-mensal .grade-cabecalho {
@@ -12,7 +30,7 @@
     margin-bottom: 4px;
     position: sticky;
     top: 0;
-    background: var(--white);
+    background: transparent;
     z-index: 1;
     padding-bottom: 4px;
 }
@@ -23,7 +41,7 @@
     font-weight: 700;
     color: var(--primary-dark);
     padding: 6px 0;
-    background: var(--gray-50);
+    background: transparent;
     border-radius: 6px;
 }
 

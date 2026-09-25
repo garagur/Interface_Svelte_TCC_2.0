@@ -29,7 +29,7 @@ function GradeSemanal($$renderer, $$props) {
 			$$renderer.push(`<p class="estado-vazio">Carregando horários...</p>`);
 		} else {
 			$$renderer.push("<!--[-1-->");
-			$$renderer.push(`<div class="grade-wrapper"><!--[-->`);
+			$$renderer.push(`<div class="grade-semanal"><div class="grade-wrapper"><!--[-->`);
 			const each_array = ensure_array_like(dias);
 			for (let $$index_1 = 0, $$length = each_array.length; $$index_1 < $$length; $$index_1++) {
 				let dia = each_array[$$index_1];
@@ -49,7 +49,7 @@ function GradeSemanal($$renderer, $$props) {
 				}
 				$$renderer.push(`<!--]--></div></div>`);
 			}
-			$$renderer.push(`<!--]--></div>`);
+			$$renderer.push(`<!--]--></div></div>`);
 		}
 		$$renderer.push(`<!--]-->`);
 		bind_props($$props, {

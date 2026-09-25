@@ -69,7 +69,25 @@ body {
     margin: 0;
     padding: 0;
     width: 100%;
+    height: auto;
     min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+
+    .escopo-main .scaffold,
+    .escopo-admin-cadastro .scaffold {
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+    }
+
+    .escopo-main .body-content {
+        overflow: visible;
+        min-height: auto;
+    }
 }
 
 .material-symbols-outlined {
