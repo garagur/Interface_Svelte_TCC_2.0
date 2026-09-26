@@ -1,5 +1,5 @@
 import "../../../chunks/internal.js";
-import { s as slot } from "../../../chunks/server.js";
+import { c as slot } from "../../../chunks/server.js";
 import "../../../chunks/client.js";
 import "../../../chunks/navigation.js";
 //#region src/routes/admin/+layout.svelte

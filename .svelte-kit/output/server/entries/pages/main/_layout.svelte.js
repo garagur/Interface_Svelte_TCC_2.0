@@ -1,4 +1,4 @@
-import { s as slot } from "../../../chunks/server.js";
+import { c as slot } from "../../../chunks/server.js";
 /* empty css                           */
 //#region src/routes/main/+layout.svelte
 function _layout($$renderer, $$props) {

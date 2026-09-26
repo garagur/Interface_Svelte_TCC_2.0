@@ -6,6 +6,16 @@
     import { atualizarEquipamentos } from "$lib/services/EquipamentoServices/Update_Equipamento_Service.js";
     import { carregarUsuarios } from "$lib/services/UserServices/List_User_Service.js";
     import { goto } from "$app/navigation";
+    const FOTO_TIPOS = ["image/jpeg", "image/png", "image/webp"];
+    const FOTO_MAX_BYTES = 2 * 1024 * 1024;
+
+    let fotoArquivo = null;
+    let fotoPreview = "";
+    let removerFoto = false;
+    let inputFoto;
+
+    $: fotoExibida =
+        fotoPreview || (removerFoto ? "" : novoEquipamento.fotoUrl || "");
 
     let token = "";
     let matriculaLogado = "";
@@ -16,7 +26,9 @@
         obs: "",
         status: true,
         responsavel_id: null,
+        fotoUrl: null,
     };
+
     let equipamentos = [];
     let usuarios = [];
     let carregando = false;
@@ -65,25 +77,31 @@
     async function salvarEquipamento() {
         erro = "";
         sucesso = "";
-        if (
-            !novoEquipamento.nome.trim() ||
-            !novoEquipamento.N_patrimonio ||
-            !novoEquipamento.obs.trim()
-        ) {
-            erro = "Preencha todos os campos do formulário.";
+        if (!novoEquipamento.nome.trim() || !novoEquipamento.N_patrimonio) {
+            erro = "Preencha nome e número de patrimônio.";
             return;
         }
         carregando = true;
         try {
+            const dadosEnviar = {
+                nome: novoEquipamento.nome,
+                N_patrimonio: novoEquipamento.N_patrimonio,
+                obs: novoEquipamento.obs,
+                status: novoEquipamento.status,
+                responsavel_id: novoEquipamento.responsavel_id,
+                foto: fotoArquivo,
+                removerFoto,
+            };
+
             if (editando && equipamentoEditandoId) {
                 await atualizarEquipamentos(
                     equipamentoEditandoId,
-                    novoEquipamento,
+                    dadosEnviar,
                     token,
                 );
                 sucesso = "Equipamento atualizado com sucesso.";
             } else {
-                await cadastrarEquipamento(novoEquipamento, token);
+                await cadastrarEquipamento(dadosEnviar, token);
                 sucesso = "Equipamento cadastrado com sucesso.";
             }
             resetForm();
@@ -97,13 +115,20 @@
 
     function editarEquipamento(eq) {
         novoEquipamento = {
-            ...eq,
+            nome: eq.nome,
+            N_patrimonio: eq.N_patrimonio,
+            obs: eq.obs,
+            status: eq.status,
             responsavel_id: eq.responsavel_id ?? eq.responsavel?.id ?? null,
+            fotoUrl: eq.fotoUrl ?? eq.foto_url ?? null,
         };
         equipamentoEditandoId = eq.id;
         editando = true;
         sucesso = "";
         erro = "";
+        limparPreview();
+        fotoArquivo = null;
+        removerFoto = false;
     }
 
     function resetForm() {
@@ -113,15 +138,52 @@
             obs: "",
             status: true,
             responsavel_id: null,
+            fotoUrl: null,
         };
         editando = false;
         equipamentoEditandoId = null;
+        limparPreview();
+        fotoArquivo = null;
+        removerFoto = false;
     }
 
     function mudarOrdenacao(novoValor) {
         ordenacao = novoValor;
     }
+    function limparPreview() {
+        if (fotoPreview) URL.revokeObjectURL(fotoPreview);
+        fotoPreview = "";
+    }
 
+    function escolherFoto(event) {
+        const input = event.currentTarget;
+        const arquivo = input.files?.[0];
+        if (!arquivo) return;
+
+        if (!FOTO_TIPOS.includes(arquivo.type)) {
+            erro = "Use uma imagem nos formatos jpg, png ou webp.";
+            input.value = "";
+            return;
+        }
+        if (arquivo.size > FOTO_MAX_BYTES) {
+            erro = "A imagem pode ter no máximo 2 MB.";
+            input.value = "";
+            return;
+        }
+
+        erro = "";
+        limparPreview();
+        fotoArquivo = arquivo;
+        fotoPreview = URL.createObjectURL(arquivo);
+        removerFoto = false;
+    }
+
+    function removerFotoAtual() {
+        limparPreview();
+        fotoArquivo = null;
+        if (inputFoto) inputFoto.value = "";
+        removerFoto = !!novoEquipamento.fotoUrl;
+    }
     // pipeline: pesquisa -> filtro de status -> ordenação
     $: equipamentosFiltrados = equipamentos
         .filter((eq) => {
@@ -173,6 +235,47 @@
     {ordenacao}
     onOrdenarChange={mudarOrdenacao}
 >
+    <svelte:fragment slot="foto">
+        <div class="foto-area">
+            <div class="foto-preview">
+                {#if fotoExibida}
+                    <img src={fotoExibida} alt="Foto do equipamento" />
+                {:else}
+                    <span class="material-symbols-outlined">computer</span>
+                {/if}
+            </div>
+            <input
+                bind:this={inputFoto}
+                class="input-foto-oculto"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                on:change={escolherFoto}
+            />
+            <div class="foto-acoes">
+                <button
+                    type="button"
+                    class="btn-foto-sec"
+                    disabled={carregando}
+                    on:click={() => inputFoto?.click()}
+                >
+                    <span class="material-symbols-outlined">photo_camera</span>
+                    {fotoExibida ? "Trocar foto" : "Adicionar foto"}
+                </button>
+                {#if fotoExibida}
+                    <button
+                        type="button"
+                        class="btn-foto-sec"
+                        disabled={carregando}
+                        on:click={removerFotoAtual}
+                    >
+                        <span class="material-symbols-outlined">delete</span>
+                        Remover foto
+                    </button>
+                {/if}
+            </div>
+        </div>
+    </svelte:fragment>
+
     <svelte:fragment slot="campos">
         <div class="field">
             <label for="nome-equipamento">Nome do Equipamento</label>
@@ -306,6 +409,14 @@
                     </span>
                 </div>
                 <div class="td flex-1 action-cell">
+                    <button
+                        type="button"
+                        class="btn-action info"
+                        title="Informações"
+                        aria-label="Informações do equipamento"
+                    >
+                        <span class="material-symbols-outlined">info</span>
+                    </button>
                     <button
                         class="btn-action edit"
                         on:click={() => editarEquipamento(s)}

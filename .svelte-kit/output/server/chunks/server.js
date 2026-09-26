@@ -4093,6 +4093,17 @@ function slot(renderer, $$props, name, slot_props, fallback_fn) {
 	else fallback_fn?.();
 }
 /**
+* @param {Record<string, any>} props
+* @returns {Record<string, boolean>}
+*/
+function sanitize_slots(props) {
+	/** @type {Record<string, boolean>} */
+	const sanitized = {};
+	if (props.children) sanitized.default = true;
+	for (const key of Object.keys(props.$$slots || {})) sanitized[key] = true;
+	return sanitized;
+}
+/**
 * Legacy mode: If the prop has a fallback and is bound in the
 * parent component, propagate the fallback value upwards.
 * @param {Record<string, unknown>} props_parent
@@ -4137,4 +4148,4 @@ function derived(fn) {
 	};
 }
 //#endregion
-export { hydration_failed as $, set_active_reaction as A, boundary as B, is_passive_event as C, active_reaction as D, active_effect as E, get_next_sibling as F, hydrate_node as G, pop$1 as H, init_operations as I, set_hydrating as J, hydrating as K, mutable_source as L, clear_text_content as M, create_text as N, get as O, get_first_child as P, HYDRATION_ERROR as Q, set as R, escape_html as S, writable as T, push$1 as U, component_context as V, async_mode_flag as W, lifecycle_double_unmount as X, hydration_mismatch as Y, state_proxy_unmount as Z, hydratable_clobbering as _, head as a, define_property as at, getAbortSignal as b, stringify as c, run as ct, createContext as d, experimental_async_required as et, getAllContexts as f, ssr_context as g, setContext as h, ensure_array_like as i, array_from as it, component_root as j, set_active_effect as k, get_user_code_location as l, hasContext as m, bind_props as n, LEGACY_PROPS as nt, render as o, fallback as ot, getContext as p, set_hydrate_node as q, derived as r, STATE_SYMBOL as rt, slot as s, noop as st, attr_class as t, invalid_default_snippet as tt, get_render_context as u, hydratable_serialization_failed as v, readable as w, attr as x, lifecycle_function_unavailable as y, flushSync as z };
+export { HYDRATION_ERROR as $, set_active_effect as A, flushSync as B, escape_html as C, active_effect as D, writable as E, get_first_child as F, async_mode_flag as G, component_context as H, get_next_sibling as I, set_hydrate_node as J, hydrate_node as K, init_operations as L, component_root as M, clear_text_content as N, active_reaction as O, create_text as P, state_proxy_unmount as Q, mutable_source as R, attr as S, readable as T, pop$1 as U, boundary as V, push$1 as W, hydration_mismatch as X, set_hydrating as Y, lifecycle_double_unmount as Z, ssr_context as _, head as a, array_from as at, lifecycle_function_unavailable as b, slot as c, noop as ct, get_render_context as d, hydration_failed as et, createContext as f, setContext as g, hasContext as h, ensure_array_like as i, STATE_SYMBOL as it, set_active_reaction as j, get as k, stringify as l, run as lt, getContext as m, bind_props as n, invalid_default_snippet as nt, render as o, define_property as ot, getAllContexts as p, hydrating as q, derived as r, LEGACY_PROPS as rt, sanitize_slots as s, fallback as st, attr_class as t, experimental_async_required as tt, get_user_code_location as u, hydratable_clobbering as v, is_passive_event as w, getAbortSignal as x, hydratable_serialization_failed as y, set as z };

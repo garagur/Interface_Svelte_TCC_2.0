@@ -1,7 +1,9 @@
-import { S as escape_html, n as bind_props, ot as fallback, s as slot, x as attr } from "./server.js";
+import { C as escape_html, S as attr, c as slot, n as bind_props, s as sanitize_slots, st as fallback, t as attr_class } from "./server.js";
 //#region src/lib/components/admin/CadastroCard.svelte
 function CadastroCard($$renderer, $$props) {
+	const $$slots = sanitize_slots($$props);
 	$$renderer.component(($$renderer) => {
+		let temFotoSlot;
 		let titulo = fallback($$props["titulo"], "");
 		let subtitulo = fallback($$props["subtitulo"], "");
 		let onSair = $$props["onSair"];
@@ -9,7 +11,6 @@ function CadastroCard($$renderer, $$props) {
 		let temToggle = fallback($$props["temToggle"], false);
 		let toggleValue = fallback($$props["toggleValue"], true);
 		let onSubmit = $$props["onSubmit"];
-		/** @type {(() => void) | null} */
 		let onCancelar = fallback($$props["onCancelar"], null);
 		let editando = fallback($$props["editando"], false);
 		let carregando = fallback($$props["carregando"], false);
@@ -19,7 +20,6 @@ function CadastroCard($$renderer, $$props) {
 		let mostrarFormulario = fallback($$props["mostrarFormulario"], false);
 		let tituloNovoRegistro = fallback($$props["tituloNovoRegistro"], "Novo registro");
 		let tituloEditarRegistro = fallback($$props["tituloEditarRegistro"], "Editar registro");
-		/** @type {(() => void) | null} */
 		let onNovo = fallback($$props["onNovo"], null);
 		let tituloTabela = fallback($$props["tituloTabela"], "");
 		let iconeTabela = fallback($$props["iconeTabela"], "list");
@@ -35,6 +35,7 @@ function CadastroCard($$renderer, $$props) {
 		let labelOrdenacaoAsc = fallback($$props["labelOrdenacaoAsc"], "Nome (A-Z)");
 		let labelOrdenacaoDesc = fallback($$props["labelOrdenacaoDesc"], "Nome (Z-A)");
 		let ultimoSucesso = "";
+		$: temFotoSlot = !!$$slots.foto;
 		$: if (editando) mostrarFormulario = true;
 		$: if (sucesso && sucesso !== ultimoSucesso) {
 			ultimoSucesso = sucesso;
@@ -82,9 +83,16 @@ function CadastroCard($$renderer, $$props) {
 		$$renderer.push(`<!--]--></div></div> <div class="table-footer"><button type="button" class="btn-adicionar"><span class="material-symbols-outlined">add</span> Adicionar</button></div></div></main> `);
 		if (mostrarFormulario) {
 			$$renderer.push("<!--[0-->");
-			$$renderer.push(`<div class="modal-overlay" role="button" tabindex="-1" aria-label="Fechar formulário"><div class="card form-card form-card-modal" role="dialog" aria-modal="true" tabindex="-1"><button type="button" class="btn-fechar-modal" title="Fechar"><span class="material-symbols-outlined">close</span></button> <div class="card-header"><span class="material-symbols-outlined icon-large">${escape_html(iconeForm)}</span> <h3 class="form-titulo">${escape_html(editando ? tituloEditarRegistro : tituloNovoRegistro)}</h3></div> <form><!--[-->`);
+			$$renderer.push(`<div class="modal-overlay" role="button" tabindex="-1" aria-label="Fechar formulário"><div${attr_class("card form-card form-card-modal", void 0, { "form-card-modal-larga": temFotoSlot })} role="dialog" aria-modal="true" tabindex="-1"><button type="button" class="btn-fechar-modal" title="Fechar"><span class="material-symbols-outlined">close</span></button> <div class="card-header"><span class="material-symbols-outlined icon-large">${escape_html(iconeForm)}</span> <h3 class="form-titulo">${escape_html(editando ? tituloEditarRegistro : tituloNovoRegistro)}</h3></div> <form><div${attr_class("form-body", void 0, { "com-foto": temFotoSlot })}>`);
+			if (temFotoSlot) {
+				$$renderer.push("<!--[0-->");
+				$$renderer.push(`<!--[-->`);
+				slot($$renderer, $$props, "foto", {}, null);
+				$$renderer.push(`<!--]-->`);
+			} else $$renderer.push("<!--[-1-->");
+			$$renderer.push(`<!--]--> <div class="form-fields"><!--[-->`);
 			slot($$renderer, $$props, "campos", {}, null);
-			$$renderer.push(`<!--]--> `);
+			$$renderer.push(`<!--]--></div></div> `);
 			if (temToggle) {
 				$$renderer.push("<!--[0-->");
 				$$renderer.push(`<div class="field field-toggle"><!--[-->`);

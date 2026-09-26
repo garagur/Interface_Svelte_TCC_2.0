@@ -38,7 +38,7 @@
       "_server.js"
     ],
     "css": [
-      "_app/immutable/assets/_layout.YNT8K1Y2.css"
+      "_app/immutable/assets/_layout.BeCU6zn6.css"
     ]
   },
   "_List_Agendamento_Equipamento_Service.CzRNix7l.css": {
@@ -252,7 +252,7 @@
       "_server.js"
     ],
     "css": [
-      "_app/immutable/assets/_layout.YNT8K1Y2.css"
+      "_app/immutable/assets/_layout.BeCU6zn6.css"
     ]
   },
   "src/routes/admin/cadastro-equipamento/+page.svelte": {

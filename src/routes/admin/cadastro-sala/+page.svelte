@@ -7,14 +7,29 @@
     import { carregarUsuarios } from "$lib/services/UserServices/List_User_Service.js";
     import { goto } from "$app/navigation";
 
+    const FOTO_TIPOS = ["image/jpeg", "image/png", "image/webp"];
+    const FOTO_MAX_BYTES = 2 * 1024 * 1024;
+
     let token = "";
     let matriculaLogado = "";
+    let fotoArquivo = null;
+    let fotoPreview = "";
+    let removerFoto = false;
+    let inputFoto;
+
+    $: fotoExibida = fotoPreview || (removerFoto ? "" : novaSala.fotoUrl || "");
+
+    function limparPreview() {
+        if (fotoPreview) URL.revokeObjectURL(fotoPreview);
+        fotoPreview = "";
+    }
 
     let novaSala = {
         nome: "",
         obs: "",
         status: true,
         responsavel_id: null,
+        fotoUrl: null,
     };
     let salas = [];
     let usuarios = [];
@@ -65,17 +80,26 @@
     async function salvarSala() {
         erro = "";
         sucesso = "";
-        if (!novaSala.nome || !novaSala.obs) {
-            erro = "Preencha todos os campos do formulário.";
+        if (!novaSala.nome) {
+            erro = "Preencha o nome da sala.";
             return;
         }
         carregando = true;
         try {
+            const dadosEnviar = {
+                nome: novaSala.nome,
+                obs: novaSala.obs,
+                status: novaSala.status,
+                responsavel_id: novaSala.responsavel_id,
+                foto: fotoArquivo,
+                removerFoto,
+            };
+
             if (editando && salaEditandoId) {
-                await atualizarSalas(salaEditandoId, novaSala, token);
+                await atualizarSalas(salaEditandoId, dadosEnviar, token);
                 sucesso = "Sala atualizada com sucesso.";
             } else {
-                await cadastrarSala(novaSala, token);
+                await cadastrarSala(dadosEnviar, token);
                 sucesso = "Sala cadastrada com sucesso.";
             }
             resetForm();
@@ -89,13 +113,19 @@
 
     function editarSala(sala) {
         novaSala = {
-            ...sala,
+            nome: sala.nome,
+            obs: sala.obs,
+            status: sala.status,
             responsavel_id: sala.responsavel_id ?? sala.responsavel?.id ?? null,
+            fotoUrl: sala.fotoUrl ?? sala.foto_url ?? null,
         };
         salaEditandoId = sala.id;
         editando = true;
         sucesso = "";
         erro = "";
+        limparPreview();
+        fotoArquivo = null;
+        removerFoto = false;
     }
 
     function resetForm() {
@@ -104,15 +134,46 @@
             obs: "",
             status: true,
             responsavel_id: null,
+            fotoUrl: null,
         };
         editando = false;
         salaEditandoId = null;
+        limparPreview();
+        fotoArquivo = null;
+        removerFoto = false;
     }
 
     function mudarOrdenacao(novoValor) {
         ordenacao = novoValor;
     }
+    function escolherFoto(event) {
+        const input = event.currentTarget;
+        const arquivo = input.files?.[0];
+        if (!arquivo) return;
 
+        if (!FOTO_TIPOS.includes(arquivo.type)) {
+            erro = "Use uma imagem nos formatos jpg, png ou webp.";
+            input.value = "";
+            return;
+        }
+        if (arquivo.size > FOTO_MAX_BYTES) {
+            erro = "A imagem pode ter no máximo 2 MB.";
+            input.value = "";
+            return;
+        }
+
+        erro = "";
+        limparPreview();
+        fotoArquivo = arquivo;
+        fotoPreview = URL.createObjectURL(arquivo);
+        removerFoto = false;
+    }
+    function removerFotoAtual() {
+        limparPreview();
+        fotoArquivo = null;
+        if (inputFoto) inputFoto.value = "";
+        removerFoto = !!novaSala.fotoUrl;
+    }
     // pipeline: pesquisa -> filtro de status -> ordenação
     $: salasFiltradas = salas
         .filter((s) => {
@@ -163,6 +224,46 @@
     {ordenacao}
     onOrdenarChange={mudarOrdenacao}
 >
+    <svelte:fragment slot="foto">
+        <div class="foto-area">
+            <div class="foto-preview">
+                {#if fotoExibida}
+                    <img src={fotoExibida} alt="Foto da sala" />
+                {:else}
+                    <span class="material-symbols-outlined">meeting_room</span>
+                {/if}
+            </div>
+            <input
+                bind:this={inputFoto}
+                class="input-foto-oculto"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                on:change={escolherFoto}
+            />
+            <div class="foto-acoes">
+                <button
+                    type="button"
+                    class="btn-foto-sec"
+                    disabled={carregando}
+                    on:click={() => inputFoto?.click()}
+                >
+                    <span class="material-symbols-outlined">photo_camera</span>
+                    {fotoExibida ? "Trocar foto" : "Adicionar foto"}
+                </button>
+                {#if fotoExibida}
+                    <button
+                        type="button"
+                        class="btn-foto-sec"
+                        disabled={carregando}
+                        on:click={removerFotoAtual}
+                    >
+                        <span class="material-symbols-outlined">delete</span>
+                        Remover foto
+                    </button>
+                {/if}
+            </div>
+        </div>
+    </svelte:fragment>
     <svelte:fragment slot="campos">
         <div class="field">
             <label for="nome-sala">Nome da Sala</label>
@@ -279,6 +380,14 @@
                     </span>
                 </div>
                 <div class="td flex-1 action-cell">
+                    <button
+                        type="button"
+                        class="btn-action info"
+                        title="Informações"
+                        aria-label="Informações da sala"
+                    >
+                        <span class="material-symbols-outlined">info</span>
+                    </button>
                     <button
                         class="btn-action edit"
                         on:click={() => editarSala(s)}

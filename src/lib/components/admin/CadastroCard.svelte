@@ -41,6 +41,9 @@
     export let labelOrdenacaoAsc = "Nome (A-Z)";
     export let labelOrdenacaoDesc = "Nome (Z-A)";
 
+    // detecta se a tela informou o slot de foto, para abrir em duas colunas
+    $: temFotoSlot = !!$$slots.foto;
+
     // Abre o popup automaticamente sempre que a tela entrar em modo edição
     $: if (editando) {
         mostrarFormulario = true;
@@ -169,6 +172,7 @@
         >
             <div
                 class="card form-card form-card-modal"
+                class:form-card-modal-larga={temFotoSlot}
                 on:click|stopPropagation
                 on:keydown|stopPropagation
                 role="dialog"
@@ -194,7 +198,14 @@
                 </div>
 
                 <form on:submit|preventDefault={onSubmit}>
-                    <slot name="campos" />
+                    <div class="form-body" class:com-foto={temFotoSlot}>
+                        {#if temFotoSlot}
+                            <slot name="foto" />
+                        {/if}
+                        <div class="form-fields">
+                            <slot name="campos" />
+                        </div>
+                    </div>
 
                     {#if temToggle}
                         <div class="field field-toggle">

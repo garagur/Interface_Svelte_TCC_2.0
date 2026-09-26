@@ -1,5 +1,5 @@
 import "../../../chunks/internal.js";
-import { S as escape_html, n as bind_props, ot as fallback, t as attr_class, x as attr } from "../../../chunks/server.js";
+import { C as escape_html, S as attr, n as bind_props, st as fallback, t as attr_class } from "../../../chunks/server.js";
 import { t as goto } from "../../../chunks/client.js";
 import "../../../chunks/navigation.js";
 import "../../../chunks/BlocoAgendamentoCard.js";

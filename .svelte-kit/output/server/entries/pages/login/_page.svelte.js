@@ -1,5 +1,5 @@
 import "../../../chunks/internal.js";
-import { S as escape_html, a as head, n as bind_props, ot as fallback, x as attr } from "../../../chunks/server.js";
+import { C as escape_html, S as attr, a as head, n as bind_props, st as fallback } from "../../../chunks/server.js";
 import { t as goto } from "../../../chunks/client.js";
 import "../../../chunks/navigation.js";
 import { t as API_URL } from "../../../chunks/constants.js";

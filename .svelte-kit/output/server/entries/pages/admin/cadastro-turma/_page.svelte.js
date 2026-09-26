@@ -1,5 +1,5 @@
 import "../../../../chunks/internal.js";
-import { S as escape_html, i as ensure_array_like, t as attr_class, x as attr } from "../../../../chunks/server.js";
+import { C as escape_html, S as attr, i as ensure_array_like, t as attr_class } from "../../../../chunks/server.js";
 import { t as goto } from "../../../../chunks/client.js";
 import "../../../../chunks/navigation.js";
 import { t as CadastroCard } from "../../../../chunks/CadastroCard.js";

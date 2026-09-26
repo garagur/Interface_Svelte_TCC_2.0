@@ -1,5 +1,5 @@
 import "../../../../chunks/internal.js";
-import { S as escape_html, i as ensure_array_like, t as attr_class, x as attr } from "../../../../chunks/server.js";
+import { C as escape_html, S as attr, i as ensure_array_like, t as attr_class } from "../../../../chunks/server.js";
 import { t as goto } from "../../../../chunks/client.js";
 import "../../../../chunks/navigation.js";
 import { t as CadastroCard } from "../../../../chunks/CadastroCard.js";
@@ -208,7 +208,7 @@ function _page($$renderer, $$props) {
 							const each_array = ensure_array_like(usuariosFiltrados);
 							for (let index = 0, $$length = each_array.length; index < $$length; index++) {
 								let u = each_array[index];
-								$$renderer.push(`<div${attr_class(`table-row ${index % 2 === 0 ? "even" : "odd"}`)}><div class="td flex-2"><span class="text-truncate">${escape_html(u.nome)}</span></div> <div class="td flex-2"><span class="text-truncate">${escape_html(u.email)}</span></div> <div class="td flex-1"><span class="badge-cargo">${escape_html(u.cargo)}</span></div> <div class="td flex-1"><span class="badge-matricula">${escape_html(u.matricula)}</span></div> <div class="td flex-1"><span${attr_class(`badge-status ${u.status ? "ativo" : "inativo"}`)}>${escape_html(u.status ? "Habilitado" : "Desabilitado")}</span></div> <div class="td flex-1 action-cell"><button class="btn-action edit" title="Editar"${attr("disabled", false, true)}><span class="material-symbols-outlined">edit</span></button> <button${attr_class(`btn-action ${u.status ? "delete" : "edit"}`)}${attr("title", u.status ? "Desabilitar usuário" : "Habilitar usuário")}${attr("disabled", false, true)}>`);
+								$$renderer.push(`<div${attr_class(`table-row ${index % 2 === 0 ? "even" : "odd"}`)}><div class="td flex-2"><span class="text-truncate">${escape_html(u.nome)}</span></div> <div class="td flex-2"><span class="text-truncate">${escape_html(u.email)}</span></div> <div class="td flex-1"><span class="badge-cargo">${escape_html(u.cargo)}</span></div> <div class="td flex-1"><span class="badge-matricula">${escape_html(u.matricula)}</span></div> <div class="td flex-1"><span${attr_class(`badge-status ${u.status ? "ativo" : "inativo"}`)}>${escape_html(u.status ? "Habilitado" : "Desabilitado")}</span></div> <div class="td flex-1 action-cell"><button type="button" class="btn-action info" title="Informações" aria-label="Informações do usuário"><span class="material-symbols-outlined">info</span></button> <button class="btn-action edit" title="Editar"${attr("disabled", false, true)}><span class="material-symbols-outlined">edit</span></button> <button${attr_class(`btn-action ${u.status ? "delete" : "edit"}`)}${attr("title", u.status ? "Desabilitar usuário" : "Habilitar usuário")}${attr("disabled", false, true)}>`);
 								if (atualizandoId === u.id) {
 									$$renderer.push("<!--[0-->");
 									$$renderer.push(`<span class="material-symbols-outlined spin">progress_activity</span>`);

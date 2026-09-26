@@ -1,5 +1,5 @@
 import { i as onDestroy } from "../../../chunks/internal.js";
-import { S as escape_html, c as stringify, i as ensure_array_like, n as bind_props, ot as fallback, t as attr_class, tt as invalid_default_snippet, x as attr } from "../../../chunks/server.js";
+import { C as escape_html, S as attr, i as ensure_array_like, l as stringify, n as bind_props, nt as invalid_default_snippet, st as fallback, t as attr_class } from "../../../chunks/server.js";
 import { t as goto } from "../../../chunks/client.js";
 import "../../../chunks/navigation.js";
 import { a as BlocoHorarioCard, o as GradeSemanal } from "../../../chunks/List_Horario_Service.js";

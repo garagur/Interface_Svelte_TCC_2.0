@@ -35,7 +35,8 @@ async function carregarSalas(token) {
 		nome: s.nome || "",
 		obs: s.obs || "",
 		status: s.status ?? true,
-		responsavel_nome: s.responsavel?.nome || s.responsavel?.name || ""
+		responsavel_nome: s.responsavel?.nome || s.responsavel?.name || "",
+		fotoUrl: s.foto_url ?? null
 	}));
 }
 //#endregion

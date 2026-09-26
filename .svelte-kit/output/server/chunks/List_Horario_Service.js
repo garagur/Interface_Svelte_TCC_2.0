@@ -1,4 +1,4 @@
-import { S as escape_html, i as ensure_array_like, n as bind_props, ot as fallback, s as slot, t as attr_class } from "./server.js";
+import { C as escape_html, c as slot, i as ensure_array_like, n as bind_props, st as fallback, t as attr_class } from "./server.js";
 import { t as apiFetch } from "./api.js";
 //#region src/lib/components/Grades/GradeSemanal.svelte
 function GradeSemanal($$renderer, $$props) {

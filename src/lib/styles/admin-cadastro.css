@@ -351,6 +351,16 @@
     color: var(--warning);
 }
 
+.escopo-admin-cadastro .btn-action.info {
+    color: var(--text-dark);
+    background: var(--white);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.escopo-admin-cadastro .btn-action.info:hover {
+    background: var(--surface);
+}
+
 .escopo-admin-cadastro .btn-action.delete {
     color: var(--cancel);
 }
@@ -723,4 +733,103 @@
     font-size: 16px;
     color: var(--primary-dark);
     text-align: center;
+}
+
+.escopo-admin-cadastro .card.form-card-modal-larga {
+    width: min(620px, 100%);
+}
+
+.escopo-admin-cadastro .form-body {
+    display: flex;
+    gap: 20px;
+}
+
+.escopo-admin-cadastro .form-body.com-foto {
+    align-items: flex-start;
+}
+
+.escopo-admin-cadastro .form-fields {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ─── Foto do item (sala/equipamento) ──────────────────────────────── */
+.escopo-admin-cadastro .foto-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 150px;
+    flex-shrink: 0;
+}
+
+.escopo-admin-cadastro .foto-preview {
+    width: 150px;
+    height: 150px;
+    border-radius: 16px;
+    background: var(--gray-50);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: inset 4px 4px 8px var(--shadow-dark),
+        inset -4px -4px 8px var(--shadow-light-medium);
+}
+
+.escopo-admin-cadastro .foto-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.escopo-admin-cadastro .foto-preview .material-symbols-outlined {
+    font-size: 56px;
+    color: var(--disabled-text);
+}
+
+.escopo-admin-cadastro .input-foto-oculto {
+    display: none;
+}
+
+.escopo-admin-cadastro .foto-acoes {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+.escopo-admin-cadastro .btn-foto-sec {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: none;
+    cursor: pointer;
+    background: var(--white);
+    color: var(--text-dark);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 8px 10px;
+    border-radius: 8px;
+    box-shadow: 3px 3px 6px var(--shadow-dark),
+        -3px -3px 6px var(--shadow-light-medium);
+}
+
+.escopo-admin-cadastro .btn-foto-sec .material-symbols-outlined {
+    font-size: 16px;
+}
+
+.escopo-admin-cadastro .btn-foto-sec:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+    .escopo-admin-cadastro .form-body.com-foto {
+        flex-direction: column;
+        align-items: center;
+    }
 }

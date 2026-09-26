@@ -321,6 +321,14 @@
         </div>
         <div class="td flex-1 action-cell">
           <button
+            type="button"
+            class="btn-action info"
+            title="Informações"
+            aria-label="Informações do usuário"
+          >
+            <span class="material-symbols-outlined">info</span>
+          </button>
+          <button
             class="btn-action edit"
             on:click={() => editarUsuario(u)}
             title="Editar"

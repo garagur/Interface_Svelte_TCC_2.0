@@ -43,5 +43,6 @@ export async function carregarSalas(token) {
         obs: s.obs || '',
         status: s.status ?? true,
         responsavel_nome: s.responsavel?.nome || s.responsavel?.name || '',
+        fotoUrl: s.foto_url ?? null,
     }))
 }
