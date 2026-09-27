@@ -1,8 +1,8 @@
-
+import * as universal from '../entries/pages/_page.js';
 
 export const index = 9;
-let component_cache;
-export const component = async () => component_cache ??= (await import('../entries/pages/admin/cadastro-equipamento/_page.svelte.js')).default;
-export const imports = ["_app/immutable/nodes/9.y9fVRB_P.js","_app/immutable/chunks/DO05MLTb.js","_app/immutable/chunks/BuFlayix.js","_app/immutable/chunks/DtWb0DmJ.js","_app/immutable/chunks/DK3Fl9T5.js","_app/immutable/chunks/CJBXLZpb.js","_app/immutable/chunks/xihTtKlq.js","_app/immutable/chunks/CHvzFGNa.js","_app/immutable/chunks/CNh4_GnR.js","_app/immutable/chunks/C-GYqkvW.js","_app/immutable/chunks/Ue4P2k_9.js","_app/immutable/chunks/DKd2oX92.js","_app/immutable/chunks/Ch6HKWtM.js","_app/immutable/chunks/BKhhBKuB.js"];
-export const stylesheets = ["_app/immutable/assets/2.DA02M6HR.css"];
+export { universal };
+export const universal_id = "src/routes/+page.js";
+export const imports = ["_app/immutable/nodes/9.Dud0oBlt.js","_app/immutable/chunks/DK3Fl9T5.js","_app/immutable/chunks/BuFlayix.js"];
+export const stylesheets = [];
 export const fonts = [];

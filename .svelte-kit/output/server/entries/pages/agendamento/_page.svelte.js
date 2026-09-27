@@ -1,5 +1,5 @@
 import "../../../chunks/internal.js";
-import { C as escape_html, S as attr, c as slot, i as ensure_array_like, n as bind_props, nt as invalid_default_snippet, st as fallback, t as attr_class } from "../../../chunks/server.js";
+import { T as escape_html, c as slot, i as ensure_array_like, it as invalid_default_snippet, lt as fallback, n as bind_props, t as attr_class, w as attr } from "../../../chunks/server.js";
 import { t as goto } from "../../../chunks/client.js";
 import "../../../chunks/navigation.js";
 import { t as apiFetch } from "../../../chunks/api.js";
@@ -171,7 +171,7 @@ function AgendamentoCard($$renderer, $$props) {
 				cancelandoId = null;
 			}
 		}
-		$: itemSelecionado = salas.find((s) => s.id === sala_id) || null;
+		$: itemSelecionado = salas.find((s) => String(s.id) === String(sala_id)) || null;
 		$: agendamentosVisiveis = agendamentos;
 		$$renderer.push(`<div class="escopo-agendamento">`);
 		ConfirmarDelecaoModal($$renderer, {
@@ -222,7 +222,7 @@ function AgendamentoCard($$renderer, $$props) {
 				$$renderer.push("<!--[-1-->");
 				$$renderer.push(`<span class="material-symbols-outlined">${escape_html(modo === "sala" ? "meeting_room" : "devices")}</span>`);
 			}
-			$$renderer.push(`<!--]--></div> <div class="item-info-dados"><div class="item-info-titulo"><h3>${escape_html(itemSelecionado.nome)}</h3> <span${attr_class(`badge-status ${itemSelecionado.status ? "ativo" : "inativo"}`)}>${escape_html(itemSelecionado.status ? "Ativo" : "Inativo")}</span> <button type="button" class="btn-info-item" title="Mais informações"><span class="material-symbols-outlined">info</span></button></div> `);
+			$$renderer.push(`<!--]--></div> <div class="item-info-dados"><div class="item-info-titulo"><h3>${escape_html(itemSelecionado.nome)}</h3> <span${attr_class(`badge-status ${itemSelecionado.status ? "ativo" : "inativo"}`)}>${escape_html(itemSelecionado.status ? "Ativo" : "Inativo")}</span> <a class="btn-info-item"${attr("href", `/informacoes?tipo=${encodeURIComponent(modo)}&id=${encodeURIComponent(itemSelecionado.id)}`)} title="Mais informações"${attr("aria-label", `Informações de ${itemSelecionado.nome}`)}><span class="material-symbols-outlined">info</span></a></div> `);
 			if (modo === "equipamento" && itemSelecionado.N_patrimonio) {
 				$$renderer.push("<!--[0-->");
 				$$renderer.push(`<div class="item-info-linha"><span class="material-symbols-outlined">tag</span> Patrimônio: ${escape_html(itemSelecionado.N_patrimonio)}</div>`);

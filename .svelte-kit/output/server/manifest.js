@@ -10,7 +10,7 @@ return {
 	assets: new Set([]),
 	mimeTypes: {},
 	_: {
-		client: {start:"_app/immutable/entry/start.CT42XWMG.js",app:"_app/immutable/entry/app.Dxx9j7Fc.js",imports:["_app/immutable/entry/start.CT42XWMG.js","_app/immutable/chunks/DO05MLTb.js","_app/immutable/chunks/BuFlayix.js","_app/immutable/chunks/DtWb0DmJ.js","_app/immutable/chunks/DK3Fl9T5.js","_app/immutable/entry/app.Dxx9j7Fc.js","_app/immutable/chunks/kNaey6uv.js","_app/immutable/chunks/DtWb0DmJ.js","_app/immutable/chunks/DK3Fl9T5.js","_app/immutable/chunks/xihTtKlq.js"],stylesheets:[],fonts:[],uses_env_dynamic_public:false},
+		client: {start:"_app/immutable/entry/start.C1jaz87f.js",app:"_app/immutable/entry/app.BusZntZI.js",imports:["_app/immutable/entry/start.C1jaz87f.js","_app/immutable/chunks/DgmpGLHB.js","_app/immutable/chunks/BuFlayix.js","_app/immutable/chunks/BUw-L-0w.js","_app/immutable/chunks/DK3Fl9T5.js","_app/immutable/entry/app.BusZntZI.js","_app/immutable/chunks/kNaey6uv.js","_app/immutable/chunks/BUw-L-0w.js","_app/immutable/chunks/DK3Fl9T5.js","_app/immutable/chunks/xihTtKlq.js"],stylesheets:[],fonts:[],uses_env_dynamic_public:false},
 		nodes: [
 			__memo(() => import('./nodes/0.js')),
 			__memo(() => import('./nodes/1.js')),
@@ -29,7 +29,9 @@ return {
 			__memo(() => import('./nodes/14.js')),
 			__memo(() => import('./nodes/15.js')),
 			__memo(() => import('./nodes/16.js')),
-			__memo(() => import('./nodes/17.js'))
+			__memo(() => import('./nodes/17.js')),
+			__memo(() => import('./nodes/18.js')),
+			__memo(() => import('./nodes/19.js'))
 		],
 		remotes: {
 			
@@ -39,70 +41,77 @@ return {
 				id: "/",
 				pattern: /^\/$/,
 				params: [],
-				page: { layouts: [0,], errors: [1,], leaf: 8 },
+				page: { layouts: [0,], errors: [1,], leaf: 9 },
 				endpoint: null
 			},
 			{
 				id: "/admin/cadastro-equipamento",
 				pattern: /^\/admin\/cadastro-equipamento\/?$/,
 				params: [],
-				page: { layouts: [0,2,], errors: [1,,], leaf: 9 },
+				page: { layouts: [0,2,], errors: [1,,], leaf: 10 },
 				endpoint: null
 			},
 			{
 				id: "/admin/cadastro-horario",
 				pattern: /^\/admin\/cadastro-horario\/?$/,
 				params: [],
-				page: { layouts: [0,2,3,], errors: [1,,,], leaf: 10 },
+				page: { layouts: [0,2,3,], errors: [1,,,], leaf: 11 },
 				endpoint: null
 			},
 			{
 				id: "/admin/cadastro-sala",
 				pattern: /^\/admin\/cadastro-sala\/?$/,
 				params: [],
-				page: { layouts: [0,2,], errors: [1,,], leaf: 11 },
+				page: { layouts: [0,2,], errors: [1,,], leaf: 12 },
 				endpoint: null
 			},
 			{
 				id: "/admin/cadastro-turma",
 				pattern: /^\/admin\/cadastro-turma\/?$/,
 				params: [],
-				page: { layouts: [0,2,], errors: [1,,], leaf: 12 },
+				page: { layouts: [0,2,], errors: [1,,], leaf: 13 },
 				endpoint: null
 			},
 			{
 				id: "/admin/cadastro-usuario",
 				pattern: /^\/admin\/cadastro-usuario\/?$/,
 				params: [],
-				page: { layouts: [0,2,], errors: [1,,], leaf: 13 },
+				page: { layouts: [0,2,], errors: [1,,], leaf: 14 },
 				endpoint: null
 			},
 			{
 				id: "/agendamento",
 				pattern: /^\/agendamento\/?$/,
 				params: [],
-				page: { layouts: [0,4,], errors: [1,,], leaf: 14 },
+				page: { layouts: [0,4,], errors: [1,,], leaf: 15 },
+				endpoint: null
+			},
+			{
+				id: "/informacoes",
+				pattern: /^\/informacoes\/?$/,
+				params: [],
+				page: { layouts: [0,5,], errors: [1,,], leaf: 16 },
 				endpoint: null
 			},
 			{
 				id: "/login",
 				pattern: /^\/login\/?$/,
 				params: [],
-				page: { layouts: [0,5,], errors: [1,,], leaf: 15 },
+				page: { layouts: [0,6,], errors: [1,,], leaf: 17 },
 				endpoint: null
 			},
 			{
 				id: "/main",
 				pattern: /^\/main\/?$/,
 				params: [],
-				page: { layouts: [0,6,], errors: [1,,], leaf: 16 },
+				page: { layouts: [0,7,], errors: [1,,], leaf: 18 },
 				endpoint: null
 			},
 			{
 				id: "/minhas_informacoes",
 				pattern: /^\/minhas_informacoes\/?$/,
 				params: [],
-				page: { layouts: [0,7,], errors: [1,,], leaf: 17 },
+				page: { layouts: [0,8,], errors: [1,,], leaf: 19 },
 				endpoint: null
 			}
 		],

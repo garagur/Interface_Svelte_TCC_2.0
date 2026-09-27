@@ -1,6 +1,6 @@
 import { apiFetch } from '../../../config/api.js'
 import { EQUIPAMENTO_ROUTES } from '../../../config/routes/Equipamento_Endpoints.js'
-
+//list equipamento service
 async function parseJson(response) {
     const text = await response.text()
     if (!text) return null

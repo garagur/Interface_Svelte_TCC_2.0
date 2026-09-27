@@ -1,6 +1,6 @@
 import { apiFetch } from '../../../config/api.js'
 import { SALA_ROUTES } from '../../../config/routes/Sala_Endpoints.js'
-
+//list sala service
 async function parseJson(response) {
     const text = await response.text()
     if (!text) return null

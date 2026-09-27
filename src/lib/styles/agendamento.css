@@ -733,6 +733,7 @@
     background: var(--white);
     border: none;
     cursor: pointer;
+    text-decoration: none;
     width: 28px;
     height: 28px;
     border-radius: 50%;

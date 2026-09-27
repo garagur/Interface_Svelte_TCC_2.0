@@ -357,7 +357,7 @@
       "_server.js"
     ],
     "css": [
-      "_app/immutable/assets/_layout.DFkNds2Q.css",
+      "_app/immutable/assets/_layout.DQW15re8.css",
       "_app/immutable/assets/grade-mensal.D9p0Q5nc.css"
     ]
   },
@@ -378,6 +378,39 @@
       "_List_Sala_Service.js",
       "_List_Turma_Service.js",
       "_BlocoAgendamentoCard.js"
+    ]
+  },
+  "src/routes/informacoes/+layout.svelte": {
+    "file": "entries/pages/informacoes/_layout.svelte.js",
+    "name": "entries/pages/informacoes/_layout.svelte",
+    "src": "src/routes/informacoes/+layout.svelte",
+    "isEntry": true,
+    "imports": [
+      "_server.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_layout.sKduwSX5.css"
+    ]
+  },
+  "src/routes/informacoes/+page.svelte": {
+    "file": "entries/pages/informacoes/_page.svelte.js",
+    "name": "entries/pages/informacoes/_page.svelte",
+    "src": "src/routes/informacoes/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_internal.js",
+      "_navigation.js",
+      "_client.js",
+      "_server.js",
+      "_List_Agendamento_Equipamento_Service.js",
+      "_List_Equipamento_Service.js",
+      "_List_Horario_Service.js",
+      "_List_Sala_Service.js",
+      "_Buscar_Usuario_Service.js",
+      "_List_User_Service.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_layout.sKduwSX5.css"
     ]
   },
   "src/routes/login/+layout.svelte": {

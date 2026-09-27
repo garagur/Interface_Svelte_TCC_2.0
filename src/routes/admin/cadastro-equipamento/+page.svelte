@@ -74,6 +74,15 @@
         }
     }
 
+    function verInformacoesEquipamento(equipamento) {
+        if (equipamento?.id == null) return;
+        const parametros = new URLSearchParams({
+            tipo: "equipamento",
+            id: String(equipamento.id),
+        });
+        goto(`/informacoes?${parametros.toString()}`);
+    }
+
     async function salvarEquipamento() {
         erro = "";
         sucesso = "";
@@ -412,6 +421,7 @@
                     <button
                         type="button"
                         class="btn-action info"
+                        on:click={() => verInformacoesEquipamento(s)}
                         title="Informações"
                         aria-label="Informações do equipamento"
                     >

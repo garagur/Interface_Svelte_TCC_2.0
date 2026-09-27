@@ -1,6 +1,6 @@
 import { apiFetch } from '../../../config/api.js'
 import { USER_ROUTES } from '../../../config/routes/User_Endpoints.js'
-
+//buscar usuario service
 /**
  * @param {Response} response
  * @returns {Promise<any|null>}

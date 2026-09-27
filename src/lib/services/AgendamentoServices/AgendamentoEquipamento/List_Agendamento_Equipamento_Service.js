@@ -1,6 +1,6 @@
 import { apiFetch } from '../../../../config/api.js'
 import { AGENDAMENTOEQUIPAMENTO_ROUTE } from '../../../../config/routes/Agendamento_Equipamento_Endpoints.js'
-
+//list agendamento equipamento service
 async function parseJson(response) {
     const text = await response.text()
     if (!text) return null

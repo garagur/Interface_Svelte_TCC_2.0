@@ -65,14 +65,14 @@
     ];
 
     let agendamentoParaDeletar = null;
-    let mostrarInfoItem = false;
     let cancelandoId = null; // ex: "sala-12" ou "equipamento-7" — null quando nada está em andamento
     let visao = "calendario";
 
     function trocarVisao(novaVisao) {
         visao = novaVisao;
     }
-    $: itemSelecionado = salas.find((s) => s.id === sala_id) || null;
+    $: itemSelecionado =
+        salas.find((s) => String(s.id) === String(sala_id)) || null;
     $: agendamentosVisiveis = agendamentos;
 
     function abrirModalDeletar(ag) {
@@ -230,16 +230,16 @@
                             >
                                 {itemSelecionado.status ? "Ativo" : "Inativo"}
                             </span>
-                            <button
-                                type="button"
+                            <a
                                 class="btn-info-item"
-                                on:click={() => (mostrarInfoItem = true)}
+                                href={`/informacoes?tipo=${encodeURIComponent(modo)}&id=${encodeURIComponent(itemSelecionado.id)}`}
                                 title="Mais informações"
+                                aria-label={`Informações de ${itemSelecionado.nome}`}
                             >
                                 <span class="material-symbols-outlined"
                                     >info</span
                                 >
-                            </button>
+                            </a>
                         </div>
 
                         {#if modo === "equipamento" && itemSelecionado.N_patrimonio}

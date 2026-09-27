@@ -1,6 +1,6 @@
 import { apiFetch } from '../../../config/api.js'
 import { HORARIO_ROUTES } from '../../../config/routes/Horario_Endpoits.js'
-
+//list horario service
 async function parseJson(response) {
     const text = await response.text()
     if (!text) return null

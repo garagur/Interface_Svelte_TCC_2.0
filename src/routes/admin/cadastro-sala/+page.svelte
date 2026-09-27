@@ -383,6 +383,10 @@
                     <button
                         type="button"
                         class="btn-action info"
+                        on:click={() =>
+                            goto(
+                                `/informacoes?tipo=sala&id=${encodeURIComponent(s.id)}`,
+                            )}
                         title="Informações"
                         aria-label="Informações da sala"
                     >

@@ -1,4 +1,4 @@
-import { C as escape_html, S as attr, c as slot, n as bind_props, s as sanitize_slots, st as fallback, t as attr_class } from "./server.js";
+import { T as escape_html, c as slot, lt as fallback, n as bind_props, s as sanitize_slots, t as attr_class, w as attr } from "./server.js";
 //#region src/lib/components/admin/CadastroCard.svelte
 function CadastroCard($$renderer, $$props) {
 	const $$slots = sanitize_slots($$props);

@@ -1,6 +1,6 @@
 import { apiFetch } from '../../../../config/api.js'
 import { AGENDAMENTOSALA_ROUTE } from '../../../../config/routes/Agendamento_Sala_Endpoints.js'
-
+//list agendamento sala service
 async function parseJson(response) {
     const text = await response.text()
     if (!text) return null
