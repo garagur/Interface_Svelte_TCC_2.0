@@ -120,7 +120,7 @@ function ListaAgendamentosCard($$renderer, $$props) {
 		$: agendamentosFiltrados = agendamentos.filter((ag) => {
 			if (!pesquisaAg.trim()) return true;
 			const termo = pesquisaAg.toLowerCase();
-			return nomeAgendamento(ag).toLowerCase().includes(termo) || nomeResponsavel(ag).toLowerCase().includes(termo) || (ag.obs || "").toLowerCase().includes(termo);
+			return nomeAgendamento(ag).toLowerCase().includes(termo) || nomeResponsavel(ag).toLowerCase().includes(termo) || (ag.turma_nome || "").toLowerCase().includes(termo) || (ag.obs || "").toLowerCase().includes(termo);
 		}).filter((ag) => {
 			return true;
 		}).filter((ag) => {
@@ -211,6 +211,11 @@ function ListaAgendamentosCard($$renderer, $$props) {
 				if (responsavel) {
 					$$renderer.push("<!--[0-->");
 					$$renderer.push(`<div class="agendamento-sala svelte-1c63qri"><span class="material-symbols-outlined svelte-1c63qri">person</span> ${escape_html(responsavel)}</div>`);
+				} else $$renderer.push("<!--[-1-->");
+				$$renderer.push(`<!--]--> `);
+				if (ag.turma_nome) {
+					$$renderer.push("<!--[0-->");
+					$$renderer.push(`<div class="agendamento-sala svelte-1c63qri"><span class="material-symbols-outlined svelte-1c63qri">groups</span> ${escape_html(ag.turma_nome)}</div>`);
 				} else $$renderer.push("<!--[-1-->");
 				$$renderer.push(`<!--]--> `);
 				if (ag.obs) {
@@ -358,6 +363,8 @@ async function carregarAgendamentosSalas(token, sala_id = null) {
 			usuario_nome: s.usuario_nome || "",
 			sala_id: s.sala_id || "",
 			sala_nome: s.sala_nome || "",
+			turma_id: s.turma_id ?? s.turma?.id ?? null,
+			turma_nome: s.turma_nome || s.turma?.nome || "",
 			data_hora_inicio: s.data_hora_inicio || "",
 			data_hora_fim: s.data_hora_fim || "",
 			obs: s.obs || "",
@@ -397,6 +404,8 @@ async function carregarAgendamentosEquipamentos(token) {
 		usuario_nome: s.usuario_nome || "",
 		equipamento_id: s.equipamento_id || "",
 		equipamento_nome: s.equipamento_nome || "",
+		turma_id: s.turma_id ?? s.turma?.id ?? null,
+		turma_nome: s.turma_nome || s.turma?.nome || "",
 		data_hora_inicio: s.data_hora_inicio || "",
 		data_hora_fim: s.data_hora_fim || "",
 		obs: s.obs || "",

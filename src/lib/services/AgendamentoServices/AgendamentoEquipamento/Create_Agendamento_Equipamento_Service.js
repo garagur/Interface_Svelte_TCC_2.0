@@ -23,6 +23,7 @@ export async function cadastrarAgendamento(novoAgendamentoEquipamento, token) {
         },
         body: JSON.stringify({
             equipamento_id: novoAgendamentoEquipamento.equipamento_id,
+            turma_id: novoAgendamentoEquipamento.turma_id ?? null,
             data_hora_inicio: novoAgendamentoEquipamento.data_hora_inicio,
             data_hora_fim: novoAgendamentoEquipamento.data_hora_fim,
             obs: novoAgendamentoEquipamento.obs,

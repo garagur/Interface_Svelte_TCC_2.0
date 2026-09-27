@@ -13,6 +13,7 @@
     // ── Imports de Equipamentos ──
     // IMPORTANTE: Ajuste o caminho do carregarEquipamentos conforme seu projeto
     import { carregarEquipamentos } from "$lib/services/EquipamentoServices/List_Equipamento_Service.js";
+    import { carregarTurmas } from "$lib/services/TurmaServices/List_Turma_Service.js";
     import { cadastrarAgendamento as cadastrarAgendamentoEquipamento } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/Create_Agendamento_Equipamento_Service.js";
     import { carregarAgendamentosEquipamentos } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/List_Agendamento_Equipamento_Service.js";
 
@@ -36,6 +37,7 @@
     // Listas originais carregadas da API
     let salas = [];
     let equipamentos = [];
+    let turmas = [];
 
     // Variáveis dinâmicas que alimentam o card
     let itensDisponiveis = [];
@@ -49,6 +51,7 @@
     let horaInicio = "08:00";
     let horaFim = "10:00";
     let obs = "";
+    let turma_id = null;
 
     // ── Agendamentos e Grade ──
     let agendamentos = [];
@@ -100,12 +103,14 @@
     async function carregarListasIniciais() {
         try {
             // Carrega salas e equipamentos simultaneamente (se não houver carregarEquipamentos ainda, comente as linhas)
-            const [resSalas, resEquip] = await Promise.all([
+            const [resSalas, resEquip, resTurmas] = await Promise.all([
                 carregarSalas(token).catch(() => []),
                 carregarEquipamentos(token).catch(() => []),
+                carregarTurmas(token).catch(() => []),
             ]);
             salas = resSalas.filter((s) => s.status !== false);
             equipamentos = resEquip.filter((e) => e.status !== false);
+            turmas = resTurmas.filter(Boolean);
         } catch (e) {
             erro = "Erro ao carregar dados iniciais.";
         }
@@ -169,6 +174,7 @@
             data_hora_inicio: `${dataAgendamento}T${horaInicio}`,
             data_hora_fim: `${dataAgendamento}T${horaFim}`,
             obs,
+            turma_id: turma_id ?? null,
         };
 
         if (modo === "sala") {
@@ -272,6 +278,7 @@
         horaInicio = "08:00";
         horaFim = "10:00";
         obs = "";
+        turma_id = null;
     }
 
     function hoje() {
@@ -296,6 +303,8 @@
     bind:horaInicio
     bind:horaFim
     bind:obs
+    bind:turma_id
+    {turmas}
     hojeStr={hoje()}
     onSubmit={salvarAgendamento}
     onLimpar={resetForm}

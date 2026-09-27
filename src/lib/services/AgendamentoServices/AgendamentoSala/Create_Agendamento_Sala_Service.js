@@ -26,6 +26,7 @@ export async function cadastrarAgendamento(novoAgendamentoSala, token) {
         },
         body: JSON.stringify({
             sala_id: novoAgendamentoSala.sala_id,
+            turma_id: novoAgendamentoSala.turma_id ?? null,
             data_hora_inicio: novoAgendamentoSala.data_hora_inicio,
             data_hora_fim: novoAgendamentoSala.data_hora_fim,
             obs: novoAgendamentoSala.obs,

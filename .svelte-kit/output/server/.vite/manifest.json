@@ -38,7 +38,7 @@
       "_server.js"
     ],
     "css": [
-      "_app/immutable/assets/_layout.BeCU6zn6.css"
+      "_app/immutable/assets/_layout.DA02M6HR.css"
     ]
   },
   "_List_Agendamento_Equipamento_Service.CzRNix7l.css": {
@@ -252,7 +252,7 @@
       "_server.js"
     ],
     "css": [
-      "_app/immutable/assets/_layout.BeCU6zn6.css"
+      "_app/immutable/assets/_layout.DA02M6HR.css"
     ]
   },
   "src/routes/admin/cadastro-equipamento/+page.svelte": {
@@ -357,7 +357,7 @@
       "_server.js"
     ],
     "css": [
-      "_app/immutable/assets/_layout.kSI0gEPy.css",
+      "_app/immutable/assets/_layout.DFkNds2Q.css",
       "_app/immutable/assets/grade-mensal.D9p0Q5nc.css"
     ]
   },
@@ -376,6 +376,7 @@
       "_List_Equipamento_Service.js",
       "_List_Horario_Service.js",
       "_List_Sala_Service.js",
+      "_List_Turma_Service.js",
       "_BlocoAgendamentoCard.js"
     ]
   },
@@ -413,7 +414,7 @@
       "_server.js"
     ],
     "css": [
-      "_app/immutable/assets/_layout.KkqnUgj-.css",
+      "_app/immutable/assets/_layout.CGJsIWIK.css",
       "_app/immutable/assets/grade-mensal.D9p0Q5nc.css"
     ]
   },

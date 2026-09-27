@@ -27,6 +27,8 @@
     export let horaInicio = "";
     export let horaFim = "";
     export let obs = "";
+    export let turma_id = null;
+    export let turmas = [];
     export let hojeStr = "";
     export let onSubmit;
     export let onLimpar;
@@ -63,13 +65,14 @@
     ];
 
     let agendamentoParaDeletar = null;
+    let mostrarInfoItem = false;
     let cancelandoId = null; // ex: "sala-12" ou "equipamento-7" — null quando nada está em andamento
     let visao = "calendario";
 
     function trocarVisao(novaVisao) {
         visao = novaVisao;
     }
-
+    $: itemSelecionado = salas.find((s) => s.id === sala_id) || null;
     $: agendamentosVisiveis = agendamentos;
 
     function abrirModalDeletar(ag) {
@@ -202,6 +205,71 @@
                     Equipamentos
                 </button>
             </div>
+            {#if itemSelecionado}
+                <div class="card item-info-card">
+                    <div class="item-info-foto">
+                        {#if itemSelecionado.fotoUrl}
+                            <img
+                                src={itemSelecionado.fotoUrl}
+                                alt={itemSelecionado.nome}
+                            />
+                        {:else}
+                            <span class="material-symbols-outlined">
+                                {modo === "sala" ? "meeting_room" : "devices"}
+                            </span>
+                        {/if}
+                    </div>
+
+                    <div class="item-info-dados">
+                        <div class="item-info-titulo">
+                            <h3>{itemSelecionado.nome}</h3>
+                            <span
+                                class="badge-status {itemSelecionado.status
+                                    ? 'ativo'
+                                    : 'inativo'}"
+                            >
+                                {itemSelecionado.status ? "Ativo" : "Inativo"}
+                            </span>
+                            <button
+                                type="button"
+                                class="btn-info-item"
+                                on:click={() => (mostrarInfoItem = true)}
+                                title="Mais informações"
+                            >
+                                <span class="material-symbols-outlined"
+                                    >info</span
+                                >
+                            </button>
+                        </div>
+
+                        {#if modo === "equipamento" && itemSelecionado.N_patrimonio}
+                            <div class="item-info-linha">
+                                <span class="material-symbols-outlined"
+                                    >tag</span
+                                >
+                                Patrimônio: {itemSelecionado.N_patrimonio}
+                            </div>
+                        {/if}
+
+                        {#if itemSelecionado.obs}
+                            <div class="item-info-linha">
+                                <span class="material-symbols-outlined"
+                                    >info</span
+                                >
+                                {itemSelecionado.obs}
+                            </div>
+                        {/if}
+
+                        <div class="item-info-linha">
+                            <span class="material-symbols-outlined">person</span
+                            >
+                            Responsável: {itemSelecionado.responsavel?.nome ||
+                                itemSelecionado.responsavel?.name ||
+                                "Nenhum"}
+                        </div>
+                    </div>
+                </div>
+            {/if}
             {#if sala_id && modo === "sala"}
                 <div class="card grade-card">
                     <div class="grade-header-title">
@@ -379,6 +447,25 @@
                                     bind:value={obs}
                                     placeholder="Ex: Aula de reposição"
                                 />
+                            </div>
+                            <div class="field">
+                                <label for="turma-agendamento"
+                                    >Turma (opcional)</label
+                                >
+                                <select
+                                    id="turma-agendamento"
+                                    bind:value={turma_id}
+                                >
+                                    <option value={null}>Sem turma</option>
+                                    {#each turmas as t}
+                                        <option value={t.id}>
+                                            {t.nome}
+                                            {t.ano_letivo
+                                                ? `- ${t.ano_letivo}`
+                                                : ""}
+                                        </option>
+                                    {/each}
+                                </select>
                             </div>
                         </div>
 

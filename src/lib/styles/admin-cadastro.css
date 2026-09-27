@@ -99,6 +99,9 @@
 .escopo-admin-cadastro .table-card {
     flex: 1;
     min-width: 0;
+    max-height: calc(100vh - 170px);
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
 }
 
@@ -176,7 +179,8 @@
     flex-direction: column;
     border: none;
     border-radius: 12px;
-    flex: 1;
+    flex: 1 1 auto;
+    min-height: 0;
     overflow: hidden;
     background: var(--white);
     box-shadow: 6px 6px 12px var(--shadow-dark),
@@ -199,7 +203,8 @@
 }
 
 .escopo-admin-cadastro .table-body {
-    flex: 1;
+    flex: 1 1 auto;
+    min-height: 0;
     overflow-y: auto;
     background: var(--white);
 }

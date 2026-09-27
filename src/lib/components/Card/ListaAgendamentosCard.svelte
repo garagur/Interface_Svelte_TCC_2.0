@@ -105,6 +105,7 @@
             return (
                 nomeAgendamento(ag).toLowerCase().includes(termo) ||
                 nomeResponsavel(ag).toLowerCase().includes(termo) ||
+                (ag.turma_nome || "").toLowerCase().includes(termo) ||
                 (ag.obs || "").toLowerCase().includes(termo)
             );
         })
@@ -220,6 +221,14 @@
                                     >person</span
                                 >
                                 {responsavel}
+                            </div>
+                        {/if}
+                        {#if ag.turma_nome}
+                            <div class="agendamento-sala">
+                                <span class="material-symbols-outlined"
+                                    >groups</span
+                                >
+                                {ag.turma_nome}
                             </div>
                         {/if}
                         {#if ag.obs}

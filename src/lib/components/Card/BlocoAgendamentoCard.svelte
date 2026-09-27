@@ -46,6 +46,13 @@
         </div>
     {/if}
 
+    {#if ag.turma_nome}
+        <div class="ag-info">
+            <span class="material-symbols-outlined ag-icon">groups</span>
+            <span class="ag-label">{ag.turma_nome}</span>
+        </div>
+    {/if}
+
     <div class="ag-acoes">
         {#if onDeletar && podeDeletar}
             <button

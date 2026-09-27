@@ -5,6 +5,7 @@ import "../../../chunks/navigation.js";
 import { t as apiFetch } from "../../../chunks/api.js";
 import "../../../chunks/List_Equipamento_Service.js";
 import { a as BlocoHorarioCard, o as GradeSemanal, r as carregarHorariosSala } from "../../../chunks/List_Horario_Service.js";
+import "../../../chunks/List_Turma_Service.js";
 import "../../../chunks/List_Sala_Service.js";
 import { n as GradeMensal, t as BlocoAgendamentoCard } from "../../../chunks/BlocoAgendamentoCard.js";
 import { a as deletarAgendamentoSala, c as ConfirmarDelecaoModal, i as AGENDAMENTOEQUIPAMENTO_ROUTE, n as carregarAgendamentosSalas, o as AGENDAMENTOSALA_ROUTE, r as deletarAgendamentoEquipamento, t as carregarAgendamentosEquipamentos } from "../../../chunks/List_Agendamento_Equipamento_Service.js";
@@ -72,7 +73,7 @@ function ConfirmarRecorrenciaModal($$renderer, $$props) {
 //#region src/lib/components/agendamento/AgendamentoCard.svelte
 function AgendamentoCard($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
-		let agendamentosVisiveis;
+		let itemSelecionado, agendamentosVisiveis;
 		let modo = fallback($$props["modo"], "sala");
 		let salas = fallback($$props["salas"], () => [], true);
 		let sala_id = fallback($$props["sala_id"], null);
@@ -89,6 +90,8 @@ function AgendamentoCard($$renderer, $$props) {
 		let horaInicio = fallback($$props["horaInicio"], "");
 		let horaFim = fallback($$props["horaFim"], "");
 		let obs = fallback($$props["obs"], "");
+		let turma_id = fallback($$props["turma_id"], null);
+		let turmas = fallback($$props["turmas"], () => [], true);
 		let hojeStr = fallback($$props["hojeStr"], "");
 		let onSubmit = $$props["onSubmit"];
 		let onLimpar = $$props["onLimpar"];
@@ -168,6 +171,7 @@ function AgendamentoCard($$renderer, $$props) {
 				cancelandoId = null;
 			}
 		}
+		$: itemSelecionado = salas.find((s) => s.id === sala_id) || null;
 		$: agendamentosVisiveis = agendamentos;
 		$$renderer.push(`<div class="escopo-agendamento">`);
 		ConfirmarDelecaoModal($$renderer, {
@@ -208,6 +212,29 @@ function AgendamentoCard($$renderer, $$props) {
 			$$renderer.push(`<!--]-->`);
 		});
 		$$renderer.push(` <button type="button"${attr_class(`toggle-btn ${modo === "sala" ? "active" : ""}`)}><span class="material-symbols-outlined">meeting_room</span> Salas</button> <button type="button"${attr_class(`toggle-btn ${modo === "equipamento" ? "active" : ""}`)}><span class="material-symbols-outlined">devices</span> Equipamentos</button></div> `);
+		if (itemSelecionado) {
+			$$renderer.push("<!--[0-->");
+			$$renderer.push(`<div class="card item-info-card"><div class="item-info-foto">`);
+			if (itemSelecionado.fotoUrl) {
+				$$renderer.push("<!--[0-->");
+				$$renderer.push(`<img${attr("src", itemSelecionado.fotoUrl)}${attr("alt", itemSelecionado.nome)}/>`);
+			} else {
+				$$renderer.push("<!--[-1-->");
+				$$renderer.push(`<span class="material-symbols-outlined">${escape_html(modo === "sala" ? "meeting_room" : "devices")}</span>`);
+			}
+			$$renderer.push(`<!--]--></div> <div class="item-info-dados"><div class="item-info-titulo"><h3>${escape_html(itemSelecionado.nome)}</h3> <span${attr_class(`badge-status ${itemSelecionado.status ? "ativo" : "inativo"}`)}>${escape_html(itemSelecionado.status ? "Ativo" : "Inativo")}</span> <button type="button" class="btn-info-item" title="Mais informações"><span class="material-symbols-outlined">info</span></button></div> `);
+			if (modo === "equipamento" && itemSelecionado.N_patrimonio) {
+				$$renderer.push("<!--[0-->");
+				$$renderer.push(`<div class="item-info-linha"><span class="material-symbols-outlined">tag</span> Patrimônio: ${escape_html(itemSelecionado.N_patrimonio)}</div>`);
+			} else $$renderer.push("<!--[-1-->");
+			$$renderer.push(`<!--]--> `);
+			if (itemSelecionado.obs) {
+				$$renderer.push("<!--[0-->");
+				$$renderer.push(`<div class="item-info-linha"><span class="material-symbols-outlined">info</span> ${escape_html(itemSelecionado.obs)}</div>`);
+			} else $$renderer.push("<!--[-1-->");
+			$$renderer.push(`<!--]--> <div class="item-info-linha"><span class="material-symbols-outlined">person</span> Responsável: ${escape_html(itemSelecionado.responsavel?.nome || itemSelecionado.responsavel?.name || "Nenhum")}</div></div></div>`);
+		} else $$renderer.push("<!--[-1-->");
+		$$renderer.push(`<!--]--> `);
 		if (sala_id && modo === "sala") {
 			$$renderer.push("<!--[0-->");
 			$$renderer.push(`<div class="card grade-card"><div class="grade-header-title"><div class="title-left"><span class="material-symbols-outlined text-primary">event_repeat</span> <h3>Aulas Fixas — Grade Semanal</h3></div></div> `);
@@ -251,13 +278,32 @@ function AgendamentoCard($$renderer, $$props) {
 				} }
 			});
 		}
-		$$renderer.push(`<!--]--></div> <div class="card form-card"><div class="card-header"><span class="material-symbols-outlined icon-large">calendar_add_on</span></div> <div class="tabs-recorrencia"><button type="button"${attr_class(`tab-btn ${tipo === "avulso" ? "ativo" : ""}`)}>Avulso</button> <button type="button"${attr_class(`tab-btn ${tipo === "semanal" ? "ativo" : ""}`)}>Semanal</button> <button type="button"${attr_class(`tab-btn ${tipo === "quinzenal" ? "ativo" : ""}`)}>Quinzenal</button></div> <form><div class="form-fields"><div class="field"><label for="data-agendamento">${escape_html(tipo === "avulso" ? "Data" : "Data de início")}</label> <input id="data-agendamento" type="date"${attr("value", dataAgendamento)}${attr("min", hojeStr)} required=""/></div> <div class="field"><label for="hora-inicio">Hora de Início</label> <input id="hora-inicio" type="time"${attr("value", horaInicio)} required=""/></div> <div class="field"><label for="hora-fim">Hora de Fim</label> <input id="hora-fim" type="time"${attr("value", horaFim)} required=""/></div> <div class="field"><label for="obs">Observação</label> <input id="obs" type="text"${attr("value", obs)} placeholder="Ex: Aula de reposição"/></div></div> `);
+		$$renderer.push(`<!--]--></div> <div class="card form-card"><div class="card-header"><span class="material-symbols-outlined icon-large">calendar_add_on</span></div> <div class="tabs-recorrencia"><button type="button"${attr_class(`tab-btn ${tipo === "avulso" ? "ativo" : ""}`)}>Avulso</button> <button type="button"${attr_class(`tab-btn ${tipo === "semanal" ? "ativo" : ""}`)}>Semanal</button> <button type="button"${attr_class(`tab-btn ${tipo === "quinzenal" ? "ativo" : ""}`)}>Quinzenal</button></div> <form><div class="form-fields"><div class="field"><label for="data-agendamento">${escape_html(tipo === "avulso" ? "Data" : "Data de início")}</label> <input id="data-agendamento" type="date"${attr("value", dataAgendamento)}${attr("min", hojeStr)} required=""/></div> <div class="field"><label for="hora-inicio">Hora de Início</label> <input id="hora-inicio" type="time"${attr("value", horaInicio)} required=""/></div> <div class="field"><label for="hora-fim">Hora de Fim</label> <input id="hora-fim" type="time"${attr("value", horaFim)} required=""/></div> <div class="field"><label for="obs">Observação</label> <input id="obs" type="text"${attr("value", obs)} placeholder="Ex: Aula de reposição"/></div> <div class="field"><label for="turma-agendamento">Turma (opcional)</label> `);
+		$$renderer.select({
+			id: "turma-agendamento",
+			value: turma_id
+		}, ($$renderer) => {
+			$$renderer.option({ value: null }, ($$renderer) => {
+				$$renderer.push(`Sem turma`);
+			});
+			$$renderer.push(`<!--[-->`);
+			const each_array_1 = ensure_array_like(turmas);
+			for (let $$index_1 = 0, $$length = each_array_1.length; $$index_1 < $$length; $$index_1++) {
+				let t = each_array_1[$$index_1];
+				$$renderer.option({ value: t.id }, ($$renderer) => {
+					$$renderer.push(`${escape_html(t.nome)}
+                                            ${escape_html(t.ano_letivo ? `- ${t.ano_letivo}` : "")}`);
+				});
+			}
+			$$renderer.push(`<!--]-->`);
+		});
+		$$renderer.push(`</div></div> `);
 		if (tipo !== "avulso") {
 			$$renderer.push("<!--[0-->");
 			$$renderer.push(`<div class="field dias-semana-field"><div class="dias-semana-label">Dias da semana</div> <div class="dias-semana" role="group" aria-label="Dias da semana"><!--[-->`);
-			const each_array_1 = ensure_array_like(diasSemanaOpcoes);
-			for (let $$index_1 = 0, $$length = each_array_1.length; $$index_1 < $$length; $$index_1++) {
-				let d = each_array_1[$$index_1];
+			const each_array_2 = ensure_array_like(diasSemanaOpcoes);
+			for (let $$index_2 = 0, $$length = each_array_2.length; $$index_2 < $$length; $$index_2++) {
+				let d = each_array_2[$$index_2];
 				$$renderer.push(`<button type="button"${attr_class(`dia-btn ${diasSemana.includes(d.key) ? "ativo" : ""}`)}>${escape_html(d.label)}</button>`);
 			}
 			$$renderer.push(`<!--]--></div></div> <p class="aviso-recorrencia"><span class="material-symbols-outlined">info</span> ${escape_html(tipo === "semanal" ? "Cobre 7 dias a partir da data escolhida." : "Cobre 14 dias a partir da data escolhida.")}
@@ -291,6 +337,8 @@ function AgendamentoCard($$renderer, $$props) {
 			horaInicio,
 			horaFim,
 			obs,
+			turma_id,
+			turmas,
 			hojeStr,
 			onSubmit,
 			onLimpar,
@@ -326,6 +374,7 @@ async function cadastrarAgendamento$1(novoAgendamentoSala, token) {
 		},
 		body: JSON.stringify({
 			sala_id: novoAgendamentoSala.sala_id,
+			turma_id: novoAgendamentoSala.turma_id ?? null,
 			data_hora_inicio: novoAgendamentoSala.data_hora_inicio,
 			data_hora_fim: novoAgendamentoSala.data_hora_fim,
 			obs: novoAgendamentoSala.obs
@@ -362,6 +411,7 @@ async function cadastrarAgendamento(novoAgendamentoEquipamento, token) {
 		headers: { "Accept": "application/json" },
 		body: JSON.stringify({
 			equipamento_id: novoAgendamentoEquipamento.equipamento_id,
+			turma_id: novoAgendamentoEquipamento.turma_id ?? null,
 			data_hora_inicio: novoAgendamentoEquipamento.data_hora_inicio,
 			data_hora_fim: novoAgendamentoEquipamento.data_hora_fim,
 			obs: novoAgendamentoEquipamento.obs
@@ -519,6 +569,7 @@ function _page($$renderer, $$props) {
 		let modo = "sala";
 		let salas = [];
 		let equipamentos = [];
+		let turmas = [];
 		let itensDisponiveis = [];
 		let itemSelecionadoId = null;
 		/** @type {'avulso' | 'semanal' | 'quinzenal'} */
@@ -528,6 +579,7 @@ function _page($$renderer, $$props) {
 		let horaInicio = "08:00";
 		let horaFim = "10:00";
 		let obs = "";
+		let turma_id = null;
 		let agendamentos = [];
 		let carregandoLista = false;
 		let blocosFixos = [];
@@ -589,7 +641,8 @@ function _page($$renderer, $$props) {
 			const payloadBase = {
 				data_hora_inicio: `${dataAgendamento}T${horaInicio}`,
 				data_hora_fim: `${dataAgendamento}T${horaFim}`,
-				obs
+				obs,
+				turma_id: turma_id ?? null
 			};
 			if (modo === "sala") payloadBase.sala_id = itemSelecionadoId;
 			else payloadBase.equipamento_id = itemSelecionadoId;
@@ -663,6 +716,7 @@ function _page($$renderer, $$props) {
 			horaInicio = "08:00";
 			horaFim = "10:00";
 			obs = "";
+			turma_id = null;
 		}
 		function hoje() {
 			return (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
@@ -689,6 +743,7 @@ function _page($$renderer, $$props) {
 				carregando,
 				erro,
 				sucesso,
+				turmas,
 				hojeStr: hoje(),
 				onSubmit: salvarAgendamento,
 				onLimpar: resetForm,
@@ -753,6 +808,13 @@ function _page($$renderer, $$props) {
 				},
 				set obs($$value) {
 					obs = $$value;
+					$$settled = false;
+				},
+				get turma_id() {
+					return turma_id;
+				},
+				set turma_id($$value) {
+					turma_id = $$value;
 					$$settled = false;
 				}
 			});

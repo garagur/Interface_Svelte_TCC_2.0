@@ -140,6 +140,11 @@ function BlocoAgendamentoCard($$renderer, $$props) {
 			$$renderer.push("<!--[0-->");
 			$$renderer.push(`<div class="ag-info svelte-qzbw3r"><span class="material-symbols-outlined ag-icon svelte-qzbw3r">person</span> <span class="ag-label svelte-qzbw3r">${escape_html(ag.usuario_nome)}</span></div>`);
 		} else $$renderer.push("<!--[-1-->");
+		$$renderer.push(`<!--]--> `);
+		if (ag.turma_nome) {
+			$$renderer.push("<!--[0-->");
+			$$renderer.push(`<div class="ag-info svelte-qzbw3r"><span class="material-symbols-outlined ag-icon svelte-qzbw3r">groups</span> <span class="ag-label svelte-qzbw3r">${escape_html(ag.turma_nome)}</span></div>`);
+		} else $$renderer.push("<!--[-1-->");
 		$$renderer.push(`<!--]--> <div class="ag-acoes svelte-qzbw3r">`);
 		if (onDeletar && podeDeletar) {
 			$$renderer.push("<!--[0-->");
