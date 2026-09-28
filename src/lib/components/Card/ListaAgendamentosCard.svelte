@@ -259,7 +259,7 @@
 </div>
 
 <style>
-    /* Estilo copiado de minhas-informacoes.css, sem o prefixo .minhas-informacoes.
+    /* Estilo local da lista, sem prefixo de página.
        As variáveis neumórficas (definidas lá em .scaffold) ficam na raiz daqui. */
     .lista-agendamentos-card {
         --neu-bg: var(--gray-50);

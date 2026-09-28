@@ -3,7 +3,7 @@
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
     import { page } from "$app/stores";
-    import ItemInformacoesCard from "$lib/components/informacoes_itens/ItemInformacoesCard.svelte";
+    import ItemInformacoesCard from "$lib/components/informacoes/InformacoesCard.svelte";
 
     import { buscarUsuario } from "$lib/services/UserServices/Buscar_Usuario_Service.js";
     import { carregarUsuarios } from "$lib/services/UserServices/List_User_Service.js";
@@ -466,7 +466,6 @@
 <ItemInformacoesCard
     {tipo}
     onTipoChange={selecionarTipo}
-    rotuloSelecionar={ROTULOS_TIPO[tipo]}
     {itensDisponiveis}
     {carregandoItens}
     itemSelecionadoId={idSelecionado}

@@ -2,7 +2,7 @@
     //+page de minhas informações, que mostra os dados do usuário logado, sua grade de aulas e seus agendamentos
     import { onMount, tick } from "svelte";
     import { goto } from "$app/navigation";
-    import MinhasInformacoesCard from "$lib/components/minhas_informacoes/MinhasInformacoesCard.svelte";
+    import MinhasInformacoesCard from "$lib/components/informacoes/InformacoesCard.svelte";
     import { carregarHorariosProfessor } from "$lib/services/HorarioServices/List_Horario_Service.js";
     import { carregarAgendamentosSalas } from "$lib/services/AgendamentoServices/AgendamentoSala/List_Agendamento_Sala_Service.js";
     import { deletarAgendamentoSala } from "$lib/services/AgendamentoServices/AgendamentoSala/Deleted_Agendamento_Sala_Service.js";
@@ -15,6 +15,32 @@
 
     let usuario = null;
     let carregandoUsuario = false;
+    $: itemPerfil = usuario && {
+        id: usuario.id,
+        nome: usuario.nome,
+        email: usuario.email,
+        fotoUrl: usuario.foto_url || "",
+        formaFoto: /** @type {"circular"} */ ("circular"),
+        status: Boolean(usuario.status ?? true),
+        campos: [
+            {
+                chave: "email",
+                icone: "mail",
+                label: "E-mail",
+                valor: usuario.email || "—",
+            },
+            {
+                icone: "badge",
+                label: "Matrícula",
+                valor: usuario.matricula || "—",
+            },
+            {
+                icone: "work",
+                label: "Cargo",
+                valor: usuario.cargo || "—",
+            },
+        ],
+    };
 
     let blocos = [];
     let agendamentosSala = [];
@@ -26,10 +52,8 @@
     let erro = "";
 
     let estatisticas = {
-        totalSala: 0,
-        totalEquipamento: 0,
-        salaMaisAgendada: null,
-        equipamentoMaisAgendado: null,
+        resumo: [],
+        destaques: [],
         heatmap: [],
     };
 
@@ -199,18 +223,36 @@
         const todos = [...salasAtivas, ...equipamentosAtivos];
 
         estatisticas = {
-            totalSala: salasAtivas.length,
-            totalEquipamento: equipamentosAtivos.length,
-            salaMaisAgendada: itemMaisFrequente(
-                salasAtivas,
-                "sala_nome",
-                "sala_id",
-            ),
-            equipamentoMaisAgendado: itemMaisFrequente(
-                equipamentosAtivos,
-                "equipamento_nome",
-                "equipamento_id",
-            ),
+            resumo: [
+                { valor: salasAtivas.length, label: "Agendamentos de sala" },
+                {
+                    valor: equipamentosAtivos.length,
+                    label: "Agendamentos de equipamento",
+                },
+                { valor: todos.length, label: "Total de agendamentos" },
+            ],
+            destaques: [
+                {
+                    icone: "meeting_room",
+                    label: "Sala mais agendada",
+                    valor:
+                        itemMaisFrequente(
+                            salasAtivas,
+                            "sala_nome",
+                            "sala_id",
+                        ) || "—",
+                },
+                {
+                    icone: "devices",
+                    label: "Equipamento mais agendado",
+                    valor:
+                        itemMaisFrequente(
+                            equipamentosAtivos,
+                            "equipamento_nome",
+                            "equipamento_id",
+                        ) || "—",
+                },
+            ],
             heatmap: montarHeatmap(todos),
         };
         carregandoEstatisticas = false;
@@ -265,10 +307,17 @@
 </script>
 
 <MinhasInformacoesCard
-    {usuario}
-    {carregandoUsuario}
+    subtitulo="Minhas Informações"
+    tituloDados="Meu Perfil"
+    tituloEstatisticas="Minhas Estatísticas"
+    tituloAgendamentos="Meus Agendamentos"
+    mostrarSeletor={false}
+    item={itemPerfil}
+    carregandoItem={carregandoUsuario}
     {estatisticas}
     {carregandoEstatisticas}
+    mostrarGrade={true}
+    tituloGrade="Minha Grade de Aulas"
     {blocos}
     agendamentos={[...agendamentosSala, ...agendamentosEquipamento]}
     {carregandoBlocos}
