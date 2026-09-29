@@ -16,6 +16,12 @@ function mapearBloco(s) {
         id: s.id,
         turma_id: s.turma?.id || s.turma_id || '',
         turma_nome: s.turma?.nome || '',
+        turma_ano_letivo:
+            s.turma?.ano_letivo ??
+            s.turma?.ano ??
+            s.turma_ano_letivo ??
+            s.ano_letivo ??
+            '',
         sala_id: s.sala?.id || s.sala_id || '',
         sala_nome: s.sala?.nome || '',
         professor_id: s.professor?.id || s.professor_id || '',
@@ -26,14 +32,19 @@ function mapearBloco(s) {
         professor: s.professor || null,
     }
 }
-
+function limparParams(params) {
+    return Object.fromEntries(
+        Object.entries(params).filter(([, v]) => v !== null && v !== undefined && v !== '')
+    )
+}
 async function buscarBlocos(token, params = {}) {
     if (!token) {
         throw new Error('Token de autenticação não encontrado. Faça login novamente.')
     }
 
-    const query = new URLSearchParams(params).toString()
+    const query = new URLSearchParams(limparParams(params)).toString()
     const url = query ? `${HORARIO_ROUTES.listar}?${query}` : HORARIO_ROUTES.listar
+
 
     const resp = await apiFetch(url, {
         method: 'GET',
@@ -52,30 +63,29 @@ async function buscarBlocos(token, params = {}) {
 
     return lista.map(mapearBloco)
 }
-
 /**
  * @param {string} token
  * @param {number|null} turma_id
- * @returns {Promise<any[]>}
+ * @param {number|null} ano
  */
-export async function carregarHorarios(token, turma_id = null) {
-    return buscarBlocos(token, turma_id ? { turma_id } : {})
+export async function carregarHorarios(token, turma_id = null, ano = null) {
+    return buscarBlocos(token, { turma_id, ano })
 }
 
 /**
  * @param {string} token
  * @param {number|string} professor_id
- * @returns {Promise<any[]>}
+ * @param {number|null} ano
  */
-export async function carregarHorariosProfessor(token, professor_id) {
-    return buscarBlocos(token, { professor_id })
+export async function carregarHorariosProfessor(token, professor_id, ano = null) {
+    return buscarBlocos(token, { professor_id, ano })
 }
 
 /**
  * @param {string} token
  * @param {number|string} sala_id
- * @returns {Promise<any[]>}
+ * @param {number|null} ano
  */
-export async function carregarHorariosSala(token, sala_id) {
-    return buscarBlocos(token, { sala_id })
+export async function carregarHorariosSala(token, sala_id, ano = null) {
+    return buscarBlocos(token, { sala_id, ano })
 }

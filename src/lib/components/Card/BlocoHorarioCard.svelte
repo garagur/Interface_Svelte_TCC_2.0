@@ -3,14 +3,25 @@
     /** @type {((bloco: any) => void) | null} */
     export let onRemover = null;
     export let mostrarTurma = false;
+
+    function formatarHora(hora) {
+        return String(hora || "")
+            .split(":")
+            .slice(0, 2)
+            .join(":");
+    }
 </script>
 
 <div class="bloco-card">
     <div class="bloco-horario">
-        {bloco.hora_inicio} - {bloco.hora_fim}
+        {formatarHora(bloco.hora_inicio)} - {formatarHora(bloco.hora_fim)}
     </div>
     <div class="bloco-disciplina">
         {bloco.disciplina}
+    </div>
+    <div class="bloco-sala">
+        <span class="material-symbols-outlined icon-tiny">meeting_room</span>
+        {bloco.sala_nome || bloco.sala_id || "Sala não informada"}
     </div>
     <div class="bloco-professor">
         <span class="material-symbols-outlined icon-tiny">person</span>
@@ -75,6 +86,7 @@
         color: #1e293b;
     }
 
+    .bloco-sala,
     .bloco-professor,
     .bloco-turma {
         display: flex;

@@ -80,3 +80,43 @@
     color: #94a3b8;
     padding: 2rem;
 }
+
+.grade-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.seletor-ano {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.seletor-ano button,
+.ano-valor {
+    border: none;
+    background: var(--neu-bg);
+    border-radius: 12px;
+    box-shadow: 4px 4px 8px var(--neu-shadow-dark), -4px -4px 8px var(--neu-shadow-light);
+    padding: 6px 12px;
+    font-weight: 600;
+    color: inherit;
+}
+
+.seletor-ano button {
+    display: grid;
+    place-items: center;
+    padding: 6px;
+    cursor: pointer;
+}
+
+.seletor-ano button:active {
+    box-shadow: inset 2px 2px 5px var(--neu-shadow-dark), inset -2px -2px 5px var(--neu-shadow-light);
+}
+
+.ano-valor {
+    min-width: 64px;
+    text-align: center;
+}

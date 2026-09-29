@@ -76,19 +76,20 @@
       "_api.js"
     ]
   },
-  "_List_Horario_Service.BUxaEA9T.css": {
-    "file": "_app/immutable/assets/List_Horario_Service.BUxaEA9T.css",
-    "src": "_List_Horario_Service.BUxaEA9T.css"
+  "_List_Horario_Service.CPprzoas.css": {
+    "file": "_app/immutable/assets/List_Horario_Service.CPprzoas.css",
+    "src": "_List_Horario_Service.CPprzoas.css"
   },
   "_List_Horario_Service.js": {
     "file": "chunks/List_Horario_Service.js",
     "name": "List_Horario_Service",
     "imports": [
+      "_internal.js",
       "_server.js",
       "_api.js"
     ],
     "css": [
-      "_app/immutable/assets/List_Horario_Service.BUxaEA9T.css"
+      "_app/immutable/assets/List_Horario_Service.CPprzoas.css"
     ]
   },
   "_List_Sala_Service.js": {

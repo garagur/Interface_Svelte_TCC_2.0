@@ -1,4 +1,4 @@
-import { i as onDestroy } from "./internal.js";
+import { a as onDestroy } from "./internal.js";
 import { T as escape_html, i as ensure_array_like, it as invalid_default_snippet, lt as fallback, n as bind_props, t as attr_class, u as stringify, w as attr } from "./server.js";
 import { a as BlocoHorarioCard, o as GradeSemanal } from "./List_Horario_Service.js";
 import { c as ConfirmarDelecaoModal, s as ListaAgendamentosCard } from "./List_Agendamento_Equipamento_Service.js";

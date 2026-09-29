@@ -1,1 +1,0 @@
-import{A as e,C as t,K as n,O as r,ut as i}from"../chunks/BUw-L-0w.js";import"../chunks/xihTtKlq.js";import"../chunks/DNSNlkCX.js";/* empty css                */var a=e(`<div class="escopo-agendamento"><!></div>`);function o(e,o){var s=a();t(n(s),o,`default`,{},null),i(s),r(e,s)}export{o as component};
