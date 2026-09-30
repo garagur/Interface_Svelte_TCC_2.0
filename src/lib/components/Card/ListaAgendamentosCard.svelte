@@ -1,12 +1,12 @@
 <script>
     // Lista de agendamentos (estilo "Meus Agendamentos") com filtros.
     // Alternativa ao GradeMensal na página main.
+    import AgendamentoDetalheModal from "./AgendamentoDetalheModal.svelte";
 
     export let agendamentos = [];
     export let carregando = false;
     export let usuarioId = null;
     export let cargo = "";
-    /** @type {((ag: any) => void) | null} */
     export let onDeletar = null;
     // true quando a lista já está dentro de outro card (ex.: página de novo agendamento)
     export let embutido = false;
@@ -18,6 +18,9 @@
     let filtroStatusAg = "todos"; // "todos" | "ativo" | "finalizado"
     let filtroTipoAg = "todos"; // "todos" | "sala" | "equipamento"
     let ordenacaoAg = "recente"; // "recente" | "antigo" | "az" | "za"
+
+    // Agendamento aberto no modal de detalhes (null = fechado)
+    let agDetalhe = null;
 
     /**
      * Interpreta a data como horário "de parede" (ignora o Z / fuso),
@@ -51,7 +54,7 @@
         return !!d && d >= new Date();
     }
 
-    /** @returns {"cancelado" | "futuro" | "passado"} */
+    // retorna "cancelado" | "futuro" | "passado"
     function statusExibicao(ag) {
         if (ag.status === "inativo") return "cancelado";
         return isFuturo(ag.data_hora_inicio) ? "futuro" : "passado";
@@ -96,6 +99,26 @@
         if (String(ag.user_id) === String(usuarioId)) return true;
         const respId = responsavelId(ag);
         return respId != null && String(respId) === String(usuarioId);
+    }
+
+    function abrirDetalhes(ag) {
+        agDetalhe = ag;
+    }
+
+    function cancelarPeloModal(ag) {
+        // fecha o modal de detalhes antes, para não empilhar com o modal de confirmação
+        agDetalhe = null;
+        if (onDeletar) onDeletar(ag);
+    }
+
+    // Move o modal para o <body>: evita corte por overflow do card/lista
+    function portal(node) {
+        document.body.appendChild(node);
+        return {
+            destroy() {
+                node.remove();
+            },
+        };
     }
 
     $: agendamentosFiltrados = agendamentos
@@ -251,12 +274,34 @@
                                 >
                             </button>
                         {/if}
+                        <button
+                            type="button"
+                            class="btn-info-ag"
+                            on:click={() => abrirDetalhes(ag)}
+                            title="Ver detalhes"
+                        >
+                            <span class="material-symbols-outlined">info</span>
+                        </button>
                     </div>
                 </div>
             {/each}
         </div>
     {/if}
 </div>
+
+{#if agDetalhe}
+    <div use:portal>
+        <AgendamentoDetalheModal
+            ag={agDetalhe}
+            {usuarioId}
+            {cargo}
+            onFechar={() => (agDetalhe = null)}
+            onCancelar={podeDeletar(agDetalhe, statusExibicao(agDetalhe))
+                ? cancelarPeloModal
+                : null}
+        />
+    </div>
+{/if}
 
 <style>
     /* Estilo local da lista, sem prefixo de página.
@@ -476,11 +521,11 @@
         color: var(--text-muted);
     }
 
-    .btn-deletar-ag {
+    .btn-deletar-ag,
+    .btn-info-ag {
         background: var(--neu-bg);
         border: none;
         cursor: pointer;
-        color: #ef4444;
         padding: 6px;
         margin: 4px 0 0;
         border-radius: 50%;
@@ -490,14 +535,29 @@
         box-shadow:
             3px 3px 6px var(--neu-shadow-dark),
             -3px -3px 6px var(--neu-shadow-light);
-        transition: box-shadow 0.15s;
+        transition:
+            box-shadow 0.15s,
+            color 0.15s;
+    }
+
+    .btn-deletar-ag {
+        color: #ef4444;
     }
 
     .btn-deletar-ag:hover {
         color: #b91c1c;
     }
 
-    .btn-deletar-ag:active {
+    .btn-info-ag {
+        color: #64748b;
+    }
+
+    .btn-info-ag:hover {
+        color: #2563eb;
+    }
+
+    .btn-deletar-ag:active,
+    .btn-info-ag:active {
         box-shadow:
             inset 2px 2px 4px var(--neu-shadow-dark),
             inset -2px -2px 4px var(--neu-shadow-light);

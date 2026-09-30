@@ -41,7 +41,6 @@
         }
     }
 
-    // Mesma regra de permissão do AgendamentoCard
     $: respId = ag[`${k}_responsavel_id`];
     $: podeCancelar =
         cargo === "admin" ||
@@ -56,11 +55,13 @@
 
     function rotaInformacoes(tipo, id) {
         if (id == null || id === "") return "";
+
         const parametros = new URLSearchParams({ tipo, id: String(id) });
+
         return `/informacoes?${parametros.toString()}`;
     }
-
     function ir(rota) {
+        console.log("ir() ->", rota);
         onFechar();
         goto(rota);
     }
@@ -142,7 +143,6 @@
                     <button
                         class="btn-i"
                         on:click|stopPropagation={() => ir(rotaRecurso)}
-                        disabled={!rotaRecurso}
                         title="Ver {rotuloItem.toLowerCase()}"
                         aria-label="Ver {rotuloItem.toLowerCase()}"
                     >
