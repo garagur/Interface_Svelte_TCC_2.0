@@ -1,4 +1,5 @@
 <script>
+    //cadastro de salas, usado em src/routes/admin/cadastro-sala/+page.svelte
     import { onMount } from "svelte";
     import CadastroCard from "$lib/components/admin/CadastroCard.svelte";
     import { cadastrarSala } from "$lib/services/SalaServices/Create_Sala_Service.js";

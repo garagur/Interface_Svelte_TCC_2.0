@@ -39,6 +39,8 @@ export async function carregarAgendamentosEquipamentos(token) {
         usuario_nome: s.usuario_nome || '',
         equipamento_id: s.equipamento_id || '',
         equipamento_nome: s.equipamento_nome || '',
+        equipamento_responsavel_id: s.equipamento_responsavel_id ?? s.equipamento?.responsavel_id ?? null,
+        fotoUrl: s.equipamento_foto_url ?? null,
         turma_id: s.turma_id ?? s.turma?.id ?? null,
         turma_nome: s.turma_nome || s.turma?.nome || '',
         data_hora_inicio: s.data_hora_inicio || '',

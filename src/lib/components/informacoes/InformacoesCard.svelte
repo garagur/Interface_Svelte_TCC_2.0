@@ -1,6 +1,6 @@
 <script>
     // InformacoesCard: card único usado por "Minhas Informações" e "Detalhes do Item"
-    import { onDestroy } from "svelte";
+    import { onDestroy, onMount } from "svelte";
     import ConfirmarDelecaoModal from "$lib/components/Card/ConfirmarDelecaoModal.svelte";
     import ListaAgendamentosCard from "$lib/components/Card/ListaAgendamentosCard.svelte";
     import GradeSemanal from "$lib/components/Grades/GradeSemanal.svelte";
@@ -158,7 +158,10 @@
 
     $: classeForma =
         item?.formaFoto === "quadrada" ? "foto-quadrada" : "foto-circular";
-
+    $: agendamentosComFoto =
+        mostrarSeletor && tipo !== "usuario" && item?.fotoUrl
+            ? agendamentos.map((ag) => ({ ...ag, fotoUrl: item.fotoUrl }))
+            : agendamentos;
     function limparPreview() {
         if (fotoPreview) URL.revokeObjectURL(fotoPreview);
         fotoPreview = "";
@@ -729,7 +732,7 @@
                     </div>
 
                     <ListaAgendamentosCard
-                        {agendamentos}
+                        agendamentos={agendamentosComFoto}
                         carregando={carregandoAgendamentos}
                         onDeletar={abrirModal}
                     />

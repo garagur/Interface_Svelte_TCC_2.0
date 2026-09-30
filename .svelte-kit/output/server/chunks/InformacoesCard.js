@@ -5,7 +5,7 @@ import { c as ConfirmarDelecaoModal, s as ListaAgendamentosCard } from "./List_A
 //#region src/lib/components/informacoes/InformacoesCard.svelte
 function InformacoesCard($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
-		let fotoExibida, classeForma, semanasHeatmap, rotulosMeses;
+		let fotoExibida, classeForma, agendamentosComFoto, semanasHeatmap, rotulosMeses;
 		let subtitulo = fallback($$props["subtitulo"], "Detalhes do Item");
 		let tituloDados = fallback($$props["tituloDados"], "Dados");
 		let tituloEstatisticas = fallback($$props["tituloEstatisticas"], "Estatísticas");
@@ -131,6 +131,10 @@ function InformacoesCard($$renderer, $$props) {
 		}
 		$: fotoExibida = item?.fotoUrl || "";
 		$: classeForma = item?.formaFoto === "quadrada" ? "foto-quadrada" : "foto-circular";
+		$: agendamentosComFoto = mostrarSeletor && tipo !== "usuario" && item?.fotoUrl ? agendamentos.map((ag) => ({
+			...ag,
+			fotoUrl: item.fotoUrl
+		})) : agendamentos;
 		$: semanasHeatmap = montarSemanas(estatisticas?.heatmap, anoSelecionado);
 		$: rotulosMeses = semanasHeatmap.map((semana, idx) => {
 			const primeiroDia = semana[0];
@@ -314,7 +318,7 @@ function InformacoesCard($$renderer, $$props) {
 			$$renderer.push("<!--[0-->");
 			$$renderer.push(`<div class="card" id="agendamentos"><div class="card-header"><span class="material-symbols-outlined">event_available</span> <h3>${escape_html(tituloAgendamentos)}</h3></div> `);
 			ListaAgendamentosCard($$renderer, {
-				agendamentos,
+				agendamentos: agendamentosComFoto,
 				carregando: carregandoAgendamentos,
 				onDeletar: abrirModal
 			});

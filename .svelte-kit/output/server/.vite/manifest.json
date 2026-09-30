@@ -9,18 +9,20 @@
       "_internal2.js"
     ]
   },
-  "_BlocoAgendamentoCard.O9rmCLYK.css": {
-    "file": "_app/immutable/assets/BlocoAgendamentoCard.O9rmCLYK.css",
-    "src": "_BlocoAgendamentoCard.O9rmCLYK.css"
+  "_BlocoAgendamentoCard.DWtzHZ1k.css": {
+    "file": "_app/immutable/assets/BlocoAgendamentoCard.DWtzHZ1k.css",
+    "src": "_BlocoAgendamentoCard.DWtzHZ1k.css"
   },
   "_BlocoAgendamentoCard.js": {
     "file": "chunks/BlocoAgendamentoCard.js",
     "name": "BlocoAgendamentoCard",
     "imports": [
+      "_navigation.js",
+      "_client.js",
       "_server.js"
     ],
     "css": [
-      "_app/immutable/assets/BlocoAgendamentoCard.O9rmCLYK.css"
+      "_app/immutable/assets/BlocoAgendamentoCard.DWtzHZ1k.css"
     ]
   },
   "_Buscar_Usuario_Service.js": {

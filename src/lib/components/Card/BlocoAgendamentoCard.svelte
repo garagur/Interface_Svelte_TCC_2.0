@@ -1,11 +1,13 @@
 <script>
+    import AgendamentoDetalheModal from "$lib/components/Card/AgendamentoDetalheModal.svelte";
+
     export let ag;
-    /** @type {((ag: any) => void) | null} */
-    export let onDetalhes = null;
     /** @type {((ag: any) => void) | null} */
     export let onDeletar = null;
     export let usuarioId = null;
     export let cargo = null;
+
+    let mostrarDetalhes = false;
 
     $: ehEquipamento = ag.tipo === "equipamento";
 
@@ -24,9 +26,34 @@
         ? ag.equipamento_nome || ag.equipamento_id
         : ag.sala_nome || ag.sala_id;
     $: recursoIcone = ehEquipamento ? "devices" : "meeting_room";
+    $: agendamentoPassado = !estaNoFuturo(ag.data_hora_inicio);
+
+    function estaNoFuturo(dataHora) {
+        if (!dataHora) return false;
+        const data = new Date(String(dataHora).replace(" ", "T").slice(0, 19));
+        return !Number.isNaN(data.getTime()) && data >= new Date();
+    }
+
+    function cancelarPeloModal(agendamento) {
+        mostrarDetalhes = false;
+        onDeletar?.(agendamento);
+    }
 </script>
 
-<div class="ag-bloco-inner {proprio ? 'proprio' : 'outro'}">
+{#if mostrarDetalhes}
+    <AgendamentoDetalheModal
+        {ag}
+        {usuarioId}
+        {cargo}
+        onFechar={() => (mostrarDetalhes = false)}
+        onCancelar={onDeletar && !agendamentoPassado ? cancelarPeloModal : null}
+    />
+{/if}
+
+<div
+    class="ag-bloco-inner {proprio ? 'proprio' : 'outro'}"
+    class:passado={agendamentoPassado}
+>
     <span class="ag-hora">
         {ag.data_hora_inicio?.slice(11, 16)} - {ag.data_hora_fim?.slice(11, 16)}
     </span>
@@ -54,7 +81,7 @@
     {/if}
 
     <div class="ag-acoes">
-        {#if onDeletar && podeDeletar}
+        {#if onDeletar && podeDeletar && !agendamentoPassado}
             <button
                 class="btn-ag delete"
                 on:click={() => onDeletar(ag)}
@@ -63,15 +90,15 @@
                 <span class="material-symbols-outlined">delete</span>
             </button>
         {/if}
-        {#if onDetalhes}
-            <button
-                class="btn-ag info"
-                on:click={() => onDetalhes(ag)}
-                title="Ver detalhes"
-            >
-                <span class="material-symbols-outlined">info</span>
-            </button>
-        {/if}
+        <button
+            type="button"
+            class="btn-ag info"
+            on:click={() => (mostrarDetalhes = true)}
+            title="Ver detalhes"
+            aria-label="Ver detalhes do agendamento"
+        >
+            <span class="material-symbols-outlined">info</span>
+        </button>
     </div>
 </div>
 
@@ -107,6 +134,18 @@
 
     .ag-bloco-inner.outro {
         border-left: 4px solid #94a3b8;
+    }
+
+    .ag-bloco-inner.passado {
+        background: #cbd0d9;
+        box-shadow:
+            inset 3px 3px 6px rgba(100, 116, 139, 0.28),
+            inset -3px -3px 6px rgba(255, 255, 255, 0.55);
+    }
+
+    .ag-bloco-inner.passado .ag-hora,
+    .ag-bloco-inner.passado .ag-label {
+        color: #475569;
     }
 
     .ag-hora {
