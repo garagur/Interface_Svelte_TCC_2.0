@@ -85,6 +85,13 @@
             ? `${dia(ini)} · ${hora(ini)} → ${hora(fim)}`
             : `${dia(ini)} ${hora(ini)} → ${dia(fim)} ${hora(fim)}`;
 
+    // Motivo informado ao cancelar (mesma ordem de campos usada na lista)
+    $: justCancelamento =
+        ag.justificativa_cancelamento ||
+        ag.motivo_cancelamento ||
+        ag.justificativa ||
+        "";
+
     $: linhas = [
         ["schedule", "Data e horário", dataHorario],
         ["groups", "Turma", ag.turma_nome || "—"],
@@ -94,8 +101,10 @@
             ag.usuario_nome || "—",
             ag.user_id ? () => ir(rotaUsuario) : null,
         ],
-        // AJUSTAR: campo da justificativa do agendamento
-        [null, "Justificativa", ag.justificativa || "—"],
+        [null, "Justificativa do agendamento", ag.obs || "—"],
+        ...(cancelado
+            ? [[null, "Justificativa do cancelamento", justCancelamento || "—"]]
+            : []),
     ];
 </script>
 
@@ -137,7 +146,12 @@
             </div>
 
             <div class="info">
-                <span class="rotulo-item">{rotuloItem}</span>
+                <div class="selos">
+                    <span class="rotulo-item">{rotuloItem}</span>
+                    {#if cancelado}
+                        <span class="rotulo-item cancelado">Cancelado</span>
+                    {/if}
+                </div>
                 <div class="nome-linha">
                     <h2 class="nome">{recursoNome || "—"}</h2>
                     <button
@@ -178,9 +192,7 @@
                     </div>
                 {/each}
 
-                {#if cancelado}
-                    <span class="badge-cancelado">Cancelado</span>
-                {:else if onCancelar && podeCancelar}
+                {#if !cancelado && onCancelar && podeCancelar}
                     <button
                         class="btn-cancelar"
                         on:click={() => onCancelar(ag)}
@@ -264,11 +276,22 @@
         align-items: stretch;
         padding-top: 0.5rem;
     }
+    .selos {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
 
+    .rotulo-item.cancelado {
+        color: #ef4444;
+    }
     .foto {
         position: relative;
-        flex: 0 0 200px;
-        min-height: 200px;
+        flex: 0 0 280px;
+        width: 280px;
+        aspect-ratio: 1 / 1; /* altura = largura */
+        align-self: flex-start; /* não estica com a coluna de informações */
         border-radius: 18px;
         overflow: hidden;
         box-shadow: var(--dentro);
@@ -278,7 +301,8 @@
         inset: 8px;
         width: calc(100% - 16px);
         height: calc(100% - 16px);
-        object-fit: cover;
+        object-fit: cover; /* preenche a caixa, cortando o excesso */
+        object-position: center;
         border-radius: 12px;
     }
     .fallback {
@@ -384,6 +408,7 @@
 
     @media (max-width: 520px) {
         .card {
+            width: min(760px, 100%);
             padding: 1.5rem 1.2rem;
         }
         .corpo {
@@ -391,7 +416,9 @@
         }
         .foto {
             flex-basis: auto;
-            min-height: 180px;
+            width: 100%;
+            max-width: 320px;
+            align-self: center;
         }
         .info {
             padding-right: 0;

@@ -7,6 +7,9 @@
     import BlocoCard from "$lib/components/Card/BlocoHorarioCard.svelte";
 
     // ─── Textos configuráveis ─────────────────────────────────────────
+    /** @type {string | number | null} */
+    export let usuarioId = null;
+    export let cargo = "";
     export let subtitulo = "Detalhes do Item";
     export let tituloDados = "Dados";
     export let tituloEstatisticas = "Estatísticas";
@@ -734,6 +737,8 @@
                     <ListaAgendamentosCard
                         agendamentos={agendamentosComFoto}
                         carregando={carregandoAgendamentos}
+                        {usuarioId}
+                        {cargo}
                         onDeletar={abrirModal}
                     />
                 </div>

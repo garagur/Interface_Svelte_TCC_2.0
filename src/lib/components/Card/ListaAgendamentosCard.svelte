@@ -7,6 +7,7 @@
     export let carregando = false;
     export let usuarioId = null;
     export let cargo = "";
+    /** @type {((ag: any) => void) | null} */
     export let onDeletar = null;
     // true quando a lista já está dentro de outro card (ex.: página de novo agendamento)
     export let embutido = false;
@@ -48,7 +49,36 @@
         });
         return `${data} às ${hora}`;
     }
+    function formatarPeriodo(inicio, fim) {
+        const ini = parseData(inicio);
+        const f = parseData(fim);
+        if (!ini) return "—";
 
+        const dia = (d) =>
+            d.toLocaleDateString("pt-BR", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+            });
+        const hora = (d) =>
+            d.toLocaleTimeString("pt-BR", {
+                hour: "2-digit",
+                minute: "2-digit",
+            });
+
+        if (!f) return `${dia(ini)} · ${hora(ini)}`;
+        if (dia(ini) === dia(f))
+            return `${dia(ini)} · ${hora(ini)} → ${hora(f)}`;
+        return `${dia(ini)} ${hora(ini)} → ${dia(f)} ${hora(f)}`;
+    }
+    function justificativaCancelamento(ag) {
+        return (
+            ag.justificativa_cancelamento ||
+            ag.motivo_cancelamento ||
+            ag.justificativa ||
+            ""
+        );
+    }
     function isFuturo(str) {
         const d = parseData(str);
         return !!d && d >= new Date();
@@ -216,16 +246,20 @@
             {#each agendamentosFiltrados as ag (`${tipoAgendamento(ag)}-${ag.id}`)}
                 {@const status = statusExibicao(ag)}
                 {@const responsavel = nomeResponsavel(ag)}
-                <div class="agendamento-item">
+                <div
+                    class="agendamento-item"
+                    class:cancelado={status === "cancelado"}
+                >
                     <div class="agendamento-faixa"></div>
                     <div class="agendamento-body">
                         <div class="agendamento-data-hora">
                             <span class="material-symbols-outlined"
                                 >schedule</span
                             >
-                            {formatarDataHora(ag.data_hora_inicio)}
-                            &nbsp;→&nbsp;
-                            {formatarDataHora(ag.data_hora_fim)}
+                            {formatarPeriodo(
+                                ag.data_hora_inicio,
+                                ag.data_hora_fim,
+                            )}
                         </div>
                         <div class="agendamento-sala">
                             <span class="material-symbols-outlined"
@@ -255,7 +289,20 @@
                             </div>
                         {/if}
                         {#if ag.obs}
-                            <p class="agendamento-obs">{ag.obs}</p>
+                            <p class="agendamento-obs">
+                                <strong>Justificativa do agendamento:</strong>
+                                {ag.obs}
+                            </p>
+                        {/if}
+                        {#if status === "cancelado"}
+                            <p class="agendamento-justificativa">
+                                <span class="material-symbols-outlined"
+                                    >block</span
+                                >
+                                <strong>Justificativa do cancelamento:</strong>
+                                {justificativaCancelamento(ag) ||
+                                    "Não informada"}
+                            </p>
                         {/if}
                     </div>
                     <div class="agendamento-status">
@@ -588,5 +635,44 @@
         .agendamento-status {
             padding: 0 16px 12px;
         }
+    }
+    .agendamento-item.cancelado {
+        background: #fee2e2;
+        box-shadow:
+            5px 5px 10px rgba(185, 28, 28, 0.18),
+            -5px -5px 10px var(--neu-shadow-light);
+    }
+
+    .agendamento-item.cancelado:hover {
+        box-shadow:
+            3px 3px 6px rgba(185, 28, 28, 0.18),
+            -3px -3px 6px var(--neu-shadow-light);
+    }
+
+    .agendamento-item.cancelado .agendamento-faixa {
+        background: #ef4444;
+    }
+
+    .agendamento-item.cancelado .agendamento-data-hora {
+        color: #b91c1c;
+    }
+
+    .badge-status.cancelado {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .agendamento-justificativa {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin: 2px 0 0;
+        font-size: 0.75rem;
+        color: #b91c1c;
+    }
+
+    .agendamento-justificativa .material-symbols-outlined {
+        font-size: 15px;
+        color: #b91c1c;
     }
 </style>
