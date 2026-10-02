@@ -1,7 +1,5 @@
 import "../../../../chunks/internal.js";
 import { T as escape_html, i as ensure_array_like, t as attr_class, w as attr } from "../../../../chunks/server.js";
-import { t as goto } from "../../../../chunks/client.js";
-import "../../../../chunks/navigation.js";
 import { t as CadastroCard } from "../../../../chunks/CadastroCard.js";
 import { t as apiFetch } from "../../../../chunks/api.js";
 import { n as TURMA_ROUTES, t as carregarTurmas } from "../../../../chunks/List_Turma_Service.js";
@@ -202,9 +200,6 @@ function _page($$renderer, $$props) {
 		let $$inner_renderer;
 		function $$render_inner($$renderer) {
 			CadastroCard($$renderer, {
-				titulo: "Portal de Agendamento",
-				subtitulo: "Cadastro de Turmas",
-				onSair: () => goto("/main"),
 				onSubmit: salvarTurma,
 				onCancelar: resetForm,
 				editando,

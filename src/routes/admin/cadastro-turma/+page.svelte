@@ -5,7 +5,6 @@
     import { cadastrarTurma } from "$lib/services/TurmaServices/Create_Turma_Service.js";
     import { carregarTurmas } from "$lib/services/TurmaServices/List_Turma_Service.js";
     import { atualizarTurma } from "$lib/services/TurmaServices/Update_Turma_Service.js";
-    import { goto } from "$app/navigation";
 
     let token = "";
 
@@ -177,9 +176,6 @@
 </script>
 
 <CadastroCard
-    titulo="Portal de Agendamento"
-    subtitulo="Cadastro de Turmas"
-    onSair={() => goto("/main")}
     onSubmit={salvarTurma}
     onCancelar={resetForm}
     {editando}

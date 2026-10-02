@@ -6,46 +6,10 @@
     background: var(--neu-bg);
 }
 
-.escopo-horario .app-bar {
-    background-color: var(--primary);
-    color: var(--white);
-    padding: 12px 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 10px 10px 20px var(--shadow-dark-heavy),
-        -10px -10px 20px var(--primary-dark);
-    z-index: 10;
-}
-
-.escopo-horario .title-section h1 {
-    color: var(--text-light);
-    margin: 0;
-    font-size: 1.2rem;
-    font-weight: 700;
-}
-
-.escopo-horario .title-section span {
-    font-size: 0.85rem;
-    color: var(--text-light);
-}
-
-/* Botões do Header */
-.escopo-horario .btn-icon {
-    background: none;
-    border: none;
-    color: var(--white);
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 50%;
-    transition: background 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.escopo-horario .btn-icon:hover {
-    background: var(--overlay-light);
+.escopo-admin-cadastro .escopo-horario .scaffold {
+    height: auto;
+    min-height: calc(100vh - 88px);
+    overflow: visible;
 }
 
 .escopo-horario .horario-content {
@@ -98,6 +62,12 @@
 .escopo-horario select {
     width: 100%;
     max-width: 400px;
+    padding-right: 2.5rem;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.85rem center;
+    background-size: 1rem;
     cursor: pointer;
 }
 
@@ -109,8 +79,7 @@
         0 0 0 2px color-mix(in srgb, var(--focus) 30%, transparent);
 }
 
-.escopo-horario .form-bloco-card h3,
-.escopo-horario .grade-card h3 {
+.escopo-horario .form-bloco-card h3 {
     display: flex;
     align-items: center;
     gap: 0.5rem;

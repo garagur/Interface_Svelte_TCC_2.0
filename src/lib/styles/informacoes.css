@@ -7,49 +7,6 @@
     background: var(--gray-50);
 }
 
-:is(.minhas-informacoes, .item-informacoes) .app-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 24px;
-    height: 64px;
-    background: var(--primary);
-    color: var(--white);
-    box-shadow: 0 2px 8px var(--shadow-dark-medium);
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
-
-:is(.minhas-informacoes, .item-informacoes) .title-section h1 {
-    margin: 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--white);
-}
-
-:is(.minhas-informacoes, .item-informacoes) .title-section span {
-    font-size: 0.75rem;
-    color: var(--border-input);
-}
-
-:is(.minhas-informacoes, .item-informacoes) .btn-icon {
-    background: none;
-    border: none;
-    color: var(--white);
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-}
-
-:is(.minhas-informacoes, .item-informacoes) .btn-icon:hover {
-    background: var(--overlay-light);
-}
-
 :is(.minhas-informacoes, .item-informacoes) .page-content {
     display: flex;
     flex-direction: column;
@@ -126,6 +83,24 @@
 }
 
 .informacoes.item-informacoes .perfil-info-linha .material-symbols-outlined {
+    font-size: 19px;
+}
+
+.informacoes.minhas-informacoes .item-dados {
+    gap: 12px;
+    padding-top: 8px;
+}
+
+.informacoes.minhas-informacoes .item-nome {
+    font-size: 1.5rem;
+}
+
+.informacoes.minhas-informacoes .perfil-info-linha {
+    gap: 10px;
+    font-size: 1rem;
+}
+
+.informacoes.minhas-informacoes .perfil-info-linha .material-symbols-outlined {
     font-size: 19px;
 }
 
@@ -216,8 +191,6 @@
     }
 }
 
-.minhas-informacoes .perfil-foto,
-.minhas-informacoes .perfil-foto-placeholder,
 .item-informacoes .item-foto,
 .item-informacoes .item-foto-placeholder {
     width: var(--foto-tamanho);
@@ -226,32 +199,12 @@
     flex-shrink: 0;
 }
 
-.minhas-informacoes .perfil-foto {
-    border-radius: 50%;
-    object-fit: cover;
-    background: var(--gray-50);
-    border: 3px solid var(--primary-light);
-}
-
-.minhas-informacoes .perfil-foto-placeholder {
-    border-radius: 50%;
-    background: var(--primary-light);
-    color: var(--primary-dark);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(var(--foto-tamanho) * 0.38);
-    font-weight: 700;
-}
-
-.minhas-informacoes .perfil-dados,
 .item-informacoes .item-dados {
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
 
-.minhas-informacoes .perfil-nome,
 .item-informacoes .item-nome {
     margin: 0;
     font-size: 1.15rem;
@@ -635,11 +588,6 @@
     margin: 0;
 }
 
-/* Estilos exclusivos de Minhas Informações */
-.minhas-informacoes .perfil-conteudo {
-    align-items: center;
-}
-
 @media (max-width: 700px) {
     .informacoes .card {
         padding: 18px 16px;
@@ -664,12 +612,6 @@
     }
 }
 
-.minhas-informacoes .perfil-conteudo {
-    flex-direction: column;
-    align-items: flex-start;
-    text-align: left;
-}
-
 .minhas-informacoes .perfil-foto-area {
     display: flex;
     flex-direction: column;
@@ -687,16 +629,6 @@
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-}
-
-.minhas-informacoes .perfil-conteudo.editando {
-    align-items: flex-start;
-}
-
-.minhas-informacoes .perfil-conteudo.editando .perfil-dados {
-    flex: 1;
-    max-width: 420px;
-    gap: 10px;
 }
 
 .minhas-informacoes .perfil-form {

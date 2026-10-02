@@ -7,6 +7,7 @@
     import ConfirmarDelecaoModal from "$lib/components/Card/ConfirmarDelecaoModal.svelte";
     import ConfirmarRecorrenciaModal from "$lib/components/Card/ConfirmarRecorrenciaModal.svelte";
     import ListaAgendamentosCard from "$lib/components/Card/ListaAgendamentosCard.svelte";
+    import CabecalhoGlobal from "$lib/components/main/CabecalhoGlobal.svelte";
     import { deletarAgendamentoSala } from "$lib/services/AgendamentoServices/AgendamentoSala/Deleted_Agendamento_Sala_Service.js";
     import { deletarAgendamentoEquipamento } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/Deleted_Agendamento_equipamento.js";
 
@@ -102,8 +103,14 @@
                     ag.justificativa || "",
                 );
             }
-            agendamentos = agendamentos.filter(
-                (a) => a.id !== ag.id || a.tipo !== ag.tipo,
+            agendamentos = agendamentos.map((a) =>
+                a.id === ag.id && a.tipo === ag.tipo
+                    ? {
+                          ...a,
+                          status: "inativo",
+                          justificativa: ag.justificativa || "",
+                      }
+                    : a,
             );
             agendamentoParaDeletar = null;
         } catch (e) {
@@ -155,15 +162,12 @@
     />
 
     <div class="scaffold">
-        <header class="app-bar">
-            <div class="title-section">
-                <h1>Portal de Agendamento</h1>
-                <span>Novo Agendamento</span>
-            </div>
-            <button class="btn-icon" on:click={onSair} title="Voltar">
-                <span class="material-symbols-outlined">arrow_back</span>
-            </button>
-        </header>
+        <CabecalhoGlobal
+            titulo="Portal de Agendamento"
+            subtitulo="Novo Agendamento"
+            {cargo}
+            onVoltar={onSair}
+        />
 
         <main class="body-content">
             <div class="toggle-container"></div>
@@ -303,7 +307,7 @@
                             <span class="material-symbols-outlined text-primary"
                                 >calendar_month</span
                             >
-                            <h3>Agendamentos — próximos 60 dias</h3>
+                            <h3>Agendamentos</h3>
                         </div>
 
                         <div

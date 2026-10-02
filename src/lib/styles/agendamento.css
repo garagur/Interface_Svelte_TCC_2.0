@@ -9,49 +9,6 @@
     /* Ajustado suavemente para o fundo permitir o contraste do neumorphism */
 }
 
-.escopo-agendamento .app-bar {
-    background-color: var(--primary);
-    color: var(--white);
-    padding: 12px 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: none;
-    box-shadow: 4px 4px 10px var(--shadow-dark-soft), -4px -4px 10px var(--shadow-light-soft);
-}
-
-.escopo-agendamento .title-section {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.escopo-agendamento .title-section h1 {
-    margin: 0;
-    font-size: 18px;
-}
-
-.escopo-agendamento .title-section span {
-    font-size: 11px;
-    opacity: 0.9;
-    margin-top: 2px;
-}
-
-.escopo-agendamento .btn-icon {
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 50%;
-    transition: all 0.2s;
-}
-
-.escopo-agendamento .btn-icon:hover {
-    background: var(--overlay-medium);
-    box-shadow: inset 2px 2px 4px var(--shadow-dark-medium), inset -2px -2px 4px var(--shadow-light-soft);
-}
-
 .escopo-agendamento .body-content {
     flex: 1;
     display: flex;
@@ -244,6 +201,20 @@
     box-shadow: inset 3px 3px 6px var(--neu-shadow-dark),
         inset -3px -3px 6px var(--shadow-light-strong);
     transition: box-shadow 0.2s;
+}
+
+.escopo-agendamento .sala-select-card select,
+.escopo-agendamento .field select {
+    padding-right: 2.5rem;
+    appearance: none;
+    background-image:
+        linear-gradient(45deg, transparent 50%, var(--text-muted) 50%),
+        linear-gradient(135deg, var(--text-muted) 50%, transparent 50%);
+    background-repeat: no-repeat;
+    background-position:
+        calc(100% - 1rem) 50%,
+        calc(100% - 0.75rem) 50%;
+    background-size: 0.25rem 0.25rem;
 }
 
 .escopo-agendamento .field select:focus {
@@ -641,8 +612,8 @@
 .toggle-visao button.ativo {
     background: var(--confirm);
     color: var(--white);
-    box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.18),
-        inset -4px -4px 8px rgba(255, 255, 255, 0.12);
+    box-shadow: inset 4px 4px 8px var(--shadow-dark-soft),
+        inset -4px -4px 8px var(--overlay-light);
 }
 
 .escopo-agendamento .item-info-card {
@@ -720,13 +691,13 @@
 }
 
 .escopo-agendamento .badge-status.ativo {
-    background: var(--confirm-light, #d4f5dd);
-    color: var(--confirm-dark, #1a7f3c);
+    background: var(--confirm-light);
+    color: var(--confirm-dark);
 }
 
 .escopo-agendamento .badge-status.inativo {
-    background: var(--cancel-light, #fbdada);
-    color: var(--cancel-dark, #a83232);
+    background: var(--cancel-light);
+    color: var(--cancel-dark);
 }
 
 .escopo-agendamento .btn-info-item {

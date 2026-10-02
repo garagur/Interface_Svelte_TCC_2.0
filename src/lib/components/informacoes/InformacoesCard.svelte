@@ -5,6 +5,7 @@
     import ListaAgendamentosCard from "$lib/components/Card/ListaAgendamentosCard.svelte";
     import GradeSemanal from "$lib/components/Grades/GradeSemanal.svelte";
     import BlocoCard from "$lib/components/Card/BlocoHorarioCard.svelte";
+    import CabecalhoGlobal from "$lib/components/main/CabecalhoGlobal.svelte";
 
     // ─── Textos configuráveis ─────────────────────────────────────────
     /** @type {string | number | null} */
@@ -324,15 +325,12 @@
     class:item-informacoes={mostrarSeletor}
 >
     <div class="scaffold">
-        <header class="app-bar">
-            <div class="title-section">
-                <h1>Portal de Agendamento</h1>
-                <span>{subtitulo}</span>
-            </div>
-            <button class="btn-icon" on:click={onSair} title="Voltar">
-                <span class="material-symbols-outlined">arrow_back</span>
-            </button>
-        </header>
+        <CabecalhoGlobal
+            titulo="Portal de Agendamento"
+            {subtitulo}
+            {cargo}
+            onVoltar={onSair}
+        />
 
         <main class="page-content">
             {#if erro}
@@ -746,7 +744,3 @@
         </main>
     </div>
 </div>
-
-<style>
-    @import "$lib/styles/informacoes.css";
-</style>

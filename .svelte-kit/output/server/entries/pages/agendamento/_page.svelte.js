@@ -2,6 +2,7 @@ import "../../../chunks/internal.js";
 import { T as escape_html, c as slot, i as ensure_array_like, it as invalid_default_snippet, lt as fallback, n as bind_props, t as attr_class, w as attr } from "../../../chunks/server.js";
 import { t as goto } from "../../../chunks/client.js";
 import "../../../chunks/navigation.js";
+import { t as CabecalhoGlobal } from "../../../chunks/CabecalhoGlobal.js";
 import { t as apiFetch } from "../../../chunks/api.js";
 import "../../../chunks/List_Equipamento_Service.js";
 import { a as BlocoHorarioCard, o as GradeSemanal, r as carregarHorariosSala } from "../../../chunks/List_Horario_Service.js";
@@ -163,7 +164,11 @@ function AgendamentoCard($$renderer, $$props) {
 			try {
 				if (ag.tipo === "sala") await deletarAgendamentoSala(ag.id, token, ag.justificativa || "");
 				else if (ag.tipo === "equipamento") await deletarAgendamentoEquipamento(ag.id, token, ag.justificativa || "");
-				agendamentos = agendamentos.filter((a) => a.id !== ag.id || a.tipo !== ag.tipo);
+				agendamentos = agendamentos.map((a) => a.id === ag.id && a.tipo === ag.tipo ? {
+					...a,
+					status: "inativo",
+					justificativa: ag.justificativa || ""
+				} : a);
 				agendamentoParaDeletar = null;
 			} catch (e) {
 				erro = e?.message || "Erro ao deletar agendamento.";
@@ -191,7 +196,14 @@ function AgendamentoCard($$renderer, $$props) {
 			onConfirmar: onConfirmarRecorrencia,
 			onCancelar: onCancelarRecorrencia
 		});
-		$$renderer.push(`<!----> <div class="scaffold"><header class="app-bar"><div class="title-section"><h1>Portal de Agendamento</h1> <span>Novo Agendamento</span></div> <button class="btn-icon" title="Voltar"><span class="material-symbols-outlined">arrow_back</span></button></header> <main class="body-content"><div class="toggle-container"></div> <!--[-->`);
+		$$renderer.push(`<!----> <div class="scaffold">`);
+		CabecalhoGlobal($$renderer, {
+			titulo: "Portal de Agendamento",
+			subtitulo: "Novo Agendamento",
+			cargo,
+			onVoltar: onSair
+		});
+		$$renderer.push(`<!----> <main class="body-content"><div class="toggle-container"></div> <!--[-->`);
 		slot($$renderer, $$props, "botoes-topo", {}, null);
 		$$renderer.push(`<!--]--> <div class="card sala-select-card">`);
 		$$renderer.select({
@@ -256,7 +268,7 @@ function AgendamentoCard($$renderer, $$props) {
 			});
 			$$renderer.push(`<!----></div>`);
 		} else $$renderer.push("<!--[-1-->");
-		$$renderer.push(`<!--]--> <div class="conteudo-principal"><div class="card calendario-card"><div class="grade-header-title"><div class="title-left"><span class="material-symbols-outlined text-primary">calendar_month</span> <h3>Agendamentos — próximos 60 dias</h3></div> <div class="toggle-visao" role="group" aria-label="Modo de visualização"><button type="button" title="Calendário"${attr_class("", void 0, { "ativo": true })}><span class="material-symbols-outlined">calendar_view_month</span></button> <button type="button" title="Lista"${attr_class("", void 0, { "ativo": false })}><span class="material-symbols-outlined">view_list</span></button></div> <span class="badge">${escape_html(agendamentosVisiveis.length)}
+		$$renderer.push(`<!--]--> <div class="conteudo-principal"><div class="card calendario-card"><div class="grade-header-title"><div class="title-left"><span class="material-symbols-outlined text-primary">calendar_month</span> <h3>Agendamentos</h3></div> <div class="toggle-visao" role="group" aria-label="Modo de visualização"><button type="button" title="Calendário"${attr_class("", void 0, { "ativo": true })}><span class="material-symbols-outlined">calendar_view_month</span></button> <button type="button" title="Lista"${attr_class("", void 0, { "ativo": false })}><span class="material-symbols-outlined">view_list</span></button></div> <span class="badge">${escape_html(agendamentosVisiveis.length)}
                             ${escape_html(agendamentosVisiveis.length === 1 ? "registro" : "registros")}</span></div> `);
 		if (!sala_id) {
 			$$renderer.push("<!--[0-->");

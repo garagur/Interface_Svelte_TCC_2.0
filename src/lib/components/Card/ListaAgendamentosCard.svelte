@@ -92,7 +92,7 @@
 
     function rotuloStatus(status) {
         if (status === "cancelado") return "Cancelado";
-        if (status === "futuro") return "Agendado";
+        if (status === "futuro") return "Ativo";
         return "Concluído";
     }
 
@@ -206,7 +206,7 @@
             <select class="select-filtro-ag" bind:value={filtroStatusAg}>
                 <option value="todos">Todos</option>
                 <option value="ativo">Ativos</option>
-                <option value="finalizado">Finalizados</option>
+                <option value="finalizado">Concluídos</option>
                 <option value="cancelado">Cancelados</option>
             </select>
         </div>
@@ -228,8 +228,8 @@
                 <option value="recente">Mais recente</option>
                 <option value="antigo">Mais antigo</option>
                 {#if !recursoUnico}
-                    <option value="az">Nome (A-Z)</option>
-                    <option value="za">Nome (Z-A)</option>
+                    <option value="az">Nome item (A-Z)</option>
+                    <option value="za">Nome item (Z-A)</option>
                 {/if}
             </select>
         </div>
@@ -249,9 +249,13 @@
                 <div
                     class="agendamento-item"
                     class:cancelado={status === "cancelado"}
+                    class:passado={status === "passado"}
                 >
                     <div class="agendamento-faixa"></div>
                     <div class="agendamento-body">
+                        <span class="badge-status {status}">
+                            {rotuloStatus(status)}
+                        </span>
                         <div class="agendamento-data-hora">
                             <span class="material-symbols-outlined"
                                 >schedule</span
@@ -290,8 +294,16 @@
                         {/if}
                         {#if ag.obs}
                             <p class="agendamento-obs">
-                                <strong>Justificativa do agendamento:</strong>
-                                {ag.obs}
+                                <span
+                                    class="material-symbols-outlined"
+                                    aria-hidden="true">edit_note</span
+                                >
+                                <span>
+                                    <strong
+                                        >Justificativa do agendamento:</strong
+                                    >
+                                    {ag.obs}
+                                </span>
                             </p>
                         {/if}
                         {#if status === "cancelado"}
@@ -305,10 +317,7 @@
                             </p>
                         {/if}
                     </div>
-                    <div class="agendamento-status">
-                        <span class="badge-status {status}">
-                            {rotuloStatus(status)}
-                        </span>
+                    <div class="agendamento-botoes">
                         {#if podeDeletar(ag, status)}
                             <button
                                 type="button"
@@ -355,8 +364,6 @@
        As variáveis neumórficas (definidas lá em .scaffold) ficam na raiz daqui. */
     .lista-agendamentos-card {
         --neu-bg: var(--gray-50);
-        --neu-shadow-dark: rgba(163, 177, 198, 0.55);
-        --neu-shadow-light: rgba(255, 255, 255, 0.85);
         --campo-bg: var(--neu-bg);
 
         font-family: "Inter", Arial, sans-serif;
@@ -374,8 +381,6 @@
     .lista-agendamentos-card.embutido {
         --neu-bg: var(--white);
         --campo-bg: var(--bg-input);
-        --neu-shadow-dark: rgba(166, 180, 200, 0.4);
-        --neu-shadow-light: rgba(255, 255, 255, 0.8);
 
         font-family: inherit;
         background: none;
@@ -448,13 +453,25 @@
     .select-filtro-ag {
         width: auto;
         margin: 0;
-        background: var(--campo-bg);
+        background-color: var(--campo-bg); /* era "background" */
+        appearance: none;
+        background-image: linear-gradient(
+                45deg,
+                transparent 50%,
+                var(--text-muted) 50%
+            ),
+            linear-gradient(135deg, var(--text-muted) 50%, transparent 50%);
+        background-repeat: no-repeat;
+        background-position:
+            calc(100% - 1rem) 50%,
+            calc(100% - 0.75rem) 50%;
+        background-size: 0.25rem 0.25rem;
         border: none;
         cursor: pointer;
         font-size: 0.8rem;
         font-weight: 600;
         color: var(--text-dark);
-        padding: 0 14px;
+        padding: 0 2.25rem 0 14px; /* espaço à direita para a seta */
         height: 42px;
         border-radius: 12px;
         box-shadow:
@@ -467,12 +484,18 @@
         display: flex;
         flex-direction: column;
         gap: 10px;
-        width: min(100%, 1080px);
-        margin: 0 auto;
+        width: 100%;
+        max-height: min(70vh, 760px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 6px 8px 10px 6px;
+        scrollbar-gutter: stable;
+        margin: 0;
     }
 
     .agendamento-item {
         display: flex;
+        flex-shrink: 0;
         align-items: stretch;
         gap: 0;
         background: var(--neu-bg);
@@ -491,6 +514,19 @@
             -3px -3px 6px var(--neu-shadow-light);
     }
 
+    .agendamento-item.passado {
+        background: var(--disabled);
+        box-shadow:
+            inset 5px 5px 10px var(--neu-shadow-dark),
+            inset -5px -5px 10px var(--neu-shadow-light);
+    }
+
+    .agendamento-item.passado:hover {
+        box-shadow:
+            inset 4px 4px 8px var(--neu-shadow-dark),
+            inset -4px -4px 8px var(--neu-shadow-light);
+    }
+
     .agendamento-faixa {
         width: 4px;
         background: var(--primary);
@@ -500,62 +536,75 @@
     .agendamento-body {
         display: flex;
         flex-direction: column;
-        gap: 6px;
-        padding: 14px 16px;
+        gap: 8px;
+        padding: 12px 14px;
         flex: 1;
+        min-width: 0;
     }
 
     .agendamento-data-hora {
         display: flex;
         align-items: center;
-        gap: 6px;
-        font-size: 0.8rem;
+        gap: 10px;
+        font-size: 1rem;
         font-weight: 700;
         color: var(--primary-dark);
     }
 
     .agendamento-data-hora .material-symbols-outlined {
-        font-size: 16px;
+        font-size: 20px;
     }
 
     .agendamento-sala {
         display: flex;
         align-items: center;
-        gap: 6px;
-        font-size: 0.82rem;
+        gap: 10px;
+        font-size: 0.95rem;
         color: var(--text-dark);
         font-weight: 500;
     }
 
     .agendamento-sala .material-symbols-outlined {
-        font-size: 15px;
+        font-size: 19px;
         color: var(--text-muted);
     }
 
     .agendamento-obs {
-        font-size: 0.75rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 7px;
+        font-size: 0.9rem;
         color: var(--text-muted);
-        font-style: italic;
+        font-style: normal;
+        line-height: 1.45;
         margin: 2px 0 0;
     }
 
-    .agendamento-status {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 0 16px;
+    .agendamento-obs .material-symbols-outlined {
+        flex: 0 0 auto;
+        font-size: 19px;
+        color: var(--text-muted);
     }
 
-    .badge-status {
-        font-size: 0.65rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        padding: 4px 10px;
-        border-radius: 20px;
-        box-shadow:
-            2px 2px 4px var(--neu-shadow-dark),
-            -2px -2px 4px var(--neu-shadow-light);
+    .agendamento-item .agendamento-botoes {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        align-self: center;
+        gap: 8px;
+        flex-shrink: 0;
+        margin-right: 12px;
+    }
+
+    .agendamento-body .badge-status {
+        position: static !important;
+        display: inline-flex;
+        float: none;
+        margin: 0;
+        align-self: flex-start;
+        width: fit-content;
+        font-size: 0.9rem;
     }
 
     .badge-status.futuro {
@@ -564,8 +613,11 @@
     }
 
     .badge-status.passado {
-        background: var(--gray-50);
+        background: none;
         color: var(--text-muted);
+        border-radius: 0;
+        padding: 0;
+        box-shadow: none;
     }
 
     .btn-deletar-ag,
@@ -573,8 +625,10 @@
         background: var(--neu-bg);
         border: none;
         cursor: pointer;
-        padding: 6px;
-        margin: 4px 0 0;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        margin: 0;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -588,19 +642,19 @@
     }
 
     .btn-deletar-ag {
-        color: #ef4444;
+        color: var(--cancel);
     }
 
     .btn-deletar-ag:hover {
-        color: #b91c1c;
+        color: var(--cancel-dark);
     }
 
     .btn-info-ag {
-        color: #64748b;
+        color: var(--text-muted);
     }
 
     .btn-info-ag:hover {
-        color: #2563eb;
+        color: var(--focus);
     }
 
     .btn-deletar-ag:active,
@@ -632,34 +686,38 @@
             flex-wrap: wrap;
         }
 
-        .agendamento-status {
+        .agendamentos-lista {
+            max-height: 60vh;
+        }
+
+        .agendamento-botoes {
             padding: 0 16px 12px;
         }
     }
     .agendamento-item.cancelado {
-        background: #fee2e2;
+        background: var(--cancel-light);
         box-shadow:
-            5px 5px 10px rgba(185, 28, 28, 0.18),
+            5px 5px 10px color-mix(in srgb, var(--cancel-dark) 18%, transparent),
             -5px -5px 10px var(--neu-shadow-light);
     }
 
     .agendamento-item.cancelado:hover {
         box-shadow:
-            3px 3px 6px rgba(185, 28, 28, 0.18),
+            3px 3px 6px color-mix(in srgb, var(--cancel-dark) 18%, transparent),
             -3px -3px 6px var(--neu-shadow-light);
     }
 
     .agendamento-item.cancelado .agendamento-faixa {
-        background: #ef4444;
+        background: var(--cancel);
     }
 
     .agendamento-item.cancelado .agendamento-data-hora {
-        color: #b91c1c;
+        color: var(--cancel-dark);
     }
 
     .badge-status.cancelado {
-        background: #fee2e2;
-        color: #b91c1c;
+        background: var(--cancel-light);
+        color: var(--cancel-dark);
     }
 
     .agendamento-justificativa {
@@ -667,12 +725,12 @@
         align-items: center;
         gap: 6px;
         margin: 2px 0 0;
-        font-size: 0.75rem;
-        color: #b91c1c;
+        font-size: 0.9rem;
+        color: var(--cancel-dark);
     }
 
     .agendamento-justificativa .material-symbols-outlined {
-        font-size: 15px;
-        color: #b91c1c;
+        font-size: 19px;
+        color: var(--cancel-dark);
     }
 </style>

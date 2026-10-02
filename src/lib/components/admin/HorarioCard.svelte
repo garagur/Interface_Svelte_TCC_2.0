@@ -14,20 +14,9 @@
     export let sucesso = "";
     export let onAdicionar;
     export let onRemover;
-    export let onSair;
 </script>
 
 <div class="scaffold">
-    <header class="app-bar">
-        <div class="title-section">
-            <h1>Portal de Agendamento</h1>
-            <span>Grade de Horários</span>
-        </div>
-        <button class="btn-icon" on:click={onSair} title="Voltar">
-            <span class="material-symbols-outlined">arrow_back</span>
-        </button>
-    </header>
-
     <main class="horario-content">
         <div class="card turma-select-card">
             <label for="turma">Turma</label>
@@ -119,12 +108,6 @@
 
         {#if turma_id}
             <div class="card grade-card">
-                <h3>
-                    <span class="material-symbols-outlined">calendar_month</span
-                    >
-                    Grade Semanal
-                </h3>
-
                 <GradeSemanal
                     {dias}
                     {blocos}

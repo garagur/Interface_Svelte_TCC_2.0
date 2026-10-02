@@ -1,12 +1,12 @@
 <script>
     //cadastro de salas, usado em src/routes/admin/cadastro-sala/+page.svelte
     import { onMount } from "svelte";
+    import { goto } from "$app/navigation";
     import CadastroCard from "$lib/components/admin/CadastroCard.svelte";
     import { cadastrarSala } from "$lib/services/SalaServices/Create_Sala_Service.js";
     import { carregarSalas } from "$lib/services/SalaServices/List_Sala_Service.js";
     import { atualizarSalas } from "$lib/services/SalaServices/Update_Sala_Service.js";
     import { carregarUsuarios } from "$lib/services/UserServices/List_User_Service.js";
-    import { goto } from "$app/navigation";
 
     const FOTO_TIPOS = ["image/jpeg", "image/png", "image/webp"];
     const FOTO_MAX_BYTES = 2 * 1024 * 1024;
@@ -202,9 +202,6 @@
 </script>
 
 <CadastroCard
-    titulo="Portal de Agendamento"
-    subtitulo="Cadastro de Salas"
-    onSair={() => goto("/main")}
     onSubmit={salvarSala}
     onCancelar={resetForm}
     {editando}

@@ -1,7 +1,5 @@
 import "../../../../chunks/internal.js";
 import { T as escape_html, i as ensure_array_like, it as invalid_default_snippet, lt as fallback, n as bind_props, w as attr } from "../../../../chunks/server.js";
-import { t as goto } from "../../../../chunks/client.js";
-import "../../../../chunks/navigation.js";
 import { t as apiFetch } from "../../../../chunks/api.js";
 import "../../../../chunks/List_User_Service.js";
 import { a as BlocoHorarioCard, i as HORARIO_ROUTES, o as GradeSemanal, t as carregarHorarios } from "../../../../chunks/List_Horario_Service.js";
@@ -23,8 +21,7 @@ function HorarioCard($$renderer, $$props) {
 		let sucesso = fallback($$props["sucesso"], "");
 		let onAdicionar = $$props["onAdicionar"];
 		let onRemover = $$props["onRemover"];
-		let onSair = $$props["onSair"];
-		$$renderer.push(`<div class="scaffold"><header class="app-bar"><div class="title-section"><h1>Portal de Agendamento</h1> <span>Grade de Horários</span></div> <button class="btn-icon" title="Voltar"><span class="material-symbols-outlined">arrow_back</span></button></header> <main class="horario-content"><div class="card turma-select-card"><label for="turma">Turma</label> `);
+		$$renderer.push(`<div class="scaffold"><main class="horario-content"><div class="card turma-select-card"><label for="turma">Turma</label> `);
 		$$renderer.select({
 			id: "turma",
 			value: turma_id
@@ -106,7 +103,7 @@ function HorarioCard($$renderer, $$props) {
 		$$renderer.push(`<!--]--> <button class="btn-primary"${attr("disabled", carregando, true)}><span class="material-symbols-outlined">add</span> ${escape_html(carregando ? "Adicionando..." : "Adicionar")}</button></div> `);
 		if (turma_id) {
 			$$renderer.push("<!--[0-->");
-			$$renderer.push(`<div class="card grade-card"><h3><span class="material-symbols-outlined">calendar_month</span> Grade Semanal</h3> `);
+			$$renderer.push(`<div class="card grade-card">`);
 			GradeSemanal($$renderer, {
 				dias,
 				blocos,
@@ -139,8 +136,7 @@ function HorarioCard($$renderer, $$props) {
 			erro,
 			sucesso,
 			onAdicionar,
-			onRemover,
-			onSair
+			onRemover
 		});
 	});
 }
@@ -323,7 +319,6 @@ function _page($$renderer, $$props) {
 				sucesso,
 				onAdicionar: adicionarBloco,
 				onRemover: removerBloco,
-				onSair: () => goto("/main"),
 				get turma_id() {
 					return turma_id;
 				},

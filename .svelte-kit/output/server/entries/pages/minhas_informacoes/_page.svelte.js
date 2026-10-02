@@ -175,6 +175,8 @@ function _page($$renderer, $$props) {
 			carregandoBlocos,
 			carregandoAgendamentos,
 			erro,
+			usuarioId: professor_id,
+			cargo: usuario?.cargo || "",
 			onSair: () => goto("/main"),
 			onDeletar: deletar,
 			onSalvarPerfil: salvarPerfil

@@ -71,8 +71,11 @@ body {
     width: 100%;
     height: auto;
     min-height: 100vh;
-    overflow-x: hidden;
-    overflow-y: auto;
+}
+
+html {
+    overflow-x: clip;
+    /* evita scroll horizontal sem criar contêiner de rolagem */
 }
 
 @media (max-width: 768px) {
@@ -176,6 +179,41 @@ select:focus {
     transition: background 0.2s;
 }
 
+.btn-icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: none;
+    border-radius: 14px;
+    color: var(--white);
+    cursor: pointer;
+    background: var(--primary);
+    /* elevado: sombra escura embaixo/direita, clara em cima/esquerda */
+    box-shadow: 5px 5px 10px var(--shadow-dark-strong),
+        -4px -4px 8px var(--shadow-light-soft);
+    transition: box-shadow 0.2s, transform 0.1s;
+}
+
+.btn-icon:hover {
+    background: var(--primary);
+    box-shadow: 3px 3px 6px var(--shadow-dark-strong),
+        -2px -2px 5px var(--shadow-light-soft);
+}
+
+/* pressionado: efeito rebaixado */
+.btn-icon:active {
+    box-shadow: inset 3px 3px 6px var(--shadow-dark-strong),
+        inset -3px -3px 6px var(--shadow-light-soft);
+    transform: translateY(1px);
+}
+
+.btn-icon:hover:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+}
+
 .btn-primary:hover {
     background-color: var(--confirm-dark);
 }
@@ -256,4 +294,238 @@ select:focus {
     max-width: 250px;
     background-color: var(--confirm) !important;
     border-radius: 10px;
+}
+
+.cabecalho-global {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    width: 100%;
+    min-height: 88px;
+    padding: 12px 24px;
+    background: var(--primary);
+    color: var(--text-light);
+    font-family: "Inter", Arial, sans-serif;
+    box-shadow: 0 3px 12px var(--shadow-dark-medium);
+}
+
+.cabecalho-global-identidade {
+    display: flex;
+    flex: 1 1 240px;
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+
+.cabecalho-global-identidade h1 {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.25;
+}
+
+.cabecalho-global-identidade>span {
+    font-size: 12px;
+    line-height: 1.35;
+    opacity: 0.92;
+}
+
+.cabecalho-global-identidade .cabecalho-global-usuario {
+    font-size: 11px;
+    opacity: 0.82;
+}
+
+.cabecalho-global-navegacao {
+    display: flex;
+    flex: 0 1 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.cabecalho-global-navegacao.administrador {
+    gap: 8px;
+}
+
+.cabecalho-global-link {
+    display: flex;
+    width: 112px;
+    min-height: 64px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--primary);
+    color: var(--white);
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    box-shadow:
+        5px 5px 10px var(--shadow-dark-medium),
+        -4px -4px 9px var(--overlay-light);
+    transition:
+        background 0.18s ease,
+        box-shadow 0.18s ease,
+        transform 0.18s ease;
+}
+
+.cabecalho-global-link .material-symbols-outlined {
+    font-size: 22px;
+}
+
+.cabecalho-global-link:hover {
+    background: var(--primary);
+    box-shadow:
+        3px 3px 6px var(--shadow-dark-medium),
+        -2px -2px 5px var(--overlay-light);
+}
+
+.cabecalho-global-link.ativo {
+    background: var(--confirm);
+    box-shadow:
+        inset 4px 4px 8px var(--shadow-dark-medium),
+        inset -3px -3px 7px var(--overlay-light);
+    transform: translateY(1px);
+}
+
+.cabecalho-global-navegacao.administrador .cabecalho-global-link {
+    width: 90px;
+    font-size: 11px;
+}
+
+.cabecalho-global-acoes {
+    display: flex;
+    flex: 1 1 120px;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.cabecalho-global-icone {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 14px;
+    background: var(--primary);
+    color: var(--text-light);
+    cursor: pointer;
+    box-shadow:
+        5px 5px 10px var(--shadow-dark-strong),
+        -4px -4px 8px var(--shadow-light-soft);
+    transition: box-shadow 0.18s ease;
+}
+
+.cabecalho-global-icone:hover,
+.cabecalho-global-icone[aria-expanded="true"] {
+    box-shadow:
+        inset 3px 3px 6px var(--shadow-dark-strong),
+        inset -3px -3px 6px var(--shadow-light-soft);
+}
+
+.cabecalho-global-icone .material-symbols-outlined {
+    font-size: 25px;
+}
+
+.cabecalho-global-conta {
+    position: relative;
+}
+
+.cabecalho-global-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: min(280px, calc(100vw - 24px));
+    max-height: min(70vh, 520px);
+    overflow-y: auto;
+    margin: 0;
+    padding: 8px;
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--text-dark);
+    list-style: none;
+    box-shadow: 0 10px 28px var(--shadow-dark);
+}
+
+.cabecalho-global-menu li button {
+    display: flex;
+    width: 100%;
+    min-height: 40px;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.88rem;
+    text-align: left;
+}
+
+.cabecalho-global-menu li button:hover {
+    background: color-mix(in srgb, var(--text-muted) 12%, transparent);
+}
+
+.cabecalho-global-menu .material-symbols-outlined {
+    font-size: 19px;
+    color: var(--text-muted);
+}
+
+.cabecalho-global-menu .cabecalho-global-separador {
+    height: 1px;
+    margin: 5px 4px;
+    background: color-mix(in srgb, var(--text-muted) 24%, transparent);
+}
+
+.cabecalho-global-menu li button.cabecalho-global-sair,
+.cabecalho-global-menu li button.cabecalho-global-sair .material-symbols-outlined {
+    color: var(--cancel-dark);
+}
+
+@media (max-width: 1150px) {
+    .cabecalho-global {
+        flex-wrap: wrap;
+        gap: 12px 16px;
+        padding: 12px 16px;
+    }
+
+    .cabecalho-global-identidade {
+        flex-basis: 0;
+    }
+
+    .cabecalho-global-acoes {
+        flex: 0 0 auto;
+    }
+
+    .cabecalho-global-navegacao {
+        order: 3;
+        flex: 1 0 100%;
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding: 4px 2px 8px;
+        scrollbar-width: thin;
+    }
+}
+
+@media (max-width: 420px) {
+    .cabecalho-global-link {
+        width: 100px;
+        min-height: 58px;
+        font-size: 11px;
+    }
+
+    .cabecalho-global-identidade h1 {
+        font-size: 16px;
+    }
 }

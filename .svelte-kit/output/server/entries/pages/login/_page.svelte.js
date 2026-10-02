@@ -162,7 +162,11 @@ function _page($$renderer, $$props) {
 				$$renderer.push(`<style>
     body {
       margin: 0;
-      background: linear-gradient(135deg, #585858 0%, #1f1f1f 100%);
+      background: linear-gradient(
+        135deg,
+        var(--primary) 0%,
+        var(--primary-dark) 100%
+      );
       background-attachment: fixed;
       min-height: 100vh;
     }

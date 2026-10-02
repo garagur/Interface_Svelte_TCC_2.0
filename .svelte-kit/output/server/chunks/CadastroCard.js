@@ -4,9 +4,6 @@ function CadastroCard($$renderer, $$props) {
 	const $$slots = sanitize_slots($$props);
 	$$renderer.component(($$renderer) => {
 		let temFotoSlot;
-		let titulo = fallback($$props["titulo"], "");
-		let subtitulo = fallback($$props["subtitulo"], "");
-		let onSair = $$props["onSair"];
 		let campos = fallback($$props["campos"], () => [], true);
 		let temToggle = fallback($$props["temToggle"], false);
 		let toggleValue = fallback($$props["toggleValue"], true);
@@ -43,7 +40,7 @@ function CadastroCard($$renderer, $$props) {
 				mostrarFormulario = false;
 			}, 900);
 		}
-		$$renderer.push(`<div class="scaffold"><header class="app-bar"><div class="title-section"><h1>${escape_html(titulo)}</h1> <span>${escape_html(subtitulo)}</span></div> <div class="actions-section"><button class="btn-icon" title="Voltar para a Home"><span class="material-symbols-outlined">arrow_back</span></button></div></header> <main class="body-content"><div class="card table-card table-card-full"><div class="table-header-title"><div class="title-left"><span class="material-symbols-outlined text-blue">${escape_html(iconeTabela)}</span> <h3>${escape_html(tituloTabela)}</h3></div> <div class="badge">${escape_html(totalRegistros)} registros</div></div> `);
+		$$renderer.push(`<div class="scaffold"><main class="body-content"><div class="card table-card table-card-full"><div class="table-header-title"><div class="title-left"><span class="material-symbols-outlined text-blue">${escape_html(iconeTabela)}</span> <h3>${escape_html(tituloTabela)}</h3></div> <div class="badge">${escape_html(totalRegistros)} registros</div></div> `);
 		if (mostrarPesquisa) {
 			$$renderer.push("<!--[0-->");
 			$$renderer.push(`<div class="table-toolbar"><div class="campo-pesquisa"><span class="material-symbols-outlined">search</span> <input type="text"${attr("placeholder", placeholderPesquisa)}${attr("value", pesquisa)}/></div> `);
@@ -113,9 +110,6 @@ function CadastroCard($$renderer, $$props) {
 		} else $$renderer.push("<!--[-1-->");
 		$$renderer.push(`<!--]--></div>`);
 		bind_props($$props, {
-			titulo,
-			subtitulo,
-			onSair,
 			campos,
 			temToggle,
 			toggleValue,

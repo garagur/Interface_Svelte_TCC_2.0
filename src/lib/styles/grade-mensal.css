@@ -2,6 +2,122 @@
     background: transparent;
 }
 
+.grade-mensal .grade-toolbar {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.grade-mensal .grade-periodo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 40px;
+    color: var(--text-dark);
+    text-transform: capitalize;
+}
+
+.grade-mensal .btn-mes {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    background: var(--white);
+    color: var(--primary-dark);
+    cursor: pointer;
+    box-shadow:
+        3px 3px 6px var(--shadow-dark-soft),
+        -3px -3px 6px var(--shadow-light-medium);
+}
+
+.grade-mensal .btn-mes:hover {
+    background: var(--confirm-light);
+    color: var(--confirm-dark);
+}
+
+.grade-mensal .grade-filtros {
+    display: flex;
+    flex: 1 1 600px;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.grade-mensal .grade-pesquisa {
+    display: flex;
+    flex: 1 1 220px;
+    min-width: 180px;
+    height: 40px;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+    border-radius: 10px;
+    background: var(--bg-input);
+    color: var(--text-muted);
+    box-shadow:
+        inset 2px 2px 4px var(--neu-shadow-dark),
+        inset -2px -2px 4px var(--neu-shadow-light);
+}
+
+.grade-mensal .grade-pesquisa .material-symbols-outlined {
+    font-size: 18px;
+}
+
+.grade-mensal .grade-pesquisa input {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--text-dark);
+    box-shadow: none;
+}
+
+.grade-mensal .grade-filtro {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    color: var(--text-muted);
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.grade-mensal .grade-filtro select {
+    width: auto;
+    min-width: 112px;
+    height: 40px;
+    margin: 0;
+    padding: 0 2rem 0 12px;
+    border: 0;
+    border-radius: 10px;
+    background-color: var(--bg-input);
+    color: var(--text-dark);
+    font-size: 0.82rem;
+    text-transform: none;
+    box-shadow:
+        inset 2px 2px 4px var(--neu-shadow-dark),
+        inset -2px -2px 4px var(--neu-shadow-light);
+}
+
+.grade-mensal .grade-sem-resultados {
+    margin: 0 0 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: var(--warning-light);
+    color: var(--warning-text);
+    font-size: 0.85rem;
+}
+
 .grade-mensal .grade-wrapper {
     flex: 1;
     overflow-y: auto;
@@ -67,9 +183,9 @@
     flex-direction: column;
     gap: 3px;
     position: relative;
-    height: 160px;
-    min-height: 160px;
-    max-height: 160px;
+    height: 190px;
+    min-height: 190px;
+    max-height: 190px;
     overflow: hidden;
     flex: 1 1 0;
     box-sizing: border-box;
@@ -119,6 +235,13 @@
     font-size: 10px;
 }
 
+.grade-mensal .dia-expandir-slot {
+    display: flex;
+    flex: 0 0 27px;
+    align-items: center;
+    width: 100%;
+}
+
 .grade-mensal .dia-conteudo {
     display: flex;
     flex-direction: column;
@@ -128,13 +251,27 @@
     overflow-y: hidden;
 }
 
+.grade-mensal .dia-conteudo:not(.expandido) .ag-bloco {
+    display: flex;
+    flex: 1 1 0;
+    min-height: 0;
+}
+
+.grade-mensal .dia-conteudo:not(.expandido) .ag-bloco :global(.ag-bloco-inner) {
+    height: 100%;
+}
+
+.grade-mensal .dia-conteudo.expandido .ag-bloco {
+    flex: 0 0 auto;
+}
+
 .grade-mensal .dia-conteudo.com-scroll {
     overflow-y: auto;
 }
 
 .grade-mensal .dia-celula.expandido .dia-conteudo {
     position: absolute;
-    top: 24px;
+    top: 50px;
     left: 0;
     right: 0;
     background: var(--white);
@@ -149,11 +286,12 @@
 
 .grade-mensal .dia-celula.expandido .btn-expandir {
     position: relative;
-    width: auto;
-    margin-top: 0;
+    width: 100%;
+    margin: 0;
     flex-shrink: 0;
     z-index: 32;
     background: var(--gray-50);
+    color: var(--primary-dark);
     border: 1px solid var(--primary-light);
     box-shadow: none;
 }
@@ -177,24 +315,69 @@
 }
 
 .grade-mensal .btn-expandir {
-    background: var(--gray-50);
-    border: 1px solid var(--primary-light);
-    color: var(--primary-dark);
-    border-radius: 6px;
+    gap: 3px;
+    width: 100%;
+    min-height: 25px;
+    background: var(--confirm);
+    border: 1px solid var(--confirm-dark);
+    color: var(--white);
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2px;
+    padding: 3px 6px;
     cursor: pointer;
-    margin-top: auto;
+    margin: 0;
     flex-shrink: 0;
+    font-size: 0.66rem;
+    font-weight: 700;
+    box-shadow:
+        2px 2px 5px var(--shadow-dark-soft),
+        -2px -2px 5px var(--shadow-light-medium);
+    transition:
+        background 0.15s ease,
+        box-shadow 0.15s ease;
 }
 
 .grade-mensal .btn-expandir:hover {
-    background: var(--primary-light);
+    background: var(--confirm-dark);
     color: var(--white);
+}
+
+.grade-mensal .btn-expandir.aberto {
+    background: var(--white);
+    border-color: var(--primary-light);
+    color: var(--primary-dark);
+    box-shadow: inset 2px 2px 4px var(--shadow-dark-soft);
 }
 
 .grade-mensal .btn-expandir .material-symbols-outlined {
     font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    .grade-mensal .grade-toolbar {
+        align-items: stretch;
+    }
+
+    .grade-mensal .grade-periodo {
+        justify-content: space-between;
+    }
+
+    .grade-mensal .grade-filtros {
+        flex-basis: 100%;
+        justify-content: stretch;
+    }
+
+    .grade-mensal .grade-pesquisa {
+        flex-basis: 100%;
+    }
+
+    .grade-mensal .grade-filtro {
+        flex: 1 1 120px;
+    }
+
+    .grade-mensal .grade-filtro select {
+        width: 100%;
+    }
 }

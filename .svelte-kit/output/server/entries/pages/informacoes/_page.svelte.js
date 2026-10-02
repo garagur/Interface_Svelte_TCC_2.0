@@ -2,6 +2,7 @@ import "../../../chunks/internal.js";
 import { d as unsubscribe_stores } from "../../../chunks/server.js";
 import { t as goto } from "../../../chunks/client.js";
 import "../../../chunks/navigation.js";
+import "../../../chunks/CabecalhoGlobal.js";
 import { t as carregarEquipamentos } from "../../../chunks/List_Equipamento_Service.js";
 import { t as carregarUsuarios } from "../../../chunks/List_User_Service.js";
 import { n as carregarHorariosProfessor, r as carregarHorariosSala } from "../../../chunks/List_Horario_Service.js";
@@ -9,7 +10,6 @@ import { t as carregarSalas } from "../../../chunks/List_Sala_Service.js";
 import { a as deletarAgendamentoSala, n as carregarAgendamentosSalas, r as deletarAgendamentoEquipamento, t as carregarAgendamentosEquipamentos } from "../../../chunks/List_Agendamento_Equipamento_Service.js";
 import { t as InformacoesCard } from "../../../chunks/InformacoesCard.js";
 import { t as buscarUsuario } from "../../../chunks/Buscar_Usuario_Service.js";
-//#endregion
 //#region src/routes/informacoes/+page.svelte
 function _page($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {

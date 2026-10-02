@@ -2,8 +2,8 @@
     //mainCard
     import { goto } from "$app/navigation";
     import { onMount } from "svelte";
-    import { tick } from "svelte";
     import CalendarioAgendamentos from "$lib/components/Grades/GradeMensal.svelte";
+    import CabecalhoGlobal from "$lib/components/main/CabecalhoGlobal.svelte";
     import AgendamentoBloco from "$lib/components/Card/BlocoAgendamentoCard.svelte";
     import ConfirmarDelecaoModal from "$lib/components/Card/ConfirmarDelecaoModal.svelte";
     import { deletarAgendamentoSala } from "$lib/services/AgendamentoServices/AgendamentoSala/Deleted_Agendamento_Sala_Service.js";
@@ -25,7 +25,6 @@
     let usuarioId = null;
     let agendamentoParaDeletar = null;
     let cancelandoId = null; // ex: "sala-12" ou "equipamento-7" — null quando nada está em andamento
-    let mostrarMenuUsuario = false;
 
     function trocarVisao(novaVisao) {
         visao = novaVisao;
@@ -63,8 +62,14 @@
                     ag.justificativa || "",
                 );
             }
-            agendamentos = agendamentos.filter(
-                (a) => a.id !== ag.id || a.tipo !== ag.tipo,
+            agendamentos = agendamentos.map((a) =>
+                a.id === ag.id && a.tipo === ag.tipo
+                    ? {
+                          ...a,
+                          status: "inativo",
+                          justificativa: ag.justificativa || "",
+                      }
+                    : a,
             );
             agendamentoParaDeletar = null;
         } catch (e) {
@@ -74,29 +79,7 @@
         }
     }
 
-    function alternarMenuUsuario() {
-        mostrarMenuUsuario = !mostrarMenuUsuario;
-    }
-
-    function fecharMenuUsuario(event) {
-        if (event?.target?.closest?.(".user-menu")) return;
-        mostrarMenuUsuario = false;
-    }
-
-    async function irPara(rota) {
-        fecharMenuUsuario();
-        const [caminho, hash] = rota.split("#");
-        await goto(hash ? `${caminho}#${hash}` : caminho);
-        await tick();
-
-        if (hash) {
-            const destino = document.getElementById(hash);
-            destino?.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-    }
-
     function sair() {
-        fecharMenuUsuario();
         onSair();
     }
 
@@ -111,8 +94,6 @@
     $: totalRegistros = agendamentosVisiveis.length;
 </script>
 
-<svelte:window on:click={fecharMenuUsuario} />
-
 <ConfirmarDelecaoModal
     agendamento={agendamentoParaDeletar}
     onConfirmar={confirmarDeletar}
@@ -121,151 +102,7 @@
 />
 
 <div class="scaffold">
-    <header class="app-bar">
-        <div class="title-section">
-            <h1>{titulo}</h1>
-            <span>{nome} | Matrícula: {matricula}</span>
-        </div>
-
-        <nav class="nav-menu">
-            {#if cargo === "admin"}
-                <button
-                    type="button"
-                    class="menu-card"
-                    title="Gerenciar salas"
-                    aria-label="Gerenciar salas"
-                    on:click={() => goto("/admin/cadastro-sala")}
-                >
-                    <span class="material-symbols-outlined">meeting_room</span>
-                    <span>Gerenciar<br />Salas</span>
-                </button>
-                <button
-                    type="button"
-                    class="menu-card"
-                    title="Gerenciar turmas"
-                    aria-label="Gerenciar turmas"
-                    on:click={() => goto("/admin/cadastro-turma")}
-                >
-                    <span class="material-symbols-outlined">groups</span>
-                    <span>Gerenciar<br />Turmas</span>
-                </button>
-                <button
-                    type="button"
-                    class="menu-card"
-                    title="Gerenciar horários"
-                    aria-label="Gerenciar horários"
-                    on:click={() => goto("/admin/cadastro-horario")}
-                >
-                    <span class="material-symbols-outlined">calendar_month</span
-                    >
-                    <span>Gerenciar<br />Horários</span>
-                </button>
-                <button
-                    type="button"
-                    class="menu-card"
-                    title="Gerenciar equipamentos"
-                    aria-label="Gerenciar equipamentos"
-                    on:click={() => goto("/admin/cadastro-equipamento")}
-                >
-                    <span class="material-symbols-outlined">playlist_add</span>
-                    <span>Gerenciar<br />Equipamentos</span>
-                </button>
-                <button
-                    type="button"
-                    class="menu-card"
-                    title="Gerenciar usuários"
-                    aria-label="Gerenciar usuários"
-                    on:click={() => goto("/admin/cadastro-usuario")}
-                >
-                    <span class="material-symbols-outlined">person_add</span>
-                    <span>Gerenciar<br />Usuários</span>
-                </button>
-            {/if}
-        </nav>
-
-        <div class="actions-section">
-            <div class="user-menu">
-                <button
-                    class="btn-icon"
-                    on:click={alternarMenuUsuario}
-                    title="Minha conta"
-                    aria-haspopup="true"
-                    aria-expanded={mostrarMenuUsuario}
-                >
-                    <span class="material-symbols-outlined">account_circle</span
-                    >
-                </button>
-
-                {#if mostrarMenuUsuario}
-                    <ul class="user-menu-dropdown" role="menu">
-                        <li role="none">
-                            <button
-                                role="menuitem"
-                                on:click={() =>
-                                    irPara("/minhas_informacoes#dados")}
-                            >
-                                <span class="material-symbols-outlined"
-                                    >person</span
-                                >
-                                Meus Dados
-                            </button>
-                        </li>
-                        <li role="none">
-                            <button
-                                role="menuitem"
-                                on:click={() =>
-                                    irPara("/minhas_informacoes#estatisticas")}
-                            >
-                                <span class="material-symbols-outlined"
-                                    >query_stats</span
-                                >
-                                Minhas Estatísticas
-                            </button>
-                        </li>
-                        <li role="none">
-                            <button
-                                role="menuitem"
-                                on:click={() =>
-                                    irPara("/minhas_informacoes#agendamentos")}
-                            >
-                                <span class="material-symbols-outlined"
-                                    >event_available</span
-                                >
-                                Meus Agendamentos
-                            </button>
-                        </li>
-                        {#if cargo === "educador"}
-                            <li role="none">
-                                <button
-                                    role="menuitem"
-                                    on:click={() =>
-                                        irPara("/minhas_informacoes#grade")}
-                                >
-                                    <span class="material-symbols-outlined"
-                                        >calendar_month</span
-                                    >
-                                    Minha Grade de Aulas
-                                </button>
-                            </li>
-                        {/if}
-                        <li class="user-menu-separador" role="none"></li>
-                        <li role="none">
-                            <button
-                                role="menuitem"
-                                class="user-menu-sair"
-                                on:click={sair}
-                            >
-                                <span class="material-symbols-outlined"
-                                    >logout</span
-                                >
-                                Sair
-                            </button>
-                        </li>
-                    </ul>
-                {/if}
-            </div>
-        </div>
-    </header>
+    <CabecalhoGlobal {titulo} {nome} {matricula} {cargo} onLogout={sair} />
 
     <main class="body-content">
         <div class="grade-header-title">
@@ -273,7 +110,7 @@
                 <span class="material-symbols-outlined text-primary"
                     >calendar_month</span
                 >
-                <h2>Agendamentos — próximos 60 dias</h2>
+                <h2>Agendamentos</h2>
             </div>
 
             <div
@@ -354,8 +191,8 @@
 
 <style>
     .msg-erro {
-        color: var(--cancel-dark, #b3261e);
-        background: rgba(217, 45, 32, 0.08);
+        color: var(--cancel-dark);
+        background: color-mix(in srgb, var(--cancel) 8%, transparent);
         border-radius: 10px;
         padding: 10px 14px;
         font-family: "Inter", Arial, sans-serif;

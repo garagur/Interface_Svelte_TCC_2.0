@@ -48,9 +48,7 @@
 
 <style>
     .bloco-card {
-        --neu-bg: #e6e9ef;
-        --neu-shadow-dark: rgba(163, 177, 198, 0.55);
-        --neu-shadow-light: rgba(255, 255, 255, 0.85);
+        --neu-bg: var(--surface);
 
         background: var(--neu-bg);
         border: none;
@@ -78,12 +76,12 @@
     .bloco-horario {
         font-weight: 700;
         font-size: 0.8rem;
-        color: #334155;
+        color: var(--text-dark);
     }
 
     .bloco-disciplina {
         font-weight: 600;
-        color: #1e293b;
+        color: var(--text-dark);
     }
 
     .bloco-sala,
@@ -92,7 +90,7 @@
         display: flex;
         align-items: center;
         gap: 0.3rem;
-        color: #64748b;
+        color: var(--text-muted);
         font-size: 0.78rem;
     }
 
@@ -110,7 +108,7 @@
         background: var(--neu-bg);
         border: none;
         cursor: pointer;
-        color: #ef4444;
+        color: var(--cancel);
         width: 28px;
         height: 28px;
         border-radius: 50%;
@@ -130,7 +128,7 @@
     }
 
     .btn-action.delete:hover {
-        color: #b91c1c;
+        color: var(--cancel-dark);
         box-shadow:
             1px 1px 3px var(--neu-shadow-dark),
             -1px -1px 3px var(--neu-shadow-light);

@@ -7,7 +7,6 @@
     import { carregarTurmas } from "$lib/services/TurmaServices/List_Turma_Service.js";
     import { carregarSalas } from "$lib/services/SalaServices/List_Sala_Service.js";
     import { carregarUsuarios } from "$lib/services/UserServices/List_User_Service.js";
-    import { goto } from "$app/navigation";
 
     let token = "";
     let turmas = [];
@@ -175,5 +174,4 @@
     {sucesso}
     onAdicionar={adicionarBloco}
     onRemover={removerBloco}
-    onSair={() => goto("/main")}
 />

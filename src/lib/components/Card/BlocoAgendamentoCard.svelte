@@ -26,6 +26,7 @@
         ? ag.equipamento_nome || ag.equipamento_id
         : ag.sala_nome || ag.sala_id;
     $: recursoIcone = ehEquipamento ? "devices" : "meeting_room";
+    $: agendamentoCancelado = ag.status === "inativo";
     $: agendamentoPassado = !estaNoFuturo(ag.data_hora_inicio);
 
     function estaNoFuturo(dataHora) {
@@ -46,13 +47,16 @@
         {usuarioId}
         {cargo}
         onFechar={() => (mostrarDetalhes = false)}
-        onCancelar={onDeletar && !agendamentoPassado ? cancelarPeloModal : null}
+        onCancelar={onDeletar && !agendamentoPassado && !agendamentoCancelado
+            ? cancelarPeloModal
+            : null}
     />
 {/if}
 
 <div
     class="ag-bloco-inner {proprio ? 'proprio' : 'outro'}"
     class:passado={agendamentoPassado}
+    class:cancelado={agendamentoCancelado}
 >
     <span class="ag-hora">
         {ag.data_hora_inicio?.slice(11, 16)} - {ag.data_hora_fim?.slice(11, 16)}
@@ -81,7 +85,7 @@
     {/if}
 
     <div class="ag-acoes">
-        {#if onDeletar && podeDeletar && !agendamentoPassado}
+        {#if onDeletar && podeDeletar && !agendamentoPassado && !agendamentoCancelado}
             <button
                 class="btn-ag delete"
                 on:click={() => onDeletar(ag)}
@@ -104,9 +108,7 @@
 
 <style>
     .ag-bloco-inner {
-        --neu-bg: #e6e9ef;
-        --neu-shadow-dark: rgba(163, 177, 198, 0.55);
-        --neu-shadow-light: rgba(255, 255, 255, 0.85);
+        --neu-bg: var(--surface);
 
         background: var(--neu-bg);
         border-radius: 12px;
@@ -129,29 +131,47 @@
 
     /* Diferenciação por indicação de cor lateral com tom neutro neumórfico */
     .ag-bloco-inner.proprio {
-        border-left: 4px solid #16a34a;
+        border-left: 4px solid var(--confirm);
     }
 
     .ag-bloco-inner.outro {
-        border-left: 4px solid #94a3b8;
+        border-left: 4px solid var(--disabled-text);
     }
 
     .ag-bloco-inner.passado {
-        background: #cbd0d9;
+        background: var(--disabled);
         box-shadow:
-            inset 3px 3px 6px rgba(100, 116, 139, 0.28),
-            inset -3px -3px 6px rgba(255, 255, 255, 0.55);
+            inset 3px 3px 6px
+                color-mix(in srgb, var(--text-muted) 28%, transparent),
+            inset -3px -3px 6px
+                color-mix(in srgb, var(--white) 55%, transparent);
     }
 
     .ag-bloco-inner.passado .ag-hora,
     .ag-bloco-inner.passado .ag-label {
-        color: #475569;
+        color: var(--text-muted);
+    }
+
+    .ag-bloco-inner.cancelado {
+        background: var(--cancel-light);
+        border-left-color: var(--cancel);
+        box-shadow:
+            inset 3px 3px 6px
+                color-mix(in srgb, var(--cancel-dark) 18%, transparent),
+            inset -3px -3px 6px
+                color-mix(in srgb, var(--white) 60%, transparent);
+    }
+
+    .ag-bloco-inner.cancelado .ag-hora,
+    .ag-bloco-inner.cancelado .ag-icon,
+    .ag-bloco-inner.cancelado .ag-label {
+        color: var(--cancel-dark);
     }
 
     .ag-hora {
         font-size: 0.8rem;
         font-weight: 700;
-        color: #1e293b;
+        color: var(--text-dark);
     }
 
     .ag-info {
@@ -162,13 +182,13 @@
 
     .ag-icon {
         font-size: 0.9rem;
-        color: #64748b;
+        color: var(--text-muted);
     }
 
     .ag-label {
         font-size: 0.78rem;
         font-weight: 600;
-        color: #334155;
+        color: var(--text-dark);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -178,7 +198,7 @@
         display: flex;
         justify-content: flex-end;
         gap: 0.4rem;
-        margin-top: 0.2rem;
+        margin-top: auto;
     }
 
     .btn-ag {
@@ -206,20 +226,20 @@
 
     /* Botão Delete */
     .btn-ag.delete {
-        color: #ef4444;
+        color: var(--cancel);
     }
 
     .btn-ag.delete:hover {
-        color: #b91c1c;
+        color: var(--cancel-dark);
     }
 
     /* Botão Info */
     .btn-ag.info {
-        color: #64748b;
+        color: var(--text-muted);
     }
 
     .btn-ag.info:hover {
-        color: #2563eb;
+        color: var(--focus);
     }
     .btn-ag:active {
         box-shadow:

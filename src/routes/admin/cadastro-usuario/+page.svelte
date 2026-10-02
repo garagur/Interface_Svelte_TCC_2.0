@@ -1,10 +1,10 @@
 <script>
   import { onMount } from "svelte";
+  import { goto } from "$app/navigation";
   import CadastroCard from "$lib/components/admin/CadastroCard.svelte";
   import { cadastrarUsuario } from "$lib/services/UserServices/Create_User_Service.js";
   import { carregarUsuarios } from "$lib/services/UserServices/List_User_Service.js";
   import { atualizarUsuario } from "$lib/services/UserServices/Update_User_Service.js";
-  import { goto } from "$app/navigation";
 
   let token = "";
   let matriculaLogado = "";
@@ -166,9 +166,6 @@
 </script>
 
 <CadastroCard
-  titulo="Portal de Agendamento"
-  subtitulo="Cadastro de Servidor / Usuário"
-  onSair={() => goto("/main")}
   onSubmit={salvarUsuario}
   onCancelar={resetForm}
   {editando}

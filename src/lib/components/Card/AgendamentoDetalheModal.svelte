@@ -208,9 +208,9 @@
 
 <style>
     .escopo-agendamento-modal {
-        --neu-bg: #e6e9ef;
-        --dk: rgba(163, 177, 198, 0.55);
-        --lt: rgba(255, 255, 255, 0.85);
+        --neu-bg: var(--surface);
+        --dk: var(--neu-shadow-dark);
+        --lt: var(--neu-shadow-light);
         --fora: 6px 6px 12px var(--dk), -6px -6px 12px var(--lt);
         --dentro: inset 5px 5px 10px var(--dk), inset -5px -5px 10px var(--lt);
         --dentro-sm: inset 2px 2px 4px var(--dk), inset -2px -2px 4px var(--lt);
@@ -225,7 +225,7 @@
         align-items: center;
         justify-content: center;
         padding: 1rem;
-        background: rgba(0, 0, 0, 0.45);
+        background: var(--overlay);
     }
 
     .card {
@@ -237,7 +237,7 @@
         padding: 2rem;
         border-radius: 24px;
         background: var(--neu-bg);
-        box-shadow: 8px 8px 16px rgba(12, 12, 14, 0.45);
+        box-shadow: 8px 8px 16px var(--shadow-dark-heavy);
     }
 
     /* (x) canto superior direito */
@@ -254,13 +254,13 @@
         border: none;
         border-radius: 50%;
         background: var(--neu-bg);
-        color: #64748b;
+        color: var(--text-muted);
         cursor: pointer;
         box-shadow: var(--fora);
         transition: color 0.15s;
     }
     .btn-fechar:hover {
-        color: #ef4444;
+        color: var(--cancel);
     }
     .btn-fechar:active {
         box-shadow: var(--dentro-sm);
@@ -284,7 +284,7 @@
     }
 
     .rotulo-item.cancelado {
-        color: #ef4444;
+        color: var(--cancel);
     }
     .foto {
         position: relative;
@@ -311,7 +311,7 @@
         left: 50%;
         transform: translate(-50%, -50%);
         font-size: 4.5rem;
-        color: #94a3b8;
+        color: var(--disabled-text);
     }
 
     .info {
@@ -323,8 +323,7 @@
         padding-right: 2.2rem; /* respiro para o (x) */
     }
 
-    .rotulo-item,
-    .badge-cancelado {
+    .rotulo-item {
         align-self: flex-start;
         padding: 4px 12px;
         border-radius: 999px;
@@ -332,21 +331,14 @@
         font-weight: 700;
         letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: #2563eb;
+        color: var(--focus);
         box-shadow: var(--dentro-sm);
     }
-    .badge-cancelado {
-        margin-top: auto;
-        padding: 0.5rem 1.4rem;
-        font-size: 0.8rem;
-        color: #ef4444;
-    }
-
     .nome {
         margin: 0;
         font-size: 1.35rem;
         line-height: 1.25;
-        color: #1e293b;
+        color: var(--text-dark);
         overflow-wrap: anywhere;
     }
 
@@ -361,7 +353,7 @@
         gap: 0.3rem;
         font-size: 0.78rem;
         font-weight: 600;
-        color: #64748b;
+        color: var(--text-muted);
     }
     .dt .material-symbols-outlined {
         font-size: 0.95rem;
@@ -371,7 +363,7 @@
         overflow-y: auto;
         font-size: 0.95rem;
         font-weight: 600;
-        color: #334155;
+        color: var(--text-dark);
         white-space: pre-wrap;
         overflow-wrap: anywhere;
     }
@@ -386,20 +378,20 @@
         font-family: inherit;
         font-size: 0.95rem;
         font-weight: 700;
-        color: #fff;
-        background: #ef4444;
+        color: var(--white);
+        background: var(--cancel);
         cursor: pointer;
         box-shadow: var(--fora);
         transition: background 0.15s;
     }
     .btn-cancelar:hover:not(:disabled) {
-        background: #dc2626;
+        background: var(--danger-text);
     }
     .btn-cancelar:active:not(:disabled) {
-        background: #dc2626;
+        background: var(--danger-text);
         box-shadow:
-            inset 4px 4px 8px rgba(0, 0, 0, 0.25),
-            inset -4px -4px 8px rgba(255, 255, 255, 0.2);
+            inset 4px 4px 8px var(--shadow-dark-medium),
+            inset -4px -4px 8px var(--overlay-light);
     }
     .btn-cancelar:disabled {
         opacity: 0.6;
@@ -446,7 +438,7 @@
         border: none;
         border-radius: 50%;
         background: var(--neu-bg);
-        color: #64748b;
+        color: var(--text-muted);
         cursor: pointer;
         box-shadow:
             2px 2px 4px var(--dk),
@@ -454,7 +446,7 @@
         transition: color 0.15s;
     }
     .btn-i:hover {
-        color: #2563eb;
+        color: var(--focus);
     }
     .btn-i:active {
         box-shadow: var(--dentro-sm);

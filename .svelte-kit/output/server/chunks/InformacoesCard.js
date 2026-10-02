@@ -1,11 +1,14 @@
 import { a as onDestroy } from "./internal.js";
 import { T as escape_html, i as ensure_array_like, it as invalid_default_snippet, lt as fallback, n as bind_props, t as attr_class, u as stringify, w as attr } from "./server.js";
+import { t as CabecalhoGlobal } from "./CabecalhoGlobal.js";
 import { a as BlocoHorarioCard, o as GradeSemanal } from "./List_Horario_Service.js";
 import { c as ConfirmarDelecaoModal, s as ListaAgendamentosCard } from "./List_Agendamento_Equipamento_Service.js";
 //#region src/lib/components/informacoes/InformacoesCard.svelte
 function InformacoesCard($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
 		let fotoExibida, classeForma, agendamentosComFoto, semanasHeatmap, rotulosMeses;
+		let usuarioId = fallback($$props["usuarioId"], null);
+		let cargo = fallback($$props["cargo"], "");
 		let subtitulo = fallback($$props["subtitulo"], "Detalhes do Item");
 		let tituloDados = fallback($$props["tituloDados"], "Dados");
 		let tituloEstatisticas = fallback($$props["tituloEstatisticas"], "Estatísticas");
@@ -152,7 +155,14 @@ function InformacoesCard($$renderer, $$props) {
 		$$renderer.push(`<!----> <div${attr_class("informacoes", void 0, {
 			"minhas-informacoes": !mostrarSeletor,
 			"item-informacoes": mostrarSeletor
-		})}><div class="scaffold"><header class="app-bar"><div class="title-section"><h1>Portal de Agendamento</h1> <span>${escape_html(subtitulo)}</span></div> <button class="btn-icon" title="Voltar"><span class="material-symbols-outlined">arrow_back</span></button></header> <main class="page-content">`);
+		})}><div class="scaffold">`);
+		CabecalhoGlobal($$renderer, {
+			titulo: "Portal de Agendamento",
+			subtitulo,
+			cargo,
+			onVoltar: onSair
+		});
+		$$renderer.push(`<!----> <main class="page-content">`);
 		if (erro) {
 			$$renderer.push("<!--[0-->");
 			$$renderer.push(`<p class="msg-erro">${escape_html(erro)}</p>`);
@@ -320,12 +330,16 @@ function InformacoesCard($$renderer, $$props) {
 			ListaAgendamentosCard($$renderer, {
 				agendamentos: agendamentosComFoto,
 				carregando: carregandoAgendamentos,
+				usuarioId,
+				cargo,
 				onDeletar: abrirModal
 			});
 			$$renderer.push(`<!----></div>`);
 		} else $$renderer.push("<!--[-1-->");
 		$$renderer.push(`<!--]--></main></div></div>`);
 		bind_props($$props, {
+			usuarioId,
+			cargo,
 			subtitulo,
 			tituloDados,
 			tituloEstatisticas,

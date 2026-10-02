@@ -1,9 +1,5 @@
 <!-- CadastroCard.svelte -->
 <script>
-    export let titulo = "";
-    export let subtitulo = "";
-    export let onSair;
-
     // form
     export let campos = [];
     export let temToggle = false;
@@ -75,22 +71,6 @@
 </script>
 
 <div class="scaffold">
-    <header class="app-bar">
-        <div class="title-section">
-            <h1>{titulo}</h1>
-            <span>{subtitulo}</span>
-        </div>
-        <div class="actions-section">
-            <button
-                class="btn-icon"
-                on:click={onSair}
-                title="Voltar para a Home"
-            >
-                <span class="material-symbols-outlined">arrow_back</span>
-            </button>
-        </div>
-    </header>
-
     <main class="body-content">
         <div class="card table-card table-card-full">
             <div class="table-header-title">
@@ -244,7 +224,3 @@
         </div>
     {/if}
 </div>
-
-<style>
-    @import "$lib/styles/admin-cadastro.css";
-</style>

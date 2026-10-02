@@ -1,7 +1,5 @@
 .grade-semanal .grade-wrapper {
     --neu-bg: var(--white);
-    --neu-shadow-dark: rgba(163, 177, 198, 0.55);
-    --neu-shadow-light: rgba(255, 255, 255, 0.85);
 
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -37,7 +35,7 @@
     font-family: "Inter", Arial, sans-serif;
     font-weight: 700;
     font-size: 0.85rem;
-    color: #475569;
+    color: var(--text-muted);
     text-align: center;
     padding: 0.5rem;
     background: var(--neu-bg);
@@ -49,7 +47,7 @@
 }
 
 .grade-semanal .dia-coluna.fds .dia-header {
-    color: #64748b;
+    color: var(--text-muted);
     /* Header no FDS ligeiramente neutro */
     box-shadow:
         2px 2px 4px var(--neu-shadow-dark),
@@ -64,7 +62,7 @@
 
 .grade-semanal .bloco-vazio {
     text-align: center;
-    color: #a0aec0;
+    color: var(--disabled-text);
     font-size: 1.1rem;
     padding: 1rem 0;
     border-radius: 10px;
@@ -77,7 +75,7 @@
 .grade-semanal .estado-vazio {
     text-align: center;
     font-family: "Inter", Arial, sans-serif;
-    color: #94a3b8;
+    color: var(--disabled-text);
     padding: 2rem;
 }
 

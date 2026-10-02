@@ -8,52 +8,6 @@
     background-color: var(--white);
 }
 
-.escopo-admin-cadastro .app-bar {
-    background-color: var(--primary);
-    color: var(--white);
-    padding: 12px 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 10px 10px 20px var(--shadow-dark-heavy),
-        -10px -10px 20px var(--primary-dark);
-    z-index: 10;
-}
-
-.escopo-admin-cadastro .title-section {
-    display: flex;
-    flex-direction: column;
-}
-
-.escopo-admin-cadastro .title-section h1 {
-    margin: 0;
-    font-size: 18px;
-    color: var(--white);
-}
-
-.escopo-admin-cadastro .title-section span {
-    font-size: 11px;
-    color: var(--text-light);
-    margin-top: 2px;
-}
-
-.escopo-admin-cadastro .btn-icon {
-    background: none;
-    border: none;
-    color: var(--white);
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 50%;
-    transition: background 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.escopo-admin-cadastro .btn-icon:hover {
-    background: var(--overlay-light);
-}
-
 .escopo-admin-cadastro .body-content {
     flex: 1;
     display: flex;
@@ -99,7 +53,7 @@
 .escopo-admin-cadastro .table-card {
     flex: 1;
     min-width: 0;
-    max-height: calc(100vh - 170px);
+    max-height: calc(100vh - 110px);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -196,7 +150,7 @@
 
 .escopo-admin-cadastro .table-header .th {
     padding: 12px 8px;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: bold;
     text-align: center;
     white-space: nowrap;
@@ -237,7 +191,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     color: var(--text-dark);
     min-width: 0;
 }
@@ -359,7 +313,7 @@
 .escopo-admin-cadastro .btn-action.info {
     color: var(--text-dark);
     background: var(--white);
-    border: 1px solid rgba(148, 163, 184, 0.2);
+    border: 1px solid color-mix(in srgb, var(--disabled-text) 20%, transparent);
 }
 
 .escopo-admin-cadastro .btn-action.info:hover {

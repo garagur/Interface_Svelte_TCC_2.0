@@ -1,11 +1,11 @@
 <script>
     import { onMount } from "svelte";
+    import { goto } from "$app/navigation";
     import CadastroCard from "$lib/components/admin/CadastroCard.svelte";
     import { cadastrarEquipamento } from "$lib/services/EquipamentoServices/Create_Equipamento_Service.js";
     import { carregarEquipamentos } from "$lib/services/EquipamentoServices/List_Equipamento_Service.js";
     import { atualizarEquipamentos } from "$lib/services/EquipamentoServices/Update_Equipamento_Service.js";
     import { carregarUsuarios } from "$lib/services/UserServices/List_User_Service.js";
-    import { goto } from "$app/navigation";
     const FOTO_TIPOS = ["image/jpeg", "image/png", "image/webp"];
     const FOTO_MAX_BYTES = 2 * 1024 * 1024;
 
@@ -221,9 +221,6 @@
 </script>
 
 <CadastroCard
-    titulo="Portal de Agendamento"
-    subtitulo="Cadastro de Equipamentos"
-    onSair={() => goto("/main")}
     onSubmit={salvarEquipamento}
     onCancelar={resetForm}
     {editando}

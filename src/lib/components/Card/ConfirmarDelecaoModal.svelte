@@ -118,7 +118,7 @@
     .modal-overlay {
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.45);
+        background: var(--overlay);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -126,8 +126,8 @@
     }
 
     .modal-box {
-        --neu-bg: #e6e9ef;
-        --neu-shadow-dark: rgba(12, 12, 14, 0.45);
+        --neu-bg: var(--surface);
+        --neu-shadow-dark: var(--shadow-dark-heavy);
 
         background: var(--neu-bg);
         border-radius: 24px;
@@ -143,7 +143,7 @@
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        color: var(--cancel-dark, #b3261e);
+        color: var(--cancel-dark);
     }
 
     .icon-wrapper {
@@ -174,15 +174,15 @@
         margin: 0;
         font-family: "Inter", Arial, sans-serif;
         font-size: 0.95rem;
-        color: var(--text-dark, #2b2f38);
+        color: var(--text-dark);
     }
 
     .modal-horario {
         margin: 0;
         font-family: "Inter", Arial, sans-serif;
         font-size: 0.875rem;
-        color: var(--text-muted, #6b7280);
-        background: rgba(163, 177, 198, 0.12);
+        color: var(--text-muted);
+        background: color-mix(in srgb, var(--neu-shadow-dark) 12%, transparent);
         padding: 8px 12px;
         border-radius: 10px;
         width: fit-content;
@@ -198,34 +198,34 @@
         font-family: "Inter", Arial, sans-serif;
         font-size: 0.85rem;
         font-weight: 600;
-        color: var(--text-dark, #2b2f38);
+        color: var(--text-dark);
     }
 
     .modal-campo textarea {
         font-family: "Inter", Arial, sans-serif;
         font-size: 0.9rem;
-        color: var(--text-dark, #2b2f38);
-        background: #e6e9ef;
+        color: var(--text-dark);
+        background: var(--neu-bg);
         border: none;
         border-radius: 20px;
         padding: 14px 16px;
         resize: none;
         outline: none;
         box-shadow:
-            inset 6px 6px 12px #a3b1c6,
-            inset -6px -6px 12px #ffffff;
+            inset 6px 6px 12px var(--neu-shadow-dark),
+            inset -6px -6px 12px var(--neu-shadow-light);
         transition: box-shadow 0.2s ease;
     }
 
     .modal-campo textarea::placeholder {
-        color: var(--text-muted, #9aa0a8);
+        color: var(--disabled-text);
     }
 
     .modal-campo textarea:focus {
         box-shadow:
-            inset 7px 7px 14px #a3b1c6,
-            inset -7px -7px 14px #ffffff,
-            0 0 0 2px rgba(179, 38, 30, 0.15);
+            inset 7px 7px 14px var(--neu-shadow-dark),
+            inset -7px -7px 14px var(--neu-shadow-light),
+            0 0 0 2px color-mix(in srgb, var(--cancel-dark) 15%, transparent);
     }
 
     .modal-campo textarea:disabled {
@@ -259,7 +259,7 @@
 
     .btn-secondary {
         background: var(--neu-bg);
-        color: var(--primary-dark, #3a3f4b);
+        color: var(--primary-dark);
         box-shadow:
             5px 5px 10px var(--neu-shadow-dark),
             -5px -5px 10px var(--neu-shadow-light);
@@ -278,15 +278,15 @@
     }
 
     .btn-danger {
-        background: var(--cancel, #d92d20);
-        color: #fff;
+        background: var(--cancel);
+        color: var(--white);
         box-shadow:
             5px 5px 10px var(--neu-shadow-dark),
             -2px -2px 6px var(--neu-shadow-light);
     }
 
     .btn-danger:hover {
-        background: var(--cancel-dark, #b3261e);
+        background: var(--cancel-dark);
         box-shadow:
             3px 3px 6px var(--neu-shadow-dark),
             -1px -1px 4px var(--neu-shadow-light);
@@ -294,8 +294,8 @@
 
     .btn-danger:active {
         box-shadow:
-            inset 3px 3px 6px rgba(0, 0, 0, 0.35),
-            inset -2px -2px 5px rgba(255, 255, 255, 0.15);
+            inset 3px 3px 6px var(--shadow-dark-strong),
+            inset -2px -2px 5px var(--shadow-light-soft);
     }
 
     .btn-secondary:disabled,
