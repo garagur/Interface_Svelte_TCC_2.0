@@ -1,5 +1,5 @@
 import { T as escape_html, c as slot, i as ensure_array_like, lt as fallback, n as bind_props, t as attr_class, u as stringify, w as attr } from "./server.js";
-import { l as AgendamentoDetalheModal } from "./List_Agendamento_Equipamento_Service.js";
+import { u as AgendamentoDetalheModal } from "./Confirmar_Agendamento_Service.js";
 //#region src/lib/components/Grades/GradeMensal.svelte
 function GradeMensal($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
@@ -230,6 +230,8 @@ function BlocoAgendamentoCard($$renderer, $$props) {
 		} else $$renderer.push("<!--[-1-->");
 		$$renderer.push(`<!--]--> <div${attr_class(`ag-bloco-inner ${proprio ? "proprio" : "outro"}`, "svelte-qzbw3r", {
 			"passado": agendamentoPassado,
+			"ocioso": ag.status === "ocioso",
+			"em-andamento": ag.status === "em_andamento",
 			"cancelado": agendamentoCancelado
 		})}><span class="ag-hora svelte-qzbw3r">${escape_html(ag.data_hora_inicio?.slice(11, 16))} - ${escape_html(ag.data_hora_fim?.slice(11, 16))}</span> `);
 		if (recursoNome) {

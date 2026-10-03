@@ -41,7 +41,8 @@ export async function carregarSalas(token) {
         id: s.id,
         nome: s.nome || '',
         obs: s.obs || '',
-        status: s.status ?? true,
+        obs_can: s.obs_can || '',
+        status: s.status === false || s.status === 0 || s.status === '0' ? false : true,
         responsavel_nome: s.responsavel?.nome || s.responsavel?.name || '',
         fotoUrl: s.foto_url ?? null,
     }))

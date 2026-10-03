@@ -16,7 +16,7 @@ async function parseJson(response) {
 
 /**
  * @param {number} id
- * @param {{ nome: string, obs?: string, status: boolean, responsavel_id?: number | null, foto?: File | null, removerFoto?: boolean }} dadosSala
+ * @param {{ nome: string, obs?: string, obs_can?: string, status: boolean, responsavel_id?: number | null, foto?: File | null, removerFoto?: boolean }} dadosSala
  * @param {string} token
  * @returns {Promise<any>}
  */
@@ -45,6 +45,7 @@ export async function atualizarSalas(id, dadosSala, token) {
     formData.append('nome', dadosSala.nome)
     if (dadosSala.obs) formData.append('obs', dadosSala.obs)
     formData.append('status', dadosSala.status ? '1' : '0')
+    formData.append('obs_can', dadosSala.status ? '' : (dadosSala.obs_can || '').trim())
     if (dadosSala.responsavel_id) {
         formData.append('responsavel_id', String(dadosSala.responsavel_id))
     }

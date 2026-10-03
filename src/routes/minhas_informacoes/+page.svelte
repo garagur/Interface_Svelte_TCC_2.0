@@ -8,6 +8,7 @@
     import { deletarAgendamentoSala } from "$lib/services/AgendamentoServices/AgendamentoSala/Deleted_Agendamento_Sala_Service.js";
     import { carregarAgendamentosEquipamentos } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/List_Agendamento_Equipamento_Service.js";
     import { deletarAgendamentoEquipamento } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/Deleted_Agendamento_equipamento.js";
+    import { confirmarAgendamento as confirmarAgendamentoService } from "$lib/services/AgendamentoServices/Confirmar_Agendamento_Service.js";
     import { buscarUsuario } from "$lib/services/UserServices/Buscar_Usuario_Service.js";
     import { atualizarUsuario } from "$lib/services/UserServices/Update_User_Service.js";
     let token = "";
@@ -304,6 +305,26 @@
             throw e; // repropaga para o MinhasInformacoesCard saber que falhou
         }
     }
+
+    async function confirmar(ag) {
+        try {
+            const atualizado = await confirmarAgendamentoService(ag);
+            const status = atualizado?.status || "ativo";
+            if (ag.tipo === "equipamento") {
+                agendamentosEquipamento = agendamentosEquipamento.map((item) =>
+                    item.id === ag.id ? { ...item, status } : item,
+                );
+            } else {
+                agendamentosSala = agendamentosSala.map((item) =>
+                    item.id === ag.id ? { ...item, status } : item,
+                );
+            }
+            montarEstatisticas();
+        } catch (e) {
+            erro = e?.message || "Erro ao confirmar o agendamento.";
+            throw e;
+        }
+    }
 </script>
 
 <MinhasInformacoesCard
@@ -327,5 +348,6 @@
     cargo={usuario?.cargo || ""}
     onSair={() => goto("/main")}
     onDeletar={deletar}
+    onConfirmar={confirmar}
     onSalvarPerfil={salvarPerfil}
 />

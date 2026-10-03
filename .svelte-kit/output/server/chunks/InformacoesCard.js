@@ -2,7 +2,7 @@ import { a as onDestroy } from "./internal.js";
 import { T as escape_html, i as ensure_array_like, it as invalid_default_snippet, lt as fallback, n as bind_props, t as attr_class, u as stringify, w as attr } from "./server.js";
 import { t as CabecalhoGlobal } from "./CabecalhoGlobal.js";
 import { a as BlocoHorarioCard, o as GradeSemanal } from "./List_Horario_Service.js";
-import { c as ConfirmarDelecaoModal, s as ListaAgendamentosCard } from "./List_Agendamento_Equipamento_Service.js";
+import { c as ListaAgendamentosCard, l as ConfirmarDelecaoModal } from "./Confirmar_Agendamento_Service.js";
 //#region src/lib/components/informacoes/InformacoesCard.svelte
 function InformacoesCard($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
@@ -43,6 +43,7 @@ function InformacoesCard($$renderer, $$props) {
 		let erro = fallback($$props["erro"], "");
 		let onSair = $$props["onSair"];
 		let onDeletar = fallback($$props["onDeletar"], null);
+		let onConfirmar = fallback($$props["onConfirmar"], null);
 		let agendamentoParaDeletar = null;
 		let processando = false;
 		const dias = [
@@ -332,7 +333,8 @@ function InformacoesCard($$renderer, $$props) {
 				carregando: carregandoAgendamentos,
 				usuarioId,
 				cargo,
-				onDeletar: abrirModal
+				onDeletar: abrirModal,
+				onConfirmar
 			});
 			$$renderer.push(`<!----></div>`);
 		} else $$renderer.push("<!--[-1-->");
@@ -369,7 +371,8 @@ function InformacoesCard($$renderer, $$props) {
 			carregandoAgendamentos,
 			erro,
 			onSair,
-			onDeletar
+			onDeletar,
+			onConfirmar
 		});
 	});
 }

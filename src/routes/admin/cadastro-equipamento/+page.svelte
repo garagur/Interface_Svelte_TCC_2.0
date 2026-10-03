@@ -24,6 +24,7 @@
         nome: "",
         N_patrimonio: "",
         obs: "",
+        obs_can: "",
         status: true,
         responsavel_id: null,
         fotoUrl: null,
@@ -96,6 +97,7 @@
                 nome: novoEquipamento.nome,
                 N_patrimonio: novoEquipamento.N_patrimonio,
                 obs: novoEquipamento.obs,
+                obs_can: novoEquipamento.obs_can,
                 status: novoEquipamento.status,
                 responsavel_id: novoEquipamento.responsavel_id,
                 foto: fotoArquivo,
@@ -127,6 +129,7 @@
             nome: eq.nome,
             N_patrimonio: eq.N_patrimonio,
             obs: eq.obs,
+            obs_can: eq.obs_can || "",
             status: eq.status,
             responsavel_id: eq.responsavel_id ?? eq.responsavel?.id ?? null,
             fotoUrl: eq.fotoUrl ?? eq.foto_url ?? null,
@@ -145,6 +148,7 @@
             nome: "",
             N_patrimonio: "",
             obs: "",
+            obs_can: "",
             status: true,
             responsavel_id: null,
             fotoUrl: null,
@@ -203,6 +207,7 @@
                 eq.nome?.toLowerCase().includes(termo) ||
                 eq.N_patrimonio?.toLowerCase().includes(termo) ||
                 eq.obs?.toLowerCase().includes(termo) ||
+                eq.obs_can?.toLowerCase().includes(termo) ||
                 nomeResp.toLowerCase().includes(termo)
             );
         })
@@ -313,6 +318,17 @@
                 required
             />
         </div>
+        {#if !novoEquipamento.status}
+            <div class="field">
+                <label for="obs-can-equipamento">Motivo da inativação</label>
+                <textarea
+                    id="obs-can-equipamento"
+                    bind:value={novoEquipamento.obs_can}
+                    placeholder="Informe o motivo da inativação"
+                    rows="3"
+                ></textarea>
+            </div>
+        {/if}
         <div class="field">
             <label for="responsavel-equipamento">Responsável</label>
             <select
@@ -384,6 +400,7 @@
             </div>
             <div class="th flex-1">Número</div>
             <div class="th flex-2">Observação</div>
+            <div class="th flex-2">Motivo (inativo)</div>
             <div class="th flex-2">Responsável</div>
             <div class="th flex-1">Status</div>
             <div class="th flex-1">Ações</div>
@@ -401,6 +418,11 @@
                 </div>
                 <div class="td flex-2">
                     <span class="text-truncate">{s.obs}</span>
+                </div>
+                <div class="td flex-2">
+                    <span class="text-truncate"
+                        >{!s.status ? s.obs_can || "—" : "—"}</span
+                    >
                 </div>
                 <div class="td flex-2">
                     <span class="text-truncate"

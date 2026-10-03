@@ -16,7 +16,7 @@ async function parseJson(response) {
 
 /**
  * @param {number} id
- * @param {{ nome: string, N_patrimonio: string, obs?: string, status: boolean, responsavel_id?: number | null, foto?: File | null, removerFoto?: boolean }} dadosEquipamento
+ * @param {{ nome: string, N_patrimonio: string, obs?: string, obs_can?: string, status: boolean, responsavel_id?: number | null, foto?: File | null, removerFoto?: boolean }} dadosEquipamento
  * @param {string} token
  * @returns {Promise<any>}
  */
@@ -46,6 +46,7 @@ export async function atualizarEquipamentos(id, dadosEquipamento, token) {
     formData.append('N_patrimonio', dadosEquipamento.N_patrimonio)
     if (dadosEquipamento.obs) formData.append('obs', dadosEquipamento.obs)
     formData.append('status', dadosEquipamento.status ? '1' : '0')
+    formData.append('obs_can', dadosEquipamento.status ? '' : (dadosEquipamento.obs_can || '').trim())
     if (dadosEquipamento.responsavel_id) {
         formData.append('responsavel_id', String(dadosEquipamento.responsavel_id))
     }

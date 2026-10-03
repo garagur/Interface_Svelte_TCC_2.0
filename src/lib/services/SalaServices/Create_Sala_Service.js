@@ -15,7 +15,7 @@ async function parseJson(response) {
 }
 
 /**
- * @param {{ nome: string, obs?: string, status: boolean, responsavel_id?: number | null, foto?: File | null }} novaSala
+ * @param {{ nome: string, obs?: string, obs_can?: string, status: boolean, responsavel_id?: number | null, foto?: File | null }} novaSala
  * @param {string} token
  * @returns {Promise<any>}
  */
@@ -43,6 +43,9 @@ export async function cadastrarSala(novaSala, token) {
     formData.append('nome', novaSala.nome)
     if (novaSala.obs) formData.append('obs', novaSala.obs)
     formData.append('status', novaSala.status ? '1' : '0')
+    if (!novaSala.status && novaSala.obs_can?.trim()) {
+        formData.append('obs_can', novaSala.obs_can.trim())
+    }
     if (novaSala.responsavel_id) {
         formData.append('responsavel_id', String(novaSala.responsavel_id))
     }

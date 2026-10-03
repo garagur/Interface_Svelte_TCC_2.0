@@ -16,6 +16,7 @@
     import { carregarTurmas } from "$lib/services/TurmaServices/List_Turma_Service.js";
     import { cadastrarAgendamento as cadastrarAgendamentoEquipamento } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/Create_Agendamento_Equipamento_Service.js";
     import { carregarAgendamentosEquipamentos } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/List_Agendamento_Equipamento_Service.js";
+    import { confirmarAgendamento as confirmarAgendamentoService } from "$lib/services/AgendamentoServices/Confirmar_Agendamento_Service.js";
 
     // ── Imports de Recorrência ──
     import { validarRecorrencia } from "$lib/services/RecorrenciaService/Validar_Recorrencia.js";
@@ -138,6 +139,15 @@
         } finally {
             carregandoLista = false;
         }
+    }
+
+    async function confirmarAgendamento(ag) {
+        const atualizado = await confirmarAgendamentoService(ag);
+        agendamentos = agendamentos.map((item) =>
+            item.id === ag.id && item.tipo === ag.tipo
+                ? { ...item, status: atualizado?.status || "ativo" }
+                : item,
+        );
     }
 
     async function carregarBlocosFixos(id) {
@@ -315,4 +325,5 @@
     {resultadoFinal}
     onConfirmarRecorrencia={confirmarRecorrencia}
     onCancelarRecorrencia={cancelarRecorrencia}
+    onConfirmarAgendamento={confirmarAgendamento}
 />

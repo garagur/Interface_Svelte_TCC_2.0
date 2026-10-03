@@ -9,6 +9,8 @@
     export let cargo = "";
     /** @type {((ag: any) => void) | null} */
     export let onDeletar = null;
+    /** @type {((ag: any) => Promise<void> | void) | null} */
+    export let onConfirmar = null;
     // true quando a lista já está dentro de outro card (ex.: página de novo agendamento)
     export let embutido = false;
     // true quando a lista é de um único recurso (sala/equipamento já selecionado):
@@ -90,7 +92,9 @@
         return isFuturo(ag.data_hora_inicio) ? "futuro" : "passado";
     }
 
-    function rotuloStatus(status) {
+    function rotuloStatus(ag, status) {
+        if (ag.status === "ocioso") return "Ocioso";
+        if (ag.status === "em_andamento") return "Em andamento";
         if (status === "cancelado") return "Cancelado";
         if (status === "futuro") return "Ativo";
         return "Concluído";
@@ -131,6 +135,13 @@
         return respId != null && String(respId) === String(usuarioId);
     }
 
+    function podeConfirmar(ag) {
+        if (!onConfirmar || ag.status !== "ocioso") return false;
+        const respId = responsavelId(ag);
+        if (respId == null) return cargo === "admin";
+        return String(respId) === String(usuarioId);
+    }
+
     function abrirDetalhes(ag) {
         agDetalhe = ag;
     }
@@ -168,6 +179,7 @@
         })
         .filter((ag) => {
             if (filtroStatusAg === "todos") return true;
+            if (filtroStatusAg === "ocioso") return ag.status === "ocioso";
             const status = statusExibicao(ag);
             if (filtroStatusAg === "ativo") return status === "futuro";
             if (filtroStatusAg === "finalizado") return status === "passado";
@@ -205,6 +217,7 @@
             <span class="filtro-grupo-label">Status</span>
             <select class="select-filtro-ag" bind:value={filtroStatusAg}>
                 <option value="todos">Todos</option>
+                <option value="ocioso">Ociosos</option>
                 <option value="ativo">Ativos</option>
                 <option value="finalizado">Concluídos</option>
                 <option value="cancelado">Cancelados</option>
@@ -247,14 +260,24 @@
                 {@const status = statusExibicao(ag)}
                 {@const responsavel = nomeResponsavel(ag)}
                 <div
-                    class="agendamento-item"
+                    class="agendamento-item {ag.status === 'ocioso'
+                        ? 'ocioso'
+                        : ''} {ag.status === 'em_andamento'
+                        ? 'em-andamento'
+                        : ''}"
                     class:cancelado={status === "cancelado"}
                     class:passado={status === "passado"}
                 >
                     <div class="agendamento-faixa"></div>
                     <div class="agendamento-body">
-                        <span class="badge-status {status}">
-                            {rotuloStatus(status)}
+                        <span
+                            class="badge-status {status} {ag.status === 'ocioso'
+                                ? 'ocioso'
+                                : ''} {ag.status === 'em_andamento'
+                                ? 'em-andamento'
+                                : ''}"
+                        >
+                            {rotuloStatus(ag, status)}
                         </span>
                         <div class="agendamento-data-hora">
                             <span class="material-symbols-outlined"
@@ -355,6 +378,7 @@
             onCancelar={podeDeletar(agDetalhe, statusExibicao(agDetalhe))
                 ? cancelarPeloModal
                 : null}
+            onConfirmar={podeConfirmar(agDetalhe) ? onConfirmar : null}
         />
     </div>
 {/if}
@@ -612,6 +636,16 @@
         color: var(--confirm-dark);
     }
 
+    .badge-status.ocioso {
+        background: var(--warning-light);
+        color: var(--warning-text);
+    }
+
+    .badge-status.em-andamento {
+        background: color-mix(in srgb, var(--focus) 16%, var(--white));
+        color: #1d4ed8;
+    }
+
     .badge-status.passado {
         background: none;
         color: var(--text-muted);
@@ -713,6 +747,22 @@
 
     .agendamento-item.cancelado .agendamento-data-hora {
         color: var(--cancel-dark);
+    }
+
+    .agendamento-item.ocioso {
+        background: var(--warning-light);
+    }
+
+    .agendamento-item.ocioso .agendamento-faixa {
+        background: var(--warning);
+    }
+
+    .agendamento-item.em-andamento {
+        background: color-mix(in srgb, var(--focus) 16%, var(--white));
+    }
+
+    .agendamento-item.em-andamento .agendamento-faixa {
+        background: var(--focus);
     }
 
     .badge-status.cancelado {

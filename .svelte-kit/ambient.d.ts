@@ -40,6 +40,8 @@
 declare module '$env/static/private' {
 	export const SVELTEKIT_FORK: string;
 	export const NODE_ENV: string;
+	export const USERNAME: string;
+	export const VSCODE_PYTHON_AUTOACTIVATE_GUARD: string;
 	export const MEMORY_PRESSURE_WRITE: string;
 	export const XDG_SESSION_CLASS: string;
 	export const XDG_CONFIG_DIRS_VSCODE_SNAP_ORIG: string;
@@ -51,7 +53,6 @@ declare module '$env/static/private' {
 	export const MANAGERPID: string;
 	export const VSCODE_GIT_IPC_HANDLE: string;
 	export const SYSTEMD_EXEC_PID: string;
-	export const PYDEVD_DISABLE_FILE_VALIDATION: string;
 	export const VSCODE_GIT_ASKPASS_NODE: string;
 	export const LC_NUMERIC: string;
 	export const npm_config_prefix: string;
@@ -67,9 +68,6 @@ declare module '$env/static/private' {
 	export const GTK_MODULES: string;
 	export const npm_config_userconfig: string;
 	export const XDG_SESSION_TYPE: string;
-	export const COLOR: string;
-	export const VSCODE_PYTHON_AUTOACTIVATE_GUARD: string;
-	export const USERNAME: string;
 	export const NVM_DIR: string;
 	export const GDK_BACKEND: string;
 	export const npm_package_json: string;
@@ -77,6 +75,8 @@ declare module '$env/static/private' {
 	export const HISTCONTROL: string;
 	export const LOCPATH: string;
 	export const npm_config_noproxy: string;
+	export const DEBUGINFOD_URLS: string;
+	export const OLDPWD: string;
 	export const LC_TIME: string;
 	export const GIT_ASKPASS: string;
 	export const NVM_CD_FLAGS: string;
@@ -84,9 +84,8 @@ declare module '$env/static/private' {
 	export const GIT_EDITOR: string;
 	export const FONTCONFIG_PATH: string;
 	export const XDG_RUNTIME_DIR: string;
-	export const LC_PAPER: string;
-	export const PAPERSIZE: string;
-	export const GIO_LAUNCHED_DESKTOP_FILE: string;
+	export const SHLVL: string;
+	export const GIO_MODULE_DIR_VSCODE_SNAP_ORIG: string;
 	export const GIO_MODULE_DIR: string;
 	export const NVM_BIN: string;
 	export const VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
@@ -94,24 +93,23 @@ declare module '$env/static/private' {
 	export const npm_config_user_agent: string;
 	export const LESSOPEN: string;
 	export const XDG_DATA_DIRS: string;
-	export const DEBUGINFOD_URLS: string;
-	export const SHLVL: string;
-	export const GIO_MODULE_DIR_VSCODE_SNAP_ORIG: string;
 	export const GDK_BACKEND_VSCODE_SNAP_ORIG: string;
 	export const EDITOR: string;
 	export const LC_TELEPHONE: string;
 	export const GTK_PATH_VSCODE_SNAP_ORIG: string;
+	export const PAPERSIZE: string;
+	export const GIO_LAUNCHED_DESKTOP_FILE: string;
+	export const LC_PAPER: string;
 	export const GTK_IM_MODULE_FILE: string;
 	export const COPILOT_AGENT: string;
 	export const GTK_EXE_PREFIX: string;
 	export const npm_lifecycle_script: string;
+	export const JOURNAL_STREAM: string;
+	export const AI_AGENT: string;
+	export const XDG_DATA_DIRS_VSCODE_SNAP_ORIG: string;
 	export const XDG_DATA_HOME_VSCODE_SNAP_ORIG: string;
 	export const HOME: string;
 	export const TERM_PROGRAM_VERSION: string;
-	export const QT_IM_MODULES: string;
-	export const npm_config_npm_version: string;
-	export const XAUTHORITY: string;
-	export const PYTHON_BASIC_REPL: string;
 	export const USER: string;
 	export const NVM_INC: string;
 	export const DESKTOP_SESSION: string;
@@ -119,9 +117,6 @@ declare module '$env/static/private' {
 	export const IM_CONFIG_ENTRY: string;
 	export const CHROME_DESKTOP: string;
 	export const npm_config_global_prefix: string;
-	export const JOURNAL_STREAM: string;
-	export const AI_AGENT: string;
-	export const XDG_DATA_DIRS_VSCODE_SNAP_ORIG: string;
 	export const XDG_CONFIG_DIRS: string;
 	export const GNOME_DESKTOP_SESSION_ID: string;
 	export const FC_FONTATIONS: string;
@@ -131,7 +126,6 @@ declare module '$env/static/private' {
 	export const SHELL: string;
 	export const PATH: string;
 	export const FONTCONFIG_FILE: string;
-	export const BUNDLED_DEBUGPY_PATH: string;
 	export const npm_config_cache: string;
 	export const TERM: string;
 	export const NODE: string;
@@ -145,7 +139,6 @@ declare module '$env/static/private' {
 	export const LC_ADDRESS: string;
 	export const GNOME_SETUP_DISPLAY: string;
 	export const DISPLAY: string;
-	export const VSCODE_DEBUGPY_ADAPTER_ENDPOINTS: string;
 	export const LANG: string;
 	export const XDG_SESSION_DESKTOP: string;
 	export const LS_COLORS: string;
@@ -159,8 +152,9 @@ declare module '$env/static/private' {
 	export const QT_ACCESSIBILITY: string;
 	export const COPILOT_DEBUG_NONCE: string;
 	export const npm_config_init_module: string;
+	export const COLOR: string;
+	export const NO_AT_BRIDGE: string;
 	export const GDMSESSION: string;
-	export const PYTHONSTARTUP: string;
 	export const LESSCLOSE: string;
 	export const GJS_DEBUG_OUTPUT: string;
 	export const INVOCATION_ID: string;
@@ -172,6 +166,9 @@ declare module '$env/static/private' {
 	export const GIT_MERGE_AUTOEDIT: string;
 	export const npm_execpath: string;
 	export const XDG_SESSION_EXTRA_DEVICE_ACCESS: string;
+	export const npm_config_npm_version: string;
+	export const XAUTHORITY: string;
+	export const QT_IM_MODULES: string;
 }
 
 /**
@@ -260,6 +257,8 @@ declare module '$env/dynamic/private' {
 	export const env: {
 		SVELTEKIT_FORK: string;
 		NODE_ENV: string;
+		USERNAME: string;
+		VSCODE_PYTHON_AUTOACTIVATE_GUARD: string;
 		MEMORY_PRESSURE_WRITE: string;
 		XDG_SESSION_CLASS: string;
 		XDG_CONFIG_DIRS_VSCODE_SNAP_ORIG: string;
@@ -271,7 +270,6 @@ declare module '$env/dynamic/private' {
 		MANAGERPID: string;
 		VSCODE_GIT_IPC_HANDLE: string;
 		SYSTEMD_EXEC_PID: string;
-		PYDEVD_DISABLE_FILE_VALIDATION: string;
 		VSCODE_GIT_ASKPASS_NODE: string;
 		LC_NUMERIC: string;
 		npm_config_prefix: string;
@@ -287,9 +285,6 @@ declare module '$env/dynamic/private' {
 		GTK_MODULES: string;
 		npm_config_userconfig: string;
 		XDG_SESSION_TYPE: string;
-		COLOR: string;
-		VSCODE_PYTHON_AUTOACTIVATE_GUARD: string;
-		USERNAME: string;
 		NVM_DIR: string;
 		GDK_BACKEND: string;
 		npm_package_json: string;
@@ -297,6 +292,8 @@ declare module '$env/dynamic/private' {
 		HISTCONTROL: string;
 		LOCPATH: string;
 		npm_config_noproxy: string;
+		DEBUGINFOD_URLS: string;
+		OLDPWD: string;
 		LC_TIME: string;
 		GIT_ASKPASS: string;
 		NVM_CD_FLAGS: string;
@@ -304,9 +301,8 @@ declare module '$env/dynamic/private' {
 		GIT_EDITOR: string;
 		FONTCONFIG_PATH: string;
 		XDG_RUNTIME_DIR: string;
-		LC_PAPER: string;
-		PAPERSIZE: string;
-		GIO_LAUNCHED_DESKTOP_FILE: string;
+		SHLVL: string;
+		GIO_MODULE_DIR_VSCODE_SNAP_ORIG: string;
 		GIO_MODULE_DIR: string;
 		NVM_BIN: string;
 		VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
@@ -314,24 +310,23 @@ declare module '$env/dynamic/private' {
 		npm_config_user_agent: string;
 		LESSOPEN: string;
 		XDG_DATA_DIRS: string;
-		DEBUGINFOD_URLS: string;
-		SHLVL: string;
-		GIO_MODULE_DIR_VSCODE_SNAP_ORIG: string;
 		GDK_BACKEND_VSCODE_SNAP_ORIG: string;
 		EDITOR: string;
 		LC_TELEPHONE: string;
 		GTK_PATH_VSCODE_SNAP_ORIG: string;
+		PAPERSIZE: string;
+		GIO_LAUNCHED_DESKTOP_FILE: string;
+		LC_PAPER: string;
 		GTK_IM_MODULE_FILE: string;
 		COPILOT_AGENT: string;
 		GTK_EXE_PREFIX: string;
 		npm_lifecycle_script: string;
+		JOURNAL_STREAM: string;
+		AI_AGENT: string;
+		XDG_DATA_DIRS_VSCODE_SNAP_ORIG: string;
 		XDG_DATA_HOME_VSCODE_SNAP_ORIG: string;
 		HOME: string;
 		TERM_PROGRAM_VERSION: string;
-		QT_IM_MODULES: string;
-		npm_config_npm_version: string;
-		XAUTHORITY: string;
-		PYTHON_BASIC_REPL: string;
 		USER: string;
 		NVM_INC: string;
 		DESKTOP_SESSION: string;
@@ -339,9 +334,6 @@ declare module '$env/dynamic/private' {
 		IM_CONFIG_ENTRY: string;
 		CHROME_DESKTOP: string;
 		npm_config_global_prefix: string;
-		JOURNAL_STREAM: string;
-		AI_AGENT: string;
-		XDG_DATA_DIRS_VSCODE_SNAP_ORIG: string;
 		XDG_CONFIG_DIRS: string;
 		GNOME_DESKTOP_SESSION_ID: string;
 		FC_FONTATIONS: string;
@@ -351,7 +343,6 @@ declare module '$env/dynamic/private' {
 		SHELL: string;
 		PATH: string;
 		FONTCONFIG_FILE: string;
-		BUNDLED_DEBUGPY_PATH: string;
 		npm_config_cache: string;
 		TERM: string;
 		NODE: string;
@@ -365,7 +356,6 @@ declare module '$env/dynamic/private' {
 		LC_ADDRESS: string;
 		GNOME_SETUP_DISPLAY: string;
 		DISPLAY: string;
-		VSCODE_DEBUGPY_ADAPTER_ENDPOINTS: string;
 		LANG: string;
 		XDG_SESSION_DESKTOP: string;
 		LS_COLORS: string;
@@ -379,8 +369,9 @@ declare module '$env/dynamic/private' {
 		QT_ACCESSIBILITY: string;
 		COPILOT_DEBUG_NONCE: string;
 		npm_config_init_module: string;
+		COLOR: string;
+		NO_AT_BRIDGE: string;
 		GDMSESSION: string;
-		PYTHONSTARTUP: string;
 		LESSCLOSE: string;
 		GJS_DEBUG_OUTPUT: string;
 		INVOCATION_ID: string;
@@ -392,6 +383,9 @@ declare module '$env/dynamic/private' {
 		GIT_MERGE_AUTOEDIT: string;
 		npm_execpath: string;
 		XDG_SESSION_EXTRA_DEVICE_ACCESS: string;
+		npm_config_npm_version: string;
+		XAUTHORITY: string;
+		QT_IM_MODULES: string;
 		[key: `PUBLIC_${string}`]: undefined;
 		[key: `${string}`]: string | undefined;
 	}

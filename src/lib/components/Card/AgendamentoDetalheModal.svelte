@@ -5,10 +5,14 @@
     export let onFechar = () => {};
     /** @type {((ag: any) => void | Promise<void>) | null} */
     export let onCancelar = null;
+    /** @type {((ag: any) => void | Promise<void>) | null} */
+    export let onConfirmar = null;
     export let usuarioId = null;
     export let cargo = null;
     export let processando = false;
     let imagemQuebrada = false;
+    let confirmando = false;
+    let erroConfirmacao = "";
 
     $: k = ag.tipo === "equipamento" ? "equipamento" : "sala";
     $: recursoNome = ag[`${k}_nome`] || ag[`${k}_id`];
@@ -48,6 +52,12 @@
             (ag.user_id == usuarioId ||
                 (respId != null && String(respId) === String(usuarioId))));
     $: cancelado = ag.status === "inativo";
+    $: podeConfirmar =
+        ag.status === "ocioso" &&
+        onConfirmar &&
+        (respId == null
+            ? cargo === "admin"
+            : String(respId) === String(usuarioId));
 
     $: idRecurso = k === "sala" ? ag.sala_id : ag.equipamento_id;
     $: rotaRecurso = rotaInformacoes(k, idRecurso);
@@ -64,6 +74,20 @@
         console.log("ir() ->", rota);
         onFechar();
         goto(rota);
+    }
+
+    async function confirmar() {
+        if (confirmando || !onConfirmar) return;
+        confirmando = true;
+        erroConfirmacao = "";
+        try {
+            await onConfirmar(ag);
+            onFechar();
+        } catch (e) {
+            erroConfirmacao = e?.message || "Erro ao confirmar o agendamento.";
+        } finally {
+            confirmando = false;
+        }
     }
     // Data "de parede" (ignora fuso), igual à lista e ao GradeMensal
     function parseData(s) {
@@ -192,14 +216,36 @@
                     </div>
                 {/each}
 
-                {#if !cancelado && onCancelar && podeCancelar}
-                    <button
-                        class="btn-cancelar"
-                        on:click={() => onCancelar(ag)}
-                        disabled={processando}
-                    >
-                        {processando ? "Cancelando..." : "Cancelar agendamento"}
-                    </button>
+                {#if erroConfirmacao}
+                    <p class="erro-confirmacao" role="alert">
+                        {erroConfirmacao}
+                    </p>
+                {/if}
+                {#if (!cancelado && onCancelar && podeCancelar) || podeConfirmar}
+                    <div class="acoes-agendamento">
+                        {#if podeConfirmar}
+                            <button
+                                class="btn-confirmar"
+                                on:click={confirmar}
+                                disabled={confirmando || processando}
+                            >
+                                {confirmando
+                                    ? "Confirmando..."
+                                    : "Confirmar agendamento"}
+                            </button>
+                        {/if}
+                        {#if !cancelado && onCancelar && podeCancelar}
+                            <button
+                                class="btn-cancelar"
+                                on:click={() => onCancelar(ag)}
+                                disabled={processando || confirmando}
+                            >
+                                {processando
+                                    ? "Cancelando..."
+                                    : "Cancelar agendamento"}
+                            </button>
+                        {/if}
+                    </div>
                 {/if}
             </div>
         </div>
@@ -368,10 +414,16 @@
         overflow-wrap: anywhere;
     }
 
-    /* Botão cancelar embaixo das informações */
-    .btn-cancelar {
+    .acoes-agendamento {
+        display: flex;
+        gap: 0.75rem;
         margin-top: auto;
-        width: 100%;
+    }
+
+    .btn-confirmar,
+    .btn-cancelar {
+        flex: 1 1 0;
+        min-width: 0;
         padding: 0.85rem 1rem;
         border: none;
         border-radius: 14px;
@@ -379,13 +431,27 @@
         font-size: 0.95rem;
         font-weight: 700;
         color: var(--white);
-        background: var(--cancel);
         cursor: pointer;
         box-shadow: var(--fora);
         transition: background 0.15s;
     }
+    .btn-confirmar {
+        background: var(--confirm);
+    }
+    .btn-confirmar:hover:not(:disabled) {
+        background: var(--confirm-dark);
+    }
+    .btn-cancelar {
+        background: var(--cancel);
+    }
     .btn-cancelar:hover:not(:disabled) {
         background: var(--danger-text);
+    }
+    .btn-confirmar:active:not(:disabled) {
+        background: var(--confirm-dark);
+        box-shadow:
+            inset 4px 4px 8px var(--shadow-dark-medium),
+            inset -4px -4px 8px var(--overlay-light);
     }
     .btn-cancelar:active:not(:disabled) {
         background: var(--danger-text);
@@ -393,9 +459,15 @@
             inset 4px 4px 8px var(--shadow-dark-medium),
             inset -4px -4px 8px var(--overlay-light);
     }
+    .btn-confirmar:disabled,
     .btn-cancelar:disabled {
         opacity: 0.6;
         cursor: not-allowed;
+    }
+    .erro-confirmacao {
+        margin: 0;
+        color: var(--cancel-dark);
+        font-size: 0.85rem;
     }
 
     @media (max-width: 520px) {

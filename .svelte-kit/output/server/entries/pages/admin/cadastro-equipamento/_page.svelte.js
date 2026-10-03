@@ -39,6 +39,7 @@ async function cadastrarEquipamento(novoEquipamento, token) {
 	formData.append("N_patrimonio", novoEquipamento.N_patrimonio);
 	if (novoEquipamento.obs) formData.append("obs", novoEquipamento.obs);
 	formData.append("status", novoEquipamento.status ? "1" : "0");
+	if (!novoEquipamento.status && novoEquipamento.obs_can?.trim()) formData.append("obs_can", novoEquipamento.obs_can.trim());
 	if (novoEquipamento.responsavel_id) formData.append("responsavel_id", String(novoEquipamento.responsavel_id));
 	if (foto) formData.append("foto", foto);
 	const resp = await apiFetch(EQUIPAMENTO_ROUTES.cadastrar, {
@@ -73,7 +74,7 @@ async function parseJson(response) {
 }
 /**
 * @param {number} id
-* @param {{ nome: string, N_patrimonio: string, obs?: string, status: boolean, responsavel_id?: number | null, foto?: File | null, removerFoto?: boolean }} dadosEquipamento
+* @param {{ nome: string, N_patrimonio: string, obs?: string, obs_can?: string, status: boolean, responsavel_id?: number | null, foto?: File | null, removerFoto?: boolean }} dadosEquipamento
 * @param {string} token
 * @returns {Promise<any>}
 */
@@ -91,6 +92,7 @@ async function atualizarEquipamentos(id, dadosEquipamento, token) {
 	formData.append("N_patrimonio", dadosEquipamento.N_patrimonio);
 	if (dadosEquipamento.obs) formData.append("obs", dadosEquipamento.obs);
 	formData.append("status", dadosEquipamento.status ? "1" : "0");
+	formData.append("obs_can", dadosEquipamento.status ? "" : (dadosEquipamento.obs_can || "").trim());
 	if (dadosEquipamento.responsavel_id) formData.append("responsavel_id", String(dadosEquipamento.responsavel_id));
 	if (foto) formData.append("foto", foto);
 	else if (removerFoto) formData.append("remover_foto", "1");
@@ -120,6 +122,7 @@ function _page($$renderer, $$props) {
 			nome: "",
 			N_patrimonio: "",
 			obs: "",
+			obs_can: "",
 			status: true,
 			responsavel_id: null,
 			fotoUrl: null
@@ -158,6 +161,7 @@ function _page($$renderer, $$props) {
 					nome: novoEquipamento.nome,
 					N_patrimonio: novoEquipamento.N_patrimonio,
 					obs: novoEquipamento.obs,
+					obs_can: novoEquipamento.obs_can,
 					status: novoEquipamento.status,
 					responsavel_id: novoEquipamento.responsavel_id,
 					foto: fotoArquivo,
@@ -183,6 +187,7 @@ function _page($$renderer, $$props) {
 				nome: "",
 				N_patrimonio: "",
 				obs: "",
+				obs_can: "",
 				status: true,
 				responsavel_id: null,
 				fotoUrl: null
@@ -205,7 +210,7 @@ function _page($$renderer, $$props) {
 			if (!pesquisa.trim()) return true;
 			const termo = pesquisa.toLowerCase();
 			const nomeResp = eq.responsavel?.nome || eq.responsavel?.name || "";
-			return eq.nome?.toLowerCase().includes(termo) || eq.N_patrimonio?.toLowerCase().includes(termo) || eq.obs?.toLowerCase().includes(termo) || nomeResp.toLowerCase().includes(termo);
+			return eq.nome?.toLowerCase().includes(termo) || eq.N_patrimonio?.toLowerCase().includes(termo) || eq.obs?.toLowerCase().includes(termo) || eq.obs_can?.toLowerCase().includes(termo) || nomeResp.toLowerCase().includes(termo);
 		}).filter((eq) => {
 			return true;
 		}).sort((a, b) => {
@@ -260,7 +265,15 @@ function _page($$renderer, $$props) {
 						$$renderer.push(`<!--]--></div></div>`);
 					},
 					campos: ($$renderer) => {
-						$$renderer.push(`<div class="field"><label for="nome-equipamento">Nome do Equipamento</label> <input id="nome-equipamento" type="text"${attr("value", novoEquipamento.nome)} placeholder="Ex: Notebook Dell" required=""/></div> <div class="field"><label for="numero-equipamento">Número</label> <input id="numero-equipamento" type="text"${attr("value", novoEquipamento.N_patrimonio)} placeholder="Ex: PAT-101" required=""/></div> <div class="field"><label for="obs-equipamento">Observação</label> <input id="obs-equipamento" type="text"${attr("value", novoEquipamento.obs)} placeholder="Ex: funciona apenas em 220V" required=""/></div> <div class="field"><label for="responsavel-equipamento">Responsável</label> `);
+						$$renderer.push(`<div class="field"><label for="nome-equipamento">Nome do Equipamento</label> <input id="nome-equipamento" type="text"${attr("value", novoEquipamento.nome)} placeholder="Ex: Notebook Dell" required=""/></div> <div class="field"><label for="numero-equipamento">Número</label> <input id="numero-equipamento" type="text"${attr("value", novoEquipamento.N_patrimonio)} placeholder="Ex: PAT-101" required=""/></div> <div class="field"><label for="obs-equipamento">Observação</label> <input id="obs-equipamento" type="text"${attr("value", novoEquipamento.obs)} placeholder="Ex: funciona apenas em 220V" required=""/></div> `);
+						if (!novoEquipamento.status) {
+							$$renderer.push("<!--[0-->");
+							$$renderer.push(`<div class="field"><label for="obs-can-equipamento">Motivo da inativação</label> <textarea id="obs-can-equipamento" placeholder="Informe o motivo da inativação" rows="3">`);
+							const $$body = escape_html(novoEquipamento.obs_can);
+							if ($$body) $$renderer.push(`${$$body}`);
+							$$renderer.push(`</textarea></div>`);
+						} else $$renderer.push("<!--[-1-->");
+						$$renderer.push(`<!--]--> <div class="field"><label for="responsavel-equipamento">Responsável</label> `);
 						$$renderer.select({
 							id: "responsavel-equipamento",
 							value: novoEquipamento.responsavel_id
@@ -287,7 +300,7 @@ function _page($$renderer, $$props) {
 						$$renderer.push(`<div class="filtro-status"><button type="button"${attr_class(`chip ativo`)}>Todos</button> <button type="button"${attr_class(`chip `)}>Ativos</button> <button type="button"${attr_class(`chip `)}>Inativos</button></div>`);
 					},
 					"tabela-header": ($$renderer) => {
-						$$renderer.push(`<div class="table-header"><div class="th flex-2"><span class="material-symbols-outlined" style="font-size:16px; margin-right:4px; vertical-align:middle">computer</span> Nome</div> <div class="th flex-1">Número</div> <div class="th flex-2">Observação</div> <div class="th flex-2">Responsável</div> <div class="th flex-1">Status</div> <div class="th flex-1">Ações</div></div>`);
+						$$renderer.push(`<div class="table-header"><div class="th flex-2"><span class="material-symbols-outlined" style="font-size:16px; margin-right:4px; vertical-align:middle">computer</span> Nome</div> <div class="th flex-1">Número</div> <div class="th flex-2">Observação</div> <div class="th flex-2">Motivo (inativo)</div> <div class="th flex-2">Responsável</div> <div class="th flex-1">Status</div> <div class="th flex-1">Ações</div></div>`);
 					},
 					"tabela-body": ($$renderer) => {
 						{
@@ -295,7 +308,7 @@ function _page($$renderer, $$props) {
 							const each_array_1 = ensure_array_like(equipamentosFiltrados);
 							for (let index = 0, $$length = each_array_1.length; index < $$length; index++) {
 								let s = each_array_1[index];
-								$$renderer.push(`<div${attr_class(`table-row ${index % 2 === 0 ? "even" : "odd"}`)}><div class="td flex-2"><span class="text-truncate">${escape_html(s.nome)}</span></div> <div class="td flex-1"><span class="badge-numero">${escape_html(s.N_patrimonio)}</span></div> <div class="td flex-2"><span class="text-truncate">${escape_html(s.obs)}</span></div> <div class="td flex-2"><span class="text-truncate">${escape_html(s.responsavel?.nome || s.responsavel?.name || "—")}</span></div> <div class="td flex-1"><span${attr_class(`badge-status ${s.status ? "ativo" : "inativo"}`)}>${escape_html(s.status ? "Ativo" : "Inativo")}</span></div> <div class="td flex-1 action-cell"><button type="button" class="btn-action info" title="Informações" aria-label="Informações do equipamento"><span class="material-symbols-outlined">info</span></button> <button class="btn-action edit" title="Editar"><span class="material-symbols-outlined">edit</span></button></div></div>`);
+								$$renderer.push(`<div${attr_class(`table-row ${index % 2 === 0 ? "even" : "odd"}`)}><div class="td flex-2"><span class="text-truncate">${escape_html(s.nome)}</span></div> <div class="td flex-1"><span class="badge-numero">${escape_html(s.N_patrimonio)}</span></div> <div class="td flex-2"><span class="text-truncate">${escape_html(s.obs)}</span></div> <div class="td flex-2"><span class="text-truncate">${escape_html(!s.status ? s.obs_can || "—" : "—")}</span></div> <div class="td flex-2"><span class="text-truncate">${escape_html(s.responsavel?.nome || s.responsavel?.name || "—")}</span></div> <div class="td flex-1"><span${attr_class(`badge-status ${s.status ? "ativo" : "inativo"}`)}>${escape_html(s.status ? "Ativo" : "Inativo")}</span></div> <div class="td flex-1 action-cell"><button type="button" class="btn-action info" title="Informações" aria-label="Informações do equipamento"><span class="material-symbols-outlined">info</span></button> <button class="btn-action edit" title="Editar"><span class="material-symbols-outlined">edit</span></button></div></div>`);
 							}
 							$$renderer.push(`<!--]-->`);
 						}

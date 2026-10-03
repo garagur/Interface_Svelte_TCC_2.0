@@ -34,6 +34,7 @@
     export let onSubmit;
     export let onLimpar;
     export let onSair;
+    export let onConfirmarAgendamento = null;
 
     export let ocorrenciasPendentes = null;
     export let enviando = false;
@@ -370,6 +371,7 @@
                             {usuarioId}
                             {cargo}
                             onDeletar={abrirModalDeletar}
+                            onConfirmar={onConfirmarAgendamento}
                             embutido
                             recursoUnico
                         />

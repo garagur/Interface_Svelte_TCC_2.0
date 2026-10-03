@@ -7,7 +7,7 @@ import { t as carregarEquipamentos } from "../../../chunks/List_Equipamento_Serv
 import { t as carregarUsuarios } from "../../../chunks/List_User_Service.js";
 import { n as carregarHorariosProfessor, r as carregarHorariosSala } from "../../../chunks/List_Horario_Service.js";
 import { t as carregarSalas } from "../../../chunks/List_Sala_Service.js";
-import { a as deletarAgendamentoSala, n as carregarAgendamentosSalas, r as deletarAgendamentoEquipamento, t as carregarAgendamentosEquipamentos } from "../../../chunks/List_Agendamento_Equipamento_Service.js";
+import { i as deletarAgendamentoEquipamento, n as carregarAgendamentosEquipamentos, o as deletarAgendamentoSala, r as carregarAgendamentosSalas, t as confirmarAgendamento } from "../../../chunks/Confirmar_Agendamento_Service.js";
 import { t as InformacoesCard } from "../../../chunks/InformacoesCard.js";
 import { t as buscarUsuario } from "../../../chunks/Buscar_Usuario_Service.js";
 //#region src/routes/informacoes/+page.svelte
@@ -331,6 +331,23 @@ function _page($$renderer, $$props) {
 				throw e;
 			}
 		}
+		async function confirmar(ag) {
+			try {
+				const status = (await confirmarAgendamento(ag))?.status || "ativo";
+				if (ag.tipo === "equipamento") agendamentosEquipamentoItem = agendamentosEquipamentoItem.map((item) => item.id === ag.id ? {
+					...item,
+					status
+				} : item);
+				else agendamentosSalaItem = agendamentosSalaItem.map((item) => item.id === ag.id ? {
+					...item,
+					status
+				} : item);
+				montarEstatisticas();
+			} catch (e) {
+				erro = e?.message || "Erro ao confirmar o agendamento.";
+				throw e;
+			}
+		}
 		$: agendamentos = [...agendamentosSalaItem, ...agendamentosEquipamentoItem];
 		InformacoesCard($$renderer, {
 			tipo,
@@ -352,7 +369,8 @@ function _page($$renderer, $$props) {
 			carregandoAgendamentos,
 			erro,
 			onSair: () => goto("/main"),
-			onDeletar: deletar
+			onDeletar: deletar,
+			onConfirmar: confirmar
 		});
 		if ($$store_subs) unsubscribe_stores($$store_subs);
 	});

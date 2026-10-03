@@ -4,7 +4,7 @@ import { t as goto } from "../../../chunks/client.js";
 import "../../../chunks/navigation.js";
 import "../../../chunks/List_Horario_Service.js";
 import { t as atualizarUsuario } from "../../../chunks/Update_User_Service.js";
-import { a as deletarAgendamentoSala, r as deletarAgendamentoEquipamento } from "../../../chunks/List_Agendamento_Equipamento_Service.js";
+import { i as deletarAgendamentoEquipamento, o as deletarAgendamentoSala, t as confirmarAgendamento } from "../../../chunks/Confirmar_Agendamento_Service.js";
 import { t as InformacoesCard } from "../../../chunks/InformacoesCard.js";
 import "../../../chunks/Buscar_Usuario_Service.js";
 //#region src/routes/minhas_informacoes/+page.svelte
@@ -132,6 +132,23 @@ function _page($$renderer, $$props) {
 				throw e;
 			}
 		}
+		async function confirmar(ag) {
+			try {
+				const status = (await confirmarAgendamento(ag))?.status || "ativo";
+				if (ag.tipo === "equipamento") agendamentosEquipamento = agendamentosEquipamento.map((item) => item.id === ag.id ? {
+					...item,
+					status
+				} : item);
+				else agendamentosSala = agendamentosSala.map((item) => item.id === ag.id ? {
+					...item,
+					status
+				} : item);
+				montarEstatisticas();
+			} catch (e) {
+				erro = e?.message || "Erro ao confirmar o agendamento.";
+				throw e;
+			}
+		}
 		$: itemPerfil = usuario && {
 			id: usuario.id,
 			nome: usuario.nome,
@@ -179,6 +196,7 @@ function _page($$renderer, $$props) {
 			cargo: usuario?.cargo || "",
 			onSair: () => goto("/main"),
 			onDeletar: deletar,
+			onConfirmar: confirmar,
 			onSalvarPerfil: salvarPerfil
 		});
 	});

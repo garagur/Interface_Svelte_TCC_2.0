@@ -4,4 +4,5 @@ export const AGENDAMENTOSALA_ROUTE = {
     buscar: (id) => `/agendamento-salas/${id}`,
     cadastrar: '/agendamento-salas',
     deletar: (id) => `/agendamento-salas/${id}`,
+    atualizarStatus: (id) => `/agendamento-salas/${id}/status`,
 }

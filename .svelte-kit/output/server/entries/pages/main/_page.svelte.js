@@ -4,7 +4,7 @@ import { t as goto } from "../../../chunks/client.js";
 import "../../../chunks/navigation.js";
 import { t as CabecalhoGlobal } from "../../../chunks/CabecalhoGlobal.js";
 import "../../../chunks/BlocoAgendamentoCard.js";
-import { a as deletarAgendamentoSala, c as ConfirmarDelecaoModal, r as deletarAgendamentoEquipamento, s as ListaAgendamentosCard } from "../../../chunks/List_Agendamento_Equipamento_Service.js";
+import { c as ListaAgendamentosCard, i as deletarAgendamentoEquipamento, l as ConfirmarDelecaoModal, o as deletarAgendamentoSala, t as confirmarAgendamento } from "../../../chunks/Confirmar_Agendamento_Service.js";
 import "../../../chunks/Buscar_Usuario_Service.js";
 //#region src/lib/components/main/MainCard.svelte
 function MainCard($$renderer, $$props) {
@@ -16,6 +16,7 @@ function MainCard($$renderer, $$props) {
 		let cargo = fallback($$props["cargo"], "");
 		let onSair = fallback($$props["onSair"], () => {});
 		let onNovoAgendamento = fallback($$props["onNovoAgendamento"], () => {});
+		let onConfirmarAgendamento = fallback($$props["onConfirmarAgendamento"], null);
 		let agendamentos = fallback($$props["agendamentos"], () => [], true);
 		let carregando = fallback($$props["carregando"], false);
 		let erro = fallback($$props["erro"], "");
@@ -81,7 +82,8 @@ function MainCard($$renderer, $$props) {
 			carregando,
 			usuarioId,
 			cargo,
-			onDeletar: abrirModalDeletar
+			onDeletar: abrirModalDeletar,
+			onConfirmar: onConfirmarAgendamento
 		});
 		$$renderer.push(`<!--]--></div> <div class="bottom-action"><button class="btn-primary btn-novo-agendamento"><span class="material-symbols-outlined">add_circle</span> Novo Agendamento</button></div></main></div>`);
 		bind_props($$props, {
@@ -91,6 +93,7 @@ function MainCard($$renderer, $$props) {
 			cargo,
 			onSair,
 			onNovoAgendamento,
+			onConfirmarAgendamento,
 			agendamentos,
 			carregando,
 			erro
@@ -108,6 +111,18 @@ function _page($$renderer, $$props) {
 		let agendamentos = [];
 		let carregando = false;
 		let erro = "";
+		async function confirmarAgendamento$1(ag) {
+			try {
+				const atualizado = await confirmarAgendamento(ag);
+				agendamentos = agendamentos.map((item) => item.id === ag.id && item.tipo === ag.tipo ? {
+					...item,
+					status: atualizado?.status || "ativo"
+				} : item);
+			} catch (e) {
+				erro = e?.message || "Erro ao confirmar o agendamento.";
+				throw e;
+			}
+		}
 		function irParaNovoAgendamento() {
 			goto("/agendamento");
 		}
@@ -124,7 +139,8 @@ function _page($$renderer, $$props) {
 			carregando,
 			erro,
 			onSair: sair,
-			onNovoAgendamento: irParaNovoAgendamento
+			onNovoAgendamento: irParaNovoAgendamento,
+			onConfirmarAgendamento: confirmarAgendamento$1
 		});
 	});
 }

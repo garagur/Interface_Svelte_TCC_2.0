@@ -15,6 +15,7 @@
     export let cargo = "";
     export let onSair = () => {};
     export let onNovoAgendamento = () => {};
+    export let onConfirmarAgendamento = null;
     export let agendamentos = [];
     export let carregando = false;
     export let erro = "";
@@ -158,6 +159,7 @@
                     {usuarioId}
                     {cargo}
                     onDeletar={abrirModalDeletar}
+                    onConfirmar={onConfirmarAgendamento}
                 />
             {:else}
                 <CalendarioAgendamentos

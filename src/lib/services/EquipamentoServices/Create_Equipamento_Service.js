@@ -44,6 +44,9 @@ export async function cadastrarEquipamento(novoEquipamento, token) {
     formData.append('N_patrimonio', novoEquipamento.N_patrimonio)
     if (novoEquipamento.obs) formData.append('obs', novoEquipamento.obs)
     formData.append('status', novoEquipamento.status ? '1' : '0')
+    if (!novoEquipamento.status && novoEquipamento.obs_can?.trim()) {
+        formData.append('obs_can', novoEquipamento.obs_can.trim())
+    }
     if (novoEquipamento.responsavel_id) {
         formData.append('responsavel_id', String(novoEquipamento.responsavel_id))
     }

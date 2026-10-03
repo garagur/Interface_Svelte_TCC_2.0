@@ -56,6 +56,8 @@
 <div
     class="ag-bloco-inner {proprio ? 'proprio' : 'outro'}"
     class:passado={agendamentoPassado}
+    class:ocioso={ag.status === "ocioso"}
+    class:em-andamento={ag.status === "em_andamento"}
     class:cancelado={agendamentoCancelado}
 >
     <span class="ag-hora">
@@ -150,6 +152,28 @@
     .ag-bloco-inner.passado .ag-hora,
     .ag-bloco-inner.passado .ag-label {
         color: var(--text-muted);
+    }
+
+    .ag-bloco-inner.ocioso {
+        background: var(--warning-light);
+        border-left-color: var(--warning);
+    }
+
+    .ag-bloco-inner.ocioso .ag-hora,
+    .ag-bloco-inner.ocioso .ag-icon,
+    .ag-bloco-inner.ocioso .ag-label {
+        color: var(--warning-text);
+    }
+
+    .ag-bloco-inner.em-andamento {
+        background: color-mix(in srgb, var(--focus) 16%, var(--white));
+        border-left-color: var(--focus);
+    }
+
+    .ag-bloco-inner.em-andamento .ag-hora,
+    .ag-bloco-inner.em-andamento .ag-icon,
+    .ag-bloco-inner.em-andamento .ag-label {
+        color: #1d4ed8;
     }
 
     .ag-bloco-inner.cancelado {

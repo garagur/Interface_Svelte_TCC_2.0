@@ -5,6 +5,7 @@
   import MainCard from "$lib/components/main/MainCard.svelte";
   import { carregarAgendamentosSalas } from "$lib/services/AgendamentoServices/AgendamentoSala/List_Agendamento_Sala_Service.js";
   import { carregarAgendamentosEquipamentos } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/List_Agendamento_Equipamento_Service.js";
+  import { confirmarAgendamento as confirmarAgendamentoService } from "$lib/services/AgendamentoServices/Confirmar_Agendamento_Service.js";
   import { buscarUsuario } from "$lib/services/UserServices/Buscar_Usuario_Service.js";
 
   let token = "";
@@ -65,6 +66,20 @@
     }
   }
 
+  async function confirmarAgendamento(ag) {
+    try {
+      const atualizado = await confirmarAgendamentoService(ag);
+      agendamentos = agendamentos.map((item) =>
+        item.id === ag.id && item.tipo === ag.tipo
+          ? { ...item, status: atualizado?.status || "ativo" }
+          : item,
+      );
+    } catch (e) {
+      erro = e?.message || "Erro ao confirmar o agendamento.";
+      throw e;
+    }
+  }
+
   function irParaNovoAgendamento() {
     goto("/agendamento");
   }
@@ -85,4 +100,5 @@
   {erro}
   onSair={sair}
   onNovoAgendamento={irParaNovoAgendamento}
+  onConfirmarAgendamento={confirmarAgendamento}
 />

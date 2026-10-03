@@ -67,6 +67,8 @@
     export let onSair;
     /** @type {((ag: any) => Promise<void> | void) | null} */
     export let onDeletar = null;
+    /** @type {((ag: any) => Promise<void> | void) | null} */
+    export let onConfirmar = null;
 
     let agendamentoParaDeletar = null;
     let processando = false;
@@ -738,6 +740,7 @@
                         {usuarioId}
                         {cargo}
                         onDeletar={abrirModal}
+                        {onConfirmar}
                     />
                 </div>
             {/if}

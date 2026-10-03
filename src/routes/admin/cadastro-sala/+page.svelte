@@ -28,6 +28,7 @@
     let novaSala = {
         nome: "",
         obs: "",
+        obs_can: "",
         status: true,
         responsavel_id: null,
         fotoUrl: null,
@@ -90,6 +91,7 @@
             const dadosEnviar = {
                 nome: novaSala.nome,
                 obs: novaSala.obs,
+                obs_can: novaSala.obs_can,
                 status: novaSala.status,
                 responsavel_id: novaSala.responsavel_id,
                 foto: fotoArquivo,
@@ -116,6 +118,7 @@
         novaSala = {
             nome: sala.nome,
             obs: sala.obs,
+            obs_can: sala.obs_can || "",
             status: sala.status,
             responsavel_id: sala.responsavel_id ?? sala.responsavel?.id ?? null,
             fotoUrl: sala.fotoUrl ?? sala.foto_url ?? null,
@@ -133,6 +136,7 @@
         novaSala = {
             nome: "",
             obs: "",
+            obs_can: "",
             status: true,
             responsavel_id: null,
             fotoUrl: null,
@@ -184,6 +188,7 @@
             return (
                 s.nome?.toLowerCase().includes(termo) ||
                 s.obs?.toLowerCase().includes(termo) ||
+                s.obs_can?.toLowerCase().includes(termo) ||
                 nomeResp.toLowerCase().includes(termo)
             );
         })
@@ -283,6 +288,17 @@
                 required
             />
         </div>
+        {#if !novaSala.status}
+            <div class="field">
+                <label for="obs-can-sala">Motivo da inativação</label>
+                <textarea
+                    id="obs-can-sala"
+                    bind:value={novaSala.obs_can}
+                    placeholder="Informe o motivo da inativação"
+                    rows="3"
+                ></textarea>
+            </div>
+        {/if}
         <div class="field">
             <label for="responsavel-sala">Responsável</label>
             <select id="responsavel-sala" bind:value={novaSala.responsavel_id}>
@@ -350,6 +366,7 @@
                 Nome
             </div>
             <div class="th flex-2">Observação</div>
+            <div class="th flex-2">Motivo (inativo)</div>
             <div class="th flex-2">Responsável</div>
             <div class="th flex-1">Status</div>
             <div class="th flex-1">Ações</div>
@@ -364,6 +381,11 @@
                 </div>
                 <div class="td flex-2">
                     <span class="text-truncate">{s.obs}</span>
+                </div>
+                <div class="td flex-2">
+                    <span class="text-truncate"
+                        >{!s.status ? s.obs_can || "—" : "—"}</span
+                    >
                 </div>
                 <div class="td flex-2">
                     <span class="text-truncate"

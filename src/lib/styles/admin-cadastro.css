@@ -35,19 +35,40 @@
 }
 
 .escopo-admin-cadastro .form-card input,
-.escopo-admin-cadastro .form-card select {
+.escopo-admin-cadastro .form-card select,
+.escopo-admin-cadastro .form-card textarea {
     width: 360px;
     margin: 0;
-    height: 40px;
     border: none;
     background-color: var(--white);
     border-radius: 8px;
-    padding: 0 12px;
     box-sizing: border-box;
     box-shadow: inset 4px 4px 8px var(--shadow-dark),
         inset -4px -4px 8px var(--shadow-light-medium);
     outline: none;
     color: var(--text-dark);
+}
+
+.escopo-admin-cadastro .form-card input,
+.escopo-admin-cadastro .form-card select {
+    height: 40px;
+    padding: 0 12px;
+}
+
+.escopo-admin-cadastro .form-card textarea {
+    min-height: 88px;
+    padding: 10px 12px;
+    resize: vertical;
+    font: inherit;
+}
+
+.escopo-admin-cadastro .form-card input:focus,
+.escopo-admin-cadastro .form-card select:focus,
+.escopo-admin-cadastro .form-card textarea:focus {
+    box-shadow:
+        inset 3px 3px 6px var(--shadow-dark),
+        inset -3px -3px 6px var(--shadow-light-medium),
+        0 0 0 2px color-mix(in srgb, var(--focus) 28%, transparent);
 }
 
 .escopo-admin-cadastro .table-card {
@@ -653,7 +674,8 @@
 }
 
 .escopo-admin-cadastro .form-card-modal input,
-.escopo-admin-cadastro .form-card-modal select {
+.escopo-admin-cadastro .form-card-modal select,
+.escopo-admin-cadastro .form-card-modal textarea {
     width: 100%;
 }
 

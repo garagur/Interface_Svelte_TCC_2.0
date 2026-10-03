@@ -9,7 +9,7 @@ import { a as BlocoHorarioCard, o as GradeSemanal, r as carregarHorariosSala } f
 import "../../../chunks/List_Turma_Service.js";
 import "../../../chunks/List_Sala_Service.js";
 import { n as GradeMensal, t as BlocoAgendamentoCard } from "../../../chunks/BlocoAgendamentoCard.js";
-import { a as deletarAgendamentoSala, c as ConfirmarDelecaoModal, i as AGENDAMENTOEQUIPAMENTO_ROUTE, n as carregarAgendamentosSalas, o as AGENDAMENTOSALA_ROUTE, r as deletarAgendamentoEquipamento, t as carregarAgendamentosEquipamentos } from "../../../chunks/List_Agendamento_Equipamento_Service.js";
+import { a as AGENDAMENTOEQUIPAMENTO_ROUTE, i as deletarAgendamentoEquipamento, l as ConfirmarDelecaoModal, n as carregarAgendamentosEquipamentos, o as deletarAgendamentoSala, r as carregarAgendamentosSalas, s as AGENDAMENTOSALA_ROUTE, t as confirmarAgendamento } from "../../../chunks/Confirmar_Agendamento_Service.js";
 //#region src/lib/components/Card/ConfirmarRecorrenciaModal.svelte
 function ConfirmarRecorrenciaModal($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
@@ -97,6 +97,7 @@ function AgendamentoCard($$renderer, $$props) {
 		let onSubmit = $$props["onSubmit"];
 		let onLimpar = $$props["onLimpar"];
 		let onSair = $$props["onSair"];
+		let onConfirmarAgendamento = fallback($$props["onConfirmarAgendamento"], null);
 		let ocorrenciasPendentes = fallback($$props["ocorrenciasPendentes"], null);
 		let enviando = fallback($$props["enviando"], false);
 		let progresso = fallback($$props["progresso"], () => ({
@@ -355,6 +356,7 @@ function AgendamentoCard($$renderer, $$props) {
 			onSubmit,
 			onLimpar,
 			onSair,
+			onConfirmarAgendamento,
 			ocorrenciasPendentes,
 			enviando,
 			progresso,
@@ -624,6 +626,13 @@ function _page($$renderer, $$props) {
 				carregandoLista = false;
 			}
 		}
+		async function confirmarAgendamento$1(ag) {
+			const atualizado = await confirmarAgendamento(ag);
+			agendamentos = agendamentos.map((item) => item.id === ag.id && item.tipo === ag.tipo ? {
+				...item,
+				status: atualizado?.status || "ativo"
+			} : item);
+		}
 		async function carregarBlocosFixos(id) {
 			carregandoBlocos = true;
 			try {
@@ -766,6 +775,7 @@ function _page($$renderer, $$props) {
 				resultadoFinal,
 				onConfirmarRecorrencia: confirmarRecorrencia,
 				onCancelarRecorrencia: cancelarRecorrencia,
+				onConfirmarAgendamento: confirmarAgendamento$1,
 				get modo() {
 					return modo;
 				},

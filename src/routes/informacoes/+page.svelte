@@ -18,6 +18,7 @@
     import { deletarAgendamentoSala } from "$lib/services/AgendamentoServices/AgendamentoSala/Deleted_Agendamento_Sala_Service.js";
     import { carregarAgendamentosEquipamentos } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/List_Agendamento_Equipamento_Service.js";
     import { deletarAgendamentoEquipamento } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/Deleted_Agendamento_equipamento.js";
+    import { confirmarAgendamento as confirmarAgendamentoService } from "$lib/services/AgendamentoServices/Confirmar_Agendamento_Service.js";
 
     const ROTULOS_CARGO = {
         admin: "Administrador",
@@ -460,6 +461,26 @@
         }
     }
 
+    async function confirmar(ag) {
+        try {
+            const atualizado = await confirmarAgendamentoService(ag);
+            const status = atualizado?.status || "ativo";
+            if (ag.tipo === "equipamento") {
+                agendamentosEquipamentoItem = agendamentosEquipamentoItem.map(
+                    (item) => (item.id === ag.id ? { ...item, status } : item),
+                );
+            } else {
+                agendamentosSalaItem = agendamentosSalaItem.map((item) =>
+                    item.id === ag.id ? { ...item, status } : item,
+                );
+            }
+            montarEstatisticas();
+        } catch (e) {
+            erro = e?.message || "Erro ao confirmar o agendamento.";
+            throw e;
+        }
+    }
+
     $: agendamentos = [...agendamentosSalaItem, ...agendamentosEquipamentoItem];
 </script>
 
@@ -484,4 +505,5 @@
     {erro}
     onSair={() => goto("/main")}
     onDeletar={deletar}
+    onConfirmar={confirmar}
 />
