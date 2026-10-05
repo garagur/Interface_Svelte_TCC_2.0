@@ -399,6 +399,9 @@
       "_List_Sala_Service.js",
       "_List_Turma_Service.js",
       "_BlocoAgendamentoCard.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.CGleTJAF.css"
     ]
   },
   "src/routes/informacoes/+layout.svelte": {

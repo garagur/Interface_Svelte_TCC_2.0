@@ -84,7 +84,7 @@ function GradeSemanal($$renderer, $$props) {
 function BlocoHorarioCard($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
 		let bloco = $$props["bloco"];
-		/** @type {((bloco: any) => void) | null} */
+		/** @type {((id: string | number) => void) | null} */
 		let onRemover = fallback($$props["onRemover"], null);
 		let mostrarTurma = fallback($$props["mostrarTurma"], false);
 		function formatarHora(hora) {

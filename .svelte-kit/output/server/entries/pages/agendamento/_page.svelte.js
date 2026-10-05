@@ -29,10 +29,10 @@ function ConfirmarRecorrenciaModal($$renderer, $$props) {
 		let onCancelar = $$props["onCancelar"];
 		if (ocorrencias || resultadoFinal) {
 			$$renderer.push("<!--[0-->");
-			$$renderer.push(`<div class="modal-overlay"><div class="modal-recorrencia">`);
+			$$renderer.push(`<div class="modal-overlay svelte-180rq4q"><div class="modal-recorrencia svelte-180rq4q">`);
 			if (resultadoFinal) {
 				$$renderer.push("<!--[0-->");
-				$$renderer.push(`<h3>Resultado do agendamento</h3> <p class="msg-sucesso">${escape_html(resultadoFinal.sucesso.length)} agendamento(s) criado(s) com
+				$$renderer.push(`<h3 class="svelte-180rq4q">Resultado do agendamento</h3> <p class="msg-sucesso">${escape_html(resultadoFinal.sucesso.length)} agendamento(s) criado(s) com
                     sucesso.</p> `);
 				if (resultadoFinal.falha.length > 0) {
 					$$renderer.push("<!--[0-->");
@@ -44,16 +44,16 @@ function ConfirmarRecorrenciaModal($$renderer, $$props) {
 					}
 					$$renderer.push(`<!--]--></ul>`);
 				} else $$renderer.push("<!--[-1-->");
-				$$renderer.push(`<!--]--> <div class="bottom-action"><button class="btn-primary">Fechar</button></div>`);
+				$$renderer.push(`<!--]--> <div class="bottom-action svelte-180rq4q"><button class="btn-primary svelte-180rq4q">Fechar</button></div>`);
 			} else {
 				$$renderer.push("<!--[-1-->");
-				$$renderer.push(`<h3>Confirmar ${escape_html(ocorrencias.length)} agendamento(s)</h3> <ul class="lista-ocorrencias"><!--[-->`);
+				$$renderer.push(`<h3 class="svelte-180rq4q">Confirmar ${escape_html(ocorrencias.length)} agendamento(s)</h3> <ul class="lista-ocorrencias svelte-180rq4q"><!--[-->`);
 				const each_array_1 = ensure_array_like(ocorrencias);
 				for (let $$index_1 = 0, $$length = each_array_1.length; $$index_1 < $$length; $$index_1++) {
 					let o = each_array_1[$$index_1];
 					$$renderer.push(`<li>${escape_html(o.data)} — ${escape_html(horaInicio)} às ${escape_html(horaFim)}</li>`);
 				}
-				$$renderer.push(`<!--]--></ul> <p class="aviso-modal">Alguns podem falhar caso já exista conflito de horário.</p> <div class="bottom-action"><button class="btn-secondary"${attr("disabled", enviando, true)}>Cancelar</button> <button class="btn-primary"${attr("disabled", enviando, true)}>${escape_html(enviando ? `Enviando ${progresso.atual}/${progresso.total}...` : "Confirmar e Agendar")}</button></div>`);
+				$$renderer.push(`<!--]--></ul> <p class="aviso-modal svelte-180rq4q">Alguns podem falhar caso já exista conflito de horário.</p> <div class="bottom-action svelte-180rq4q"><button class="btn-secondary svelte-180rq4q"${attr("disabled", enviando, true)}>Cancelar</button> <button class="btn-primary svelte-180rq4q"${attr("disabled", enviando, true)}>${escape_html(enviando ? `Enviando ${progresso.atual}/${progresso.total}...` : "Agendar")}</button></div>`);
 			}
 			$$renderer.push(`<!--]--></div></div>`);
 		} else $$renderer.push("<!--[-1-->");

@@ -1,6 +1,6 @@
 <script>
     export let bloco;
-    /** @type {((bloco: any) => void) | null} */
+    /** @type {((id: string | number) => void) | null} */
     export let onRemover = null;
     export let mostrarTurma = false;
 
@@ -38,7 +38,7 @@
             <button
                 class="btn-action delete"
                 title="Remover"
-                on:click={() => onRemover(bloco)}
+                on:click={() => onRemover(bloco?.id)}
             >
                 <span class="material-symbols-outlined">delete</span>
             </button>
