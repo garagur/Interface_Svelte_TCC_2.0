@@ -21,6 +21,8 @@
     let filtroStatusAg = "todos"; // "todos" | "ativo" | "finalizado"
     let filtroTipoAg = "todos"; // "todos" | "sala" | "equipamento"
     let ordenacaoAg = "recente"; // "recente" | "antigo" | "az" | "za"
+    let filtroDataInicio = "";
+    let filtroDataFim = "";
 
     // Agendamento aberto no modal de detalhes (null = fechado)
     let agDetalhe = null;
@@ -35,6 +37,10 @@
         if (!str) return null;
         const d = new Date(String(str).replace(" ", "T").slice(0, 19));
         return isNaN(d.getTime()) ? null : d;
+    }
+
+    function dataAgendamento(str) {
+        return String(str || "").match(/^\d{4}-\d{2}-\d{2}/)?.[0] || "";
     }
 
     function formatarDataHora(str) {
@@ -178,6 +184,14 @@
             return tipoAgendamento(ag) === filtroTipoAg;
         })
         .filter((ag) => {
+            const data = dataAgendamento(ag.data_hora_inicio);
+            if (!data) return !filtroDataInicio && !filtroDataFim;
+            return (
+                (!filtroDataInicio || data >= filtroDataInicio) &&
+                (!filtroDataFim || data <= filtroDataFim)
+            );
+        })
+        .filter((ag) => {
             if (filtroStatusAg === "todos") return true;
             if (filtroStatusAg === "ocioso") return ag.status === "ocioso";
             const status = statusExibicao(ag);
@@ -223,6 +237,51 @@
                 <option value="cancelado">Cancelados</option>
             </select>
         </div>
+
+        <div class="filtro-grupo">
+            <label class="filtro-grupo-label" for="filtro-data-inicio"
+                >Data de</label
+            >
+            <input
+                id="filtro-data-inicio"
+                class="input-data-filtro"
+                type="date"
+                aria-label="Data inicial do filtro"
+                max={filtroDataFim || undefined}
+                bind:value={filtroDataInicio}
+            />
+        </div>
+
+        <div class="filtro-grupo">
+            <label class="filtro-grupo-label" for="filtro-data-fim"
+                >Data até</label
+            >
+            <input
+                id="filtro-data-fim"
+                class="input-data-filtro"
+                type="date"
+                aria-label="Data final do filtro"
+                min={filtroDataInicio || undefined}
+                bind:value={filtroDataFim}
+            />
+        </div>
+
+        {#if filtroDataInicio || filtroDataFim}
+            <button
+                type="button"
+                class="btn-limpar-data"
+                on:click={() => {
+                    filtroDataInicio = "";
+                    filtroDataFim = "";
+                }}
+                title="Limpar filtro de data"
+            >
+                <span class="material-symbols-outlined" aria-hidden="true"
+                    >filter_alt_off</span
+                >
+                Limpar datas
+            </button>
+        {/if}
 
         {#if !recursoUnico}
             <div class="filtro-grupo">
@@ -397,6 +456,42 @@
         box-shadow:
             8px 8px 16px var(--neu-shadow-dark),
             -8px -8px 16px var(--neu-shadow-light);
+    }
+
+    .input-data-filtro {
+        width: 148px;
+        height: 42px;
+        margin: 0;
+        padding: 0 10px;
+        border: none;
+        border-radius: 12px;
+        background: var(--campo-bg);
+        color: var(--text-dark);
+        font: inherit;
+        font-size: 0.8rem;
+        box-shadow:
+            inset 2px 2px 4px var(--neu-shadow-dark),
+            inset -2px -2px 4px var(--neu-shadow-light);
+    }
+
+    .btn-limpar-data {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        min-height: 42px;
+        padding: 0 8px;
+        border: 0;
+        background: transparent;
+        color: var(--text-muted);
+        font: inherit;
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .btn-limpar-data:hover {
+        color: var(--text-dark);
     }
 
     /* Dentro de outro card (página de novo agendamento): sem card próprio e

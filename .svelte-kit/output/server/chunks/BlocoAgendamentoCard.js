@@ -3,7 +3,7 @@ import { u as AgendamentoDetalheModal } from "./Confirmar_Agendamento_Service.js
 //#region src/lib/components/Grades/GradeMensal.svelte
 function GradeMensal($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
-		let agendamentosFiltrados, agendamentosPorData, dias, semanas, mesAnoLabel;
+		let usuariosDisponiveis, turmasDisponiveis, itensDisponiveis, agendamentosFiltrados, agendamentosPorData, dias, semanas, mesAnoLabel;
 		let agendamentos = fallback($$props["agendamentos"], () => [], true);
 		let carregandoLista = fallback($$props["carregandoLista"], false);
 		let hojeStr = fallback($$props["hojeStr"], "");
@@ -13,6 +13,9 @@ function GradeMensal($$renderer, $$props) {
 		let pesquisaAg = "";
 		let filtroStatusAg = "todos";
 		let filtroTipoAg = "todos";
+		let filtroItemAg = "todos";
+		let filtroTurmaAg = "todos";
+		let filtroUsuarioAg = "todos";
 		let ordenacaoAg = "recente";
 		function gerarDias(mes) {
 			const deslocamento = new Date(mes.getFullYear(), mes.getMonth(), 1).getDay();
@@ -53,6 +56,34 @@ function GradeMensal($$renderer, $$props) {
 		function nomeResponsavel(ag) {
 			return ag.user_nome || ag.usuario_nome || ag.professor_nome || "";
 		}
+		function chaveUsuario(ag) {
+			if (ag.user_id != null && ag.user_id !== "") return `id:${ag.user_id}`;
+			const nome = nomeResponsavel(ag);
+			return nome ? `nome:${nome}` : "";
+		}
+		function chaveTurma(ag) {
+			if (ag.turma_id != null && ag.turma_id !== "") return `id:${ag.turma_id}`;
+			return ag.turma_nome ? `nome:${ag.turma_nome}` : "";
+		}
+		function tipoRecurso(ag) {
+			return ag.tipo === "equipamento" ? "equipamento" : "sala";
+		}
+		function chaveItem(ag) {
+			const id = tipoRecurso(ag) === "equipamento" ? ag.equipamento_id : ag.sala_id;
+			const chave = id != null && id !== "" ? `id:${id}` : `nome:${nomeAgendamento(ag)}`;
+			return `${tipoRecurso(ag)}:${chave}`;
+		}
+		function opcoesUnicas(ags, chaveFn, nomeFn) {
+			const opcoes = /* @__PURE__ */ new Map();
+			for (const ag of ags) {
+				const chave = chaveFn(ag);
+				if (chave) opcoes.set(chave, nomeFn(ag) || chave);
+			}
+			return [...opcoes].map(([id, nome]) => ({
+				id,
+				nome
+			})).sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+		}
 		const CABECALHO = [
 			"Dom",
 			"Seg",
@@ -62,10 +93,19 @@ function GradeMensal($$renderer, $$props) {
 			"Sex",
 			"Sáb"
 		];
+		$: usuariosDisponiveis = opcoesUnicas(agendamentos, chaveUsuario, (ag) => nomeResponsavel(ag) || `Usuário ${ag.user_id}`);
+		$: turmasDisponiveis = opcoesUnicas(agendamentos, chaveTurma, (ag) => ag.turma_nome || `Turma ${ag.turma_id}`);
+		$: itensDisponiveis = opcoesUnicas(agendamentos.filter((ag) => true), chaveItem, (ag) => `${tipoRecurso(ag) === "sala" ? "Sala" : "Equipamento"}: ${nomeAgendamento(ag)}`);
 		$: agendamentosFiltrados = agendamentos.filter((ag) => {
 			const termo = pesquisaAg.trim().toLowerCase();
 			if (!termo) return true;
 			return nomeAgendamento(ag).toLowerCase().includes(termo) || nomeResponsavel(ag).toLowerCase().includes(termo) || String(ag.turma_nome || "").toLowerCase().includes(termo) || String(ag.obs || "").toLowerCase().includes(termo);
+		}).filter((ag) => {
+			return true;
+		}).filter((ag) => {
+			return true;
+		}).filter((ag) => {
+			return true;
 		}).filter((ag) => {
 			return true;
 		}).filter((ag) => {
@@ -101,6 +141,9 @@ function GradeMensal($$renderer, $$props) {
 				$$renderer.option({ value: "ativo" }, ($$renderer) => {
 					$$renderer.push(`Ativos`);
 				});
+				$$renderer.option({ value: "em_andamento" }, ($$renderer) => {
+					$$renderer.push(`Em andamento`);
+				});
 				$$renderer.option({ value: "finalizado" }, ($$renderer) => {
 					$$renderer.push(`Concluídos`);
 				});
@@ -119,6 +162,54 @@ function GradeMensal($$renderer, $$props) {
 				$$renderer.option({ value: "equipamento" }, ($$renderer) => {
 					$$renderer.push(`Equipamentos`);
 				});
+			});
+			$$renderer.push(`</label> <label class="grade-filtro"><span>Item</span> `);
+			$$renderer.select({ value: filtroItemAg }, ($$renderer) => {
+				$$renderer.option({ value: "todos" }, ($$renderer) => {
+					$$renderer.push(`Todos`);
+				});
+				$$renderer.push(`<!--[-->`);
+				const each_array = ensure_array_like(itensDisponiveis);
+				for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
+					let item = each_array[$$index];
+					$$renderer.option({ value: item.id }, ($$renderer) => {
+						$$renderer.push(`${escape_html(item.nome)}`);
+					});
+				}
+				$$renderer.push(`<!--]-->`);
+			});
+			$$renderer.push(`</label> <label class="grade-filtro"><span>Turma</span> `);
+			$$renderer.select({ value: filtroTurmaAg }, ($$renderer) => {
+				$$renderer.option({ value: "todos" }, ($$renderer) => {
+					$$renderer.push(`Todas`);
+				});
+				$$renderer.option({ value: "sem-turma" }, ($$renderer) => {
+					$$renderer.push(`Sem turma`);
+				});
+				$$renderer.push(`<!--[-->`);
+				const each_array_1 = ensure_array_like(turmasDisponiveis);
+				for (let $$index_1 = 0, $$length = each_array_1.length; $$index_1 < $$length; $$index_1++) {
+					let turma = each_array_1[$$index_1];
+					$$renderer.option({ value: turma.id }, ($$renderer) => {
+						$$renderer.push(`${escape_html(turma.nome)}`);
+					});
+				}
+				$$renderer.push(`<!--]-->`);
+			});
+			$$renderer.push(`</label> <label class="grade-filtro"><span>Usuário</span> `);
+			$$renderer.select({ value: filtroUsuarioAg }, ($$renderer) => {
+				$$renderer.option({ value: "todos" }, ($$renderer) => {
+					$$renderer.push(`Todos`);
+				});
+				$$renderer.push(`<!--[-->`);
+				const each_array_2 = ensure_array_like(usuariosDisponiveis);
+				for (let $$index_2 = 0, $$length = each_array_2.length; $$index_2 < $$length; $$index_2++) {
+					let usuario = each_array_2[$$index_2];
+					$$renderer.option({ value: usuario.id }, ($$renderer) => {
+						$$renderer.push(`${escape_html(usuario.nome)}`);
+					});
+				}
+				$$renderer.push(`<!--]-->`);
 			});
 			$$renderer.push(`</label> <label class="grade-filtro"><span>Ordenar</span> `);
 			$$renderer.select({ value: ordenacaoAg }, ($$renderer) => {
@@ -141,19 +232,19 @@ function GradeMensal($$renderer, $$props) {
 				$$renderer.push(`<p class="grade-sem-resultados">Nenhum agendamento encontrado com os filtros selecionados.</p>`);
 			} else $$renderer.push("<!--[-1-->");
 			$$renderer.push(`<!--]--> <div class="grade-wrapper"><div class="grade-cabecalho"><!--[-->`);
-			const each_array = ensure_array_like(CABECALHO);
-			for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
-				let dia = each_array[$$index];
+			const each_array_3 = ensure_array_like(CABECALHO);
+			for (let $$index_3 = 0, $$length = each_array_3.length; $$index_3 < $$length; $$index_3++) {
+				let dia = each_array_3[$$index_3];
 				$$renderer.push(`<div class="cabecalho-dia">${escape_html(dia)}</div>`);
 			}
 			$$renderer.push(`<!--]--></div> <div class="grade-semanas"><!--[-->`);
-			const each_array_1 = ensure_array_like(semanas);
-			for (let $$index_3 = 0, $$length = each_array_1.length; $$index_3 < $$length; $$index_3++) {
-				let semana = each_array_1[$$index_3];
+			const each_array_4 = ensure_array_like(semanas);
+			for (let $$index_6 = 0, $$length = each_array_4.length; $$index_6 < $$length; $$index_6++) {
+				let semana = each_array_4[$$index_6];
 				$$renderer.push(`<div class="semana-row"><!--[-->`);
-				const each_array_2 = ensure_array_like(semana);
-				for (let $$index_2 = 0, $$length = each_array_2.length; $$index_2 < $$length; $$index_2++) {
-					let dia = each_array_2[$$index_2];
+				const each_array_5 = ensure_array_like(semana);
+				for (let $$index_5 = 0, $$length = each_array_5.length; $$index_5 < $$length; $$index_5++) {
+					let dia = each_array_5[$$index_5];
 					const chave = dia ? formatarChave(dia) : "";
 					const ags = dia ? agendamentosPorData[chave] || [] : [];
 					const expandido = !!chave && chave === diaExpandido;
@@ -167,9 +258,9 @@ function GradeMensal($$renderer, $$props) {
 							$$renderer.push(`<button type="button"${attr_class("btn-expandir", void 0, { "aberto": expandido })}${attr("aria-expanded", expandido)}${attr("title", expandido ? "Recolher" : "Ver todos os agendamentos")}><span class="material-symbols-outlined" aria-hidden="true">${escape_html(expandido ? "expand_less" : "expand_more")}</span> <span>${escape_html(expandido ? "Recolher" : `Ver mais (${ags.length - LIMITE_VISIVEL})`)}</span></button>`);
 						} else $$renderer.push("<!--[-1-->");
 						$$renderer.push(`<!--]--></div> <div${attr_class("dia-conteudo", void 0, { "expandido": expandido })}><!--[-->`);
-						const each_array_3 = ensure_array_like(visiveis);
-						for (let $$index_1 = 0, $$length = each_array_3.length; $$index_1 < $$length; $$index_1++) {
-							let ag = each_array_3[$$index_1];
+						const each_array_6 = ensure_array_like(visiveis);
+						for (let $$index_4 = 0, $$length = each_array_6.length; $$index_4 < $$length; $$index_4++) {
+							let ag = each_array_6[$$index_4];
 							$$renderer.push(`<div${attr_class(`ag-bloco ${stringify(ag.tipo ?? "sala")}`)}><!--[-->`);
 							slot($$renderer, $$props, "default", { ag }, null);
 							$$renderer.push(`<!--]--></div>`);

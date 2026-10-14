@@ -223,11 +223,16 @@ function ListaAgendamentosCard($$renderer, $$props) {
 		let filtroStatusAg = "todos";
 		let filtroTipoAg = "todos";
 		let ordenacaoAg = "recente";
+		let filtroDataInicio = "";
+		let filtroDataFim = "";
 		let agDetalhe = null;
 		function parseData(str) {
 			if (!str) return null;
 			const d = new Date(String(str).replace(" ", "T").slice(0, 19));
 			return isNaN(d.getTime()) ? null : d;
+		}
+		function dataAgendamento(str) {
+			return String(str || "").match(/^\d{4}-\d{2}-\d{2}/)?.[0] || "";
 		}
 		function formatarPeriodo(inicio, fim) {
 			const ini = parseData(inicio);
@@ -300,6 +305,9 @@ function ListaAgendamentosCard($$renderer, $$props) {
 		}).filter((ag) => {
 			return true;
 		}).filter((ag) => {
+			if (!dataAgendamento(ag.data_hora_inicio)) return true;
+			return true;
+		}).filter((ag) => {
 			return true;
 		}).sort((a, b) => {
 			const dataA = parseData(a.data_hora_inicio)?.getTime() ?? 0;
@@ -326,7 +334,9 @@ function ListaAgendamentosCard($$renderer, $$props) {
 				$$renderer.push(`Cancelados`);
 			});
 		}, "svelte-1c63qri");
-		$$renderer.push(`</div> `);
+		$$renderer.push(`</div> <div class="filtro-grupo svelte-1c63qri"><label class="filtro-grupo-label svelte-1c63qri" for="filtro-data-inicio">Data de</label> <input id="filtro-data-inicio" class="input-data-filtro svelte-1c63qri" type="date" aria-label="Data inicial do filtro"${attr("max", void 0)}${attr("value", filtroDataInicio)}/></div> <div class="filtro-grupo svelte-1c63qri"><label class="filtro-grupo-label svelte-1c63qri" for="filtro-data-fim">Data até</label> <input id="filtro-data-fim" class="input-data-filtro svelte-1c63qri" type="date" aria-label="Data final do filtro"${attr("min", void 0)}${attr("value", filtroDataFim)}/></div> `);
+		$$renderer.push("<!--[-1-->");
+		$$renderer.push(`<!--]--> `);
 		if (!recursoUnico) {
 			$$renderer.push("<!--[0-->");
 			$$renderer.push(`<div class="filtro-grupo svelte-1c63qri"><span class="filtro-grupo-label svelte-1c63qri">Tipo</span> `);

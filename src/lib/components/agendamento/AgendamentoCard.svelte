@@ -508,7 +508,7 @@
                                 {tipo === "semanal"
                                     ? "Cobre 7 dias a partir da data escolhida."
                                     : "Cobre 14 dias a partir da data escolhida."}
-                                Início só a partir de amanhã.
+                                Agendamentos no mesmo dia exigem 15 minutos de antecedência.
                             </p>
                         {/if}
 

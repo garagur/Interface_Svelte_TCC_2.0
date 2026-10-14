@@ -1,5 +1,6 @@
 import { apiFetch } from '../../../../config/api.js'
 import { AGENDAMENTOEQUIPAMENTO_ROUTE } from '../../../../config/routes/Agendamento_Equipamento_Endpoints.js'
+import { validarAntecedenciaAgendamento } from '../Validar_Antecedencia_Agendamento.js'
 
 async function parseJson(response) {
     const text = await response.text()
@@ -14,6 +15,13 @@ async function parseJson(response) {
 export async function cadastrarAgendamento(novoAgendamentoEquipamento, token) {
     if (!token) {
         throw new Error('Token de autenticação não encontrado. Faça login novamente.')
+    }
+
+    const erroAntecedencia = validarAntecedenciaAgendamento(
+        novoAgendamentoEquipamento.data_hora_inicio,
+    );
+    if (erroAntecedencia) {
+        throw new Error(erroAntecedencia)
     }
 
     const resp = await apiFetch(AGENDAMENTOEQUIPAMENTO_ROUTE.cadastrar, {

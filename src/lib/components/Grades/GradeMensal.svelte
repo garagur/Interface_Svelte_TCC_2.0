@@ -14,6 +14,9 @@
     let pesquisaAg = "";
     let filtroStatusAg = "todos";
     let filtroTipoAg = "todos";
+    let filtroItemAg = "todos";
+    let filtroTurmaAg = "todos";
+    let filtroUsuarioAg = "todos";
     let ordenacaoAg = "recente";
 
     function gerarDias(mes) {
@@ -97,11 +100,68 @@
     function nomeResponsavel(ag) {
         return ag.user_nome || ag.usuario_nome || ag.professor_nome || "";
     }
+    function chaveUsuario(ag) {
+        if (ag.user_id != null && ag.user_id !== "") {
+            return `id:${ag.user_id}`;
+        }
+        const nome = nomeResponsavel(ag);
+        return nome ? `nome:${nome}` : "";
+    }
+    function chaveTurma(ag) {
+        if (ag.turma_id != null && ag.turma_id !== "") {
+            return `id:${ag.turma_id}`;
+        }
+        return ag.turma_nome ? `nome:${ag.turma_nome}` : "";
+    }
+    function tipoRecurso(ag) {
+        return ag.tipo === "equipamento" ? "equipamento" : "sala";
+    }
+    function chaveItem(ag) {
+        const id =
+            tipoRecurso(ag) === "equipamento" ? ag.equipamento_id : ag.sala_id;
+        const chave =
+            id != null && id !== ""
+                ? `id:${id}`
+                : `nome:${nomeAgendamento(ag)}`;
+        return `${tipoRecurso(ag)}:${chave}`;
+    }
+    function opcoesUnicas(ags, chaveFn, nomeFn) {
+        const opcoes = new Map();
+        for (const ag of ags) {
+            const chave = chaveFn(ag);
+            if (chave) opcoes.set(chave, nomeFn(ag) || chave);
+        }
+        return [...opcoes]
+            .map(([id, nome]) => ({ id, nome }))
+            .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+    }
+    $: usuariosDisponiveis = opcoesUnicas(
+        agendamentos,
+        chaveUsuario,
+        (ag) => nomeResponsavel(ag) || `Usuário ${ag.user_id}`,
+    );
+    $: turmasDisponiveis = opcoesUnicas(
+        agendamentos,
+        chaveTurma,
+        (ag) => ag.turma_nome || `Turma ${ag.turma_id}`,
+    );
+    $: itensDisponiveis = opcoesUnicas(
+        agendamentos.filter(
+            (ag) =>
+                filtroTipoAg === "todos" || tipoRecurso(ag) === filtroTipoAg,
+        ),
+        chaveItem,
+        (ag) =>
+            filtroTipoAg === "todos"
+                ? `${tipoRecurso(ag) === "sala" ? "Sala" : "Equipamento"}: ${nomeAgendamento(ag)}`
+                : nomeAgendamento(ag),
+    );
     function mudarFiltroStatus(event) {
         filtroStatusAg = event.currentTarget.value;
     }
     function mudarFiltroTipo(event) {
         filtroTipoAg = event.currentTarget.value;
+        filtroItemAg = "todos";
     }
     function mudarOrdenacao(event) {
         ordenacaoAg = event.currentTarget.value;
@@ -124,13 +184,27 @@
         })
         .filter((ag) => {
             if (filtroTipoAg === "todos") return true;
+            return tipoRecurso(ag) === filtroTipoAg;
+        })
+        .filter((ag) => {
+            return filtroItemAg === "todos" || chaveItem(ag) === filtroItemAg;
+        })
+        .filter((ag) => {
+            if (filtroTurmaAg === "todos") return true;
+            if (filtroTurmaAg === "sem-turma") return !chaveTurma(ag);
+            return chaveTurma(ag) === filtroTurmaAg;
+        })
+        .filter((ag) => {
             return (
-                (ag.tipo === "equipamento" ? "equipamento" : "sala") ===
-                filtroTipoAg
+                filtroUsuarioAg === "todos" ||
+                chaveUsuario(ag) === filtroUsuarioAg
             );
         })
         .filter((ag) => {
             if (filtroStatusAg === "todos") return true;
+            if (filtroStatusAg === "em_andamento") {
+                return ag.status === "em_andamento";
+            }
             return statusExibicao(ag) === filtroStatusAg;
         })
         .sort((a, b) => {
@@ -207,6 +281,7 @@
                     >
                         <option value="todos">Todos</option>
                         <option value="ativo">Ativos</option>
+                        <option value="em_andamento">Em andamento</option>
                         <option value="finalizado">Concluídos</option>
                         <option value="cancelado">Cancelados</option>
                     </select>
@@ -217,6 +292,34 @@
                         <option value="todos">Todos</option>
                         <option value="sala">Salas</option>
                         <option value="equipamento">Equipamentos</option>
+                    </select>
+                </label>
+                <label class="grade-filtro">
+                    <span>Item</span>
+                    <select bind:value={filtroItemAg}>
+                        <option value="todos">Todos</option>
+                        {#each itensDisponiveis as item (item.id)}
+                            <option value={item.id}>{item.nome}</option>
+                        {/each}
+                    </select>
+                </label>
+                <label class="grade-filtro">
+                    <span>Turma</span>
+                    <select bind:value={filtroTurmaAg}>
+                        <option value="todos">Todas</option>
+                        <option value="sem-turma">Sem turma</option>
+                        {#each turmasDisponiveis as turma (turma.id)}
+                            <option value={turma.id}>{turma.nome}</option>
+                        {/each}
+                    </select>
+                </label>
+                <label class="grade-filtro">
+                    <span>Usuário</span>
+                    <select bind:value={filtroUsuarioAg}>
+                        <option value="todos">Todos</option>
+                        {#each usuariosDisponiveis as usuario (usuario.id)}
+                            <option value={usuario.id}>{usuario.nome}</option>
+                        {/each}
                     </select>
                 </label>
                 <label class="grade-filtro">

@@ -320,7 +320,7 @@ function AgendamentoCard($$renderer, $$props) {
 				$$renderer.push(`<button type="button"${attr_class(`dia-btn ${diasSemana.includes(d.key) ? "ativo" : ""}`)}>${escape_html(d.label)}</button>`);
 			}
 			$$renderer.push(`<!--]--></div></div> <p class="aviso-recorrencia"><span class="material-symbols-outlined">info</span> ${escape_html(tipo === "semanal" ? "Cobre 7 dias a partir da data escolhida." : "Cobre 14 dias a partir da data escolhida.")}
-                                Início só a partir de amanhã.</p>`);
+                                Agendamentos no mesmo dia exigem 15 minutos de antecedência.</p>`);
 		} else $$renderer.push("<!--[-1-->");
 		$$renderer.push(`<!--]--> `);
 		if (erro) {
@@ -367,6 +367,49 @@ function AgendamentoCard($$renderer, $$props) {
 	});
 }
 //#endregion
+//#region src/lib/services/AgendamentoServices/Validar_Antecedencia_Agendamento.js
+var FUSO_AGENDAMENTO = "America/Cuiaba";
+var formatadorCuiaba = new Intl.DateTimeFormat("en-US", {
+	timeZone: FUSO_AGENDAMENTO,
+	year: "numeric",
+	month: "2-digit",
+	day: "2-digit",
+	hour: "2-digit",
+	minute: "2-digit",
+	hourCycle: "h23"
+});
+function obterDataCuiaba(agora = /* @__PURE__ */ new Date()) {
+	const partes = Object.fromEntries(new Intl.DateTimeFormat("en-US", {
+		timeZone: FUSO_AGENDAMENTO,
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit"
+	}).formatToParts(agora).map(({ type, value }) => [type, value]));
+	return `${partes.year}-${partes.month}-${partes.day}`;
+}
+function converterDataHoraCuiabaParaInstante(dataHoraInicio) {
+	const partes = dataHoraInicio.match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/);
+	if (!partes) return null;
+	const [, ano, mes, dia, horas, minutos] = partes.map(Number);
+	const horarioComoUtc = Date.UTC(ano, mes - 1, dia, horas, minutos);
+	const dataUtc = new Date(horarioComoUtc);
+	if (dataUtc.getUTCFullYear() !== ano || dataUtc.getUTCMonth() !== mes - 1 || dataUtc.getUTCDate() !== dia || dataUtc.getUTCHours() !== horas || dataUtc.getUTCMinutes() !== minutos) return null;
+	let instante = horarioComoUtc;
+	for (let tentativa = 0; tentativa < 3; tentativa += 1) {
+		const valores = Object.fromEntries(formatadorCuiaba.formatToParts(new Date(instante)).map(({ type, value }) => [type, Number(value)]));
+		const ajuste = horarioComoUtc - Date.UTC(valores.year, valores.month - 1, valores.day, valores.hour, valores.minute);
+		instante += ajuste;
+		if (ajuste === 0) break;
+	}
+	return new Date(instante);
+}
+function validarAntecedenciaAgendamento(dataHoraInicio, agora = /* @__PURE__ */ new Date()) {
+	const inicio = converterDataHoraCuiabaParaInstante(dataHoraInicio);
+	if (!inicio) return "Informe uma data e um horário válidos.";
+	if (inicio.getTime() - agora.getTime() < 900 * 1e3) return "O agendamento deve ser feito com pelo menos 15 minutos de antecedência.";
+	return null;
+}
+//#endregion
 //#region src/lib/services/AgendamentoServices/AgendamentoSala/Create_Agendamento_Sala_Service.js
 async function parseJson$1(response) {
 	const text = await response.text();
@@ -379,7 +422,8 @@ async function parseJson$1(response) {
 }
 async function cadastrarAgendamento$1(novoAgendamentoSala, token) {
 	if (!token) throw new Error("Token de autenticação não encontrado. Faça login novamente.");
-	if (!isFuturo(novoAgendamentoSala.data_hora_inicio)) throw new Error("Não é possível agendar para um horário que já passou.");
+	const erroAntecedencia = validarAntecedenciaAgendamento(novoAgendamentoSala.data_hora_inicio);
+	if (erroAntecedencia) throw new Error(erroAntecedencia);
 	const resp = await apiFetch(AGENDAMENTOSALA_ROUTE.cadastrar, {
 		method: "POST",
 		headers: {
@@ -402,11 +446,6 @@ async function cadastrarAgendamento$1(novoAgendamentoSala, token) {
 	}
 	return dados?.data || dados || {};
 }
-function isFuturo(dataHoraInicio) {
-	const inicio = new Date(dataHoraInicio);
-	if (isNaN(inicio.getTime())) return false;
-	return inicio >= /* @__PURE__ */ new Date();
-}
 //#endregion
 //#region src/lib/services/AgendamentoServices/AgendamentoEquipamento/Create_Agendamento_Equipamento_Service.js
 async function parseJson(response) {
@@ -420,6 +459,8 @@ async function parseJson(response) {
 }
 async function cadastrarAgendamento(novoAgendamentoEquipamento, token) {
 	if (!token) throw new Error("Token de autenticação não encontrado. Faça login novamente.");
+	const erroAntecedencia = validarAntecedenciaAgendamento(novoAgendamentoEquipamento.data_hora_inicio);
+	if (erroAntecedencia) throw new Error(erroAntecedencia);
 	const resp = await apiFetch(AGENDAMENTOEQUIPAMENTO_ROUTE.cadastrar, {
 		method: "POST",
 		headers: { "Accept": "application/json" },
@@ -442,23 +483,14 @@ async function cadastrarAgendamento(novoAgendamentoEquipamento, token) {
 //#endregion
 //#region src/lib/services/RecorrenciaService/Validar_Recorrencia.js
 /**
-* Retorna a data de hoje "zerada" (sem hora), no fuso local.
-* @returns {Date}
-*/
-function hojeSemHora() {
-	const agora = /* @__PURE__ */ new Date();
-	return new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
-}
-/**
 * Valida se a data de início de uma recorrência (semanal/quinzenal) é válida.
-* Regra: só pode começar a partir de amanhã (não pode ser hoje nem retroativo).
+* A data não pode ser retroativa; hoje é permitido com a antecedência mínima.
 * @param {string} dataInicio - 'YYYY-MM-DD'
 * @returns {string|null} mensagem de erro, ou null se válido
 */
 function validarDataInicioRecorrencia(dataInicio) {
 	if (!dataInicio) return "Informe a data de início.";
-	const [ano, mes, dia] = dataInicio.split("-").map(Number);
-	if (new Date(ano, mes - 1, dia) <= hojeSemHora()) return "Agendamentos semanais ou quinzenais só podem começar a partir de amanhã.";
+	if (dataInicio < obterDataCuiaba()) return "A data de início não pode ser anterior a hoje.";
 	return null;
 }
 /**
@@ -500,8 +532,8 @@ var DURACAO_DIAS = {
 * @param {Date} data
 * @returns {string}
 */
-function formatarDataLocal(data) {
-	return `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, "0")}-${String(data.getDate()).padStart(2, "0")}`;
+function formatarDataUTC(data) {
+	return `${data.getUTCFullYear()}-${String(data.getUTCMonth() + 1).padStart(2, "0")}-${String(data.getUTCDate()).padStart(2, "0")}`;
 }
 /**
 * Gera as datas de ocorrência de um agendamento recorrente.
@@ -517,22 +549,22 @@ function formatarDataLocal(data) {
 function gerarDatasRecorrentes({ diasSemana, dataInicio, horaInicio, horaFim, recorrencia }) {
 	const diasSelecionados = diasSemana.map((d) => MAPA_DIAS[d]);
 	const [anoIni, mesIni, diaIni] = dataInicio.split("-").map(Number);
-	const inicio = new Date(anoIni, mesIni - 1, diaIni);
+	const inicio = new Date(Date.UTC(anoIni, mesIni - 1, diaIni));
 	const totalDias = DURACAO_DIAS[recorrencia];
 	const fim = new Date(inicio);
 	fim.setDate(fim.getDate() + (totalDias - 1));
 	const ocorrencias = [];
 	let dataAtual = new Date(inicio);
 	while (dataAtual <= fim) {
-		if (diasSelecionados.includes(dataAtual.getDay())) {
-			const dataStr = formatarDataLocal(dataAtual);
+		if (diasSelecionados.includes(dataAtual.getUTCDay())) {
+			const dataStr = formatarDataUTC(dataAtual);
 			ocorrencias.push({
 				data: dataStr,
 				data_hora_inicio: `${dataStr} ${horaInicio}:00`,
 				data_hora_fim: `${dataStr} ${horaFim}:00`
 			});
 		}
-		dataAtual.setDate(dataAtual.getDate() + 1);
+		dataAtual.setUTCDate(dataAtual.getUTCDate() + 1);
 	}
 	return ocorrencias;
 }
@@ -659,6 +691,13 @@ function _page($$renderer, $$props) {
 				erro = "A hora de início deve ser anterior à hora de fim.";
 				return;
 			}
+			if (tipo === "avulso") {
+				const erroAntecedencia = validarAntecedenciaAgendamento(`${dataAgendamento}T${horaInicio}`);
+				if (erroAntecedencia) {
+					erro = erroAntecedencia;
+					return;
+				}
+			}
 			const payloadBase = {
 				data_hora_inicio: `${dataAgendamento}T${horaInicio}`,
 				data_hora_fim: `${dataAgendamento}T${horaFim}`,
@@ -704,6 +743,11 @@ function _page($$renderer, $$props) {
 				erro = "Nenhuma data corresponde aos dias da semana selecionados nesse período.";
 				return;
 			}
+			const ocorrenciaHoje = datasGeradas.find((data) => validarAntecedenciaAgendamento(data.data_hora_inicio));
+			if (ocorrenciaHoje) {
+				erro = validarAntecedenciaAgendamento(ocorrenciaHoje.data_hora_inicio);
+				return;
+			}
 			ocorrenciasPendentes = datasGeradas.map((d) => ({
 				data: d.data,
 				payload: {
@@ -740,7 +784,7 @@ function _page($$renderer, $$props) {
 			turma_id = null;
 		}
 		function hoje() {
-			return (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+			return obterDataCuiaba();
 		}
 		$: if (modo === "sala") itensDisponiveis = salas;
 		else itensDisponiveis = equipamentos;

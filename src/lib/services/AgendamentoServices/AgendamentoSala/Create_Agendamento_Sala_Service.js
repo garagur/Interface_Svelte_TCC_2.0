@@ -1,5 +1,6 @@
 import { AGENDAMENTOSALA_ROUTE } from '../../../../config/routes/Agendamento_Sala_Endpoints.js'
 import { apiFetch } from '../../../../config/api.js';
+import { validarAntecedenciaAgendamento } from '../Validar_Antecedencia_Agendamento.js';
 async function parseJson(response) {
     const text = await response.text()
     if (!text) return null
@@ -15,8 +16,11 @@ export async function cadastrarAgendamento(novoAgendamentoSala, token) {
     if (!token) {
         throw new Error('Token de autenticação não encontrado. Faça login novamente.')
     }
-    if (!isFuturo(novoAgendamentoSala.data_hora_inicio)) {
-        throw new Error('Não é possível agendar para um horário que já passou.')
+    const erroAntecedencia = validarAntecedenciaAgendamento(
+        novoAgendamentoSala.data_hora_inicio,
+    );
+    if (erroAntecedencia) {
+        throw new Error(erroAntecedencia)
     }
     const resp = await apiFetch(AGENDAMENTOSALA_ROUTE.cadastrar, {
         method: 'POST',
@@ -43,9 +47,4 @@ export async function cadastrarAgendamento(novoAgendamentoSala, token) {
     }
 
     return dados?.data || dados || {}
-}
-function isFuturo(dataHoraInicio) {
-    const inicio = new Date(dataHoraInicio)
-    if (isNaN(inicio.getTime())) return false
-    return inicio >= new Date()
 }

@@ -9,6 +9,10 @@
     import { cadastrarAgendamento as cadastrarAgendamentoSala } from "$lib/services/AgendamentoServices/AgendamentoSala/Create_Agendamento_Sala_Service.js";
     import { carregarAgendamentosSalas } from "$lib/services/AgendamentoServices/AgendamentoSala/List_Agendamento_Sala_Service.js";
     import { carregarHorariosSala } from "$lib/services/HorarioServices/List_Horario_Service.js";
+    import {
+        obterDataCuiaba,
+        validarAntecedenciaAgendamento,
+    } from "$lib/services/AgendamentoServices/Validar_Antecedencia_Agendamento.js";
 
     // ── Imports de Equipamentos ──
     // IMPORTANTE: Ajuste o caminho do carregarEquipamentos conforme seu projeto
@@ -179,6 +183,16 @@
             return;
         }
 
+        if (tipo === "avulso") {
+            const erroAntecedencia = validarAntecedenciaAgendamento(
+                `${dataAgendamento}T${horaInicio}`,
+            );
+            if (erroAntecedencia) {
+                erro = erroAntecedencia;
+                return;
+            }
+        }
+
         // Define a chave correta para o objeto JSON de acordo com o modo escolhido
         const payloadBase = {
             data_hora_inicio: `${dataAgendamento}T${horaInicio}`,
@@ -242,6 +256,16 @@
             return;
         }
 
+        const ocorrenciaHoje = datasGeradas.find((data) =>
+            validarAntecedenciaAgendamento(data.data_hora_inicio),
+        );
+        if (ocorrenciaHoje) {
+            erro = validarAntecedenciaAgendamento(
+                ocorrenciaHoje.data_hora_inicio,
+            );
+            return;
+        }
+
         ocorrenciasPendentes = datasGeradas.map((d) => ({
             data: d.data,
             payload: {
@@ -292,7 +316,7 @@
     }
 
     function hoje() {
-        return new Date().toISOString().slice(0, 10);
+        return obterDataCuiaba();
     }
 </script>
 
