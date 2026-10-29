@@ -5,6 +5,8 @@
   import MainCard from "$lib/components/main/MainCard.svelte";
   import { carregarAgendamentosSalas } from "$lib/services/AgendamentoServices/AgendamentoSala/List_Agendamento_Sala_Service.js";
   import { carregarAgendamentosEquipamentos } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/List_Agendamento_Equipamento_Service.js";
+  import { deletarAgendamentoSala } from "$lib/services/AgendamentoServices/AgendamentoSala/Deleted_Agendamento_Sala_Service.js";
+  import { deletarAgendamentoEquipamento } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/Deleted_Agendamento_equipamento.js";
   import { confirmarAgendamento as confirmarAgendamentoService } from "$lib/services/AgendamentoServices/Confirmar_Agendamento_Service.js";
   import { buscarUsuario } from "$lib/services/UserServices/Buscar_Usuario_Service.js";
 
@@ -14,6 +16,7 @@
   let nome = "";
   let matricula = "";
   let cargo = "";
+  let usuarioId = null;
 
   let agendamentos = [];
   let carregando = false;
@@ -24,7 +27,7 @@
     nome = localStorage.getItem("nome") || "";
     matricula = localStorage.getItem("matricula") || "";
     cargo = localStorage.getItem("cargo") || "";
-    const usuarioId = localStorage.getItem("user_id");
+    usuarioId = localStorage.getItem("user_id");
 
     if (!token) {
       goto("/login");
@@ -80,6 +83,34 @@
     }
   }
 
+  async function deletarAgendamento(ag) {
+    erro = "";
+    try {
+      if (ag.tipo === "sala") {
+        await deletarAgendamentoSala(ag.id, token, ag.justificativa || "");
+      } else if (ag.tipo === "equipamento") {
+        await deletarAgendamentoEquipamento(
+          ag.id,
+          token,
+          ag.justificativa || "",
+        );
+      }
+
+      agendamentos = agendamentos.map((item) =>
+        item.id === ag.id && item.tipo === ag.tipo
+          ? {
+              ...item,
+              status: "inativo",
+              justificativa: ag.justificativa || "",
+            }
+          : item,
+      );
+    } catch (e) {
+      erro = e?.message || "Erro ao deletar agendamento.";
+      throw e;
+    }
+  }
+
   function irParaNovoAgendamento() {
     goto("/agendamento");
   }
@@ -95,10 +126,12 @@
   {nome}
   {matricula}
   {cargo}
+  {usuarioId}
   {agendamentos}
   {carregando}
   {erro}
   onSair={sair}
   onNovoAgendamento={irParaNovoAgendamento}
   onConfirmarAgendamento={confirmarAgendamento}
+  onDeletar={deletarAgendamento}
 />
