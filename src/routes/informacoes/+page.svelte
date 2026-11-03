@@ -19,6 +19,8 @@
     import { carregarAgendamentosEquipamentos } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/List_Agendamento_Equipamento_Service.js";
     import { deletarAgendamentoEquipamento } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/Deleted_Agendamento_equipamento.js";
     import { confirmarAgendamento as confirmarAgendamentoService } from "$lib/services/AgendamentoServices/Confirmar_Agendamento_Service.js";
+    import ConfirmarConflitoModal from "$lib/components/Card/ConfirmarConflitoModal.svelte";
+    import { encontrarConflitosOciosos } from "$lib/utils/agendamentoConflito.js";
 
     const ROTULOS_CARGO = {
         admin: "Administrador",
@@ -33,6 +35,7 @@
     };
 
     let token = "";
+    let cargo = "";
 
     let tipo = "sala"; // "sala" | "equipamento" | "usuario"
     let itensDisponiveis = [];
@@ -62,12 +65,19 @@
     let carregandoEstatisticas = false;
 
     let erro = "";
+    let agendamentoEmConflito = null;
+    let confirmandoConflito = false;
 
     onMount(async () => {
         token = localStorage.getItem("token") || "";
+        cargo = localStorage.getItem("cargo") || "";
         if (!token) {
             goto("/login");
             return;
+        }
+
+        if (cargo !== "admin" && tipo === "usuario") {
+            tipo = "sala";
         }
 
         const tipoUrl = $page.url.searchParams.get("tipo");
@@ -112,6 +122,7 @@
     }
 
     async function selecionarTipo(novoTipo) {
+        if (novoTipo === "usuario" && cargo !== "admin") return;
         if (novoTipo === tipo) return;
         tipo = novoTipo;
         idSelecionado = null;
@@ -462,6 +473,17 @@
     }
 
     async function confirmar(ag) {
+        const listaAtual =
+            ag.tipo === "equipamento"
+                ? agendamentosEquipamentoItem
+                : agendamentosSalaItem;
+        const conflitos = encontrarConflitosOciosos(ag, listaAtual);
+
+        if (conflitos.length > 0) {
+            agendamentoEmConflito = { agendamento: ag, conflitos };
+            return;
+        }
+
         try {
             const atualizado = await confirmarAgendamentoService(ag);
             const status = atualizado?.status || "ativo";
@@ -481,10 +503,115 @@
         }
     }
 
+    async function confirmarConflito({
+        agendamento,
+        conflitos,
+        justificativa,
+    }) {
+        confirmandoConflito = true;
+
+        try {
+            await Promise.all(
+                conflitos.map(async (conflito) => {
+                    if (conflito.tipo === "sala") {
+                        await deletarAgendamentoSala(
+                            conflito.id,
+                            token,
+                            justificativa || "",
+                        );
+                    } else if (conflito.tipo === "equipamento") {
+                        await deletarAgendamentoEquipamento(
+                            conflito.id,
+                            token,
+                            justificativa || "",
+                        );
+                    }
+                }),
+            );
+
+            const statusConfirmado =
+                (await confirmarAgendamentoService(agendamento))?.status ||
+                "ativo";
+
+            if (agendamento.tipo === "equipamento") {
+                agendamentosEquipamentoItem = agendamentosEquipamentoItem.map(
+                    (item) => {
+                        const ehConflito = conflitos.some(
+                            (conflito) =>
+                                conflito.id === item.id &&
+                                conflito.tipo === item.tipo,
+                        );
+
+                        if (ehConflito) {
+                            return {
+                                ...item,
+                                status: "inativo",
+                                justificativa:
+                                    justificativa || item.justificativa || "",
+                            };
+                        }
+
+                        if (item.id === agendamento.id) {
+                            return {
+                                ...item,
+                                status: statusConfirmado,
+                            };
+                        }
+
+                        return item;
+                    },
+                );
+            } else {
+                agendamentosSalaItem = agendamentosSalaItem.map((item) => {
+                    const ehConflito = conflitos.some(
+                        (conflito) =>
+                            conflito.id === item.id &&
+                            conflito.tipo === item.tipo,
+                    );
+
+                    if (ehConflito) {
+                        return {
+                            ...item,
+                            status: "inativo",
+                            justificativa:
+                                justificativa || item.justificativa || "",
+                        };
+                    }
+
+                    if (item.id === agendamento.id) {
+                        return {
+                            ...item,
+                            status: statusConfirmado,
+                        };
+                    }
+
+                    return item;
+                });
+            }
+
+            agendamentoEmConflito = null;
+            montarEstatisticas();
+        } catch (e) {
+            erro = e?.message || "Erro ao confirmar o agendamento em conflito.";
+            throw e;
+        } finally {
+            confirmandoConflito = false;
+        }
+    }
+
     $: agendamentos = [...agendamentosSalaItem, ...agendamentosEquipamentoItem];
 </script>
 
+<ConfirmarConflitoModal
+    agendamento={agendamentoEmConflito?.agendamento ?? null}
+    conflitos={agendamentoEmConflito?.conflitos ?? []}
+    onConfirmar={confirmarConflito}
+    onCancelar={() => (agendamentoEmConflito = null)}
+    processando={confirmandoConflito}
+/>
+
 <ItemInformacoesCard
+    {cargo}
     {tipo}
     onTipoChange={selecionarTipo}
     {itensDisponiveis}

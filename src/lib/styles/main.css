@@ -11,6 +11,7 @@
 }
 
 .escopo-main .body-content {
+    position: relative;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -187,10 +188,14 @@
 
 /* ── Bottom ── */
 .escopo-main .bottom-action {
-    padding: 24px 0;
+    position: absolute;
+    right: 24px;
+    bottom: 20px;
     display: flex;
-    justify-content: center;
-    width: 100%;
+    justify-content: flex-end;
+    width: auto;
+    padding: 0;
+    z-index: 20;
 }
 
 .escopo-main .btn-primary {
@@ -198,8 +203,8 @@
     color: var(--white);
     border: none;
     border-radius: var(--btn-radius);
-    padding: 16px 40px;
-    font-size: 16px;
+    padding: 14px 22px;
+    font-size: 15px;
     font-weight: bold;
     display: flex;
     justify-content: center;

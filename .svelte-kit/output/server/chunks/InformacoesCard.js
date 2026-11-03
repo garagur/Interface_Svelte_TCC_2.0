@@ -2,11 +2,11 @@ import { a as onDestroy } from "./internal.js";
 import { T as escape_html, i as ensure_array_like, it as invalid_default_snippet, lt as fallback, n as bind_props, t as attr_class, u as stringify, w as attr } from "./server.js";
 import { t as CabecalhoGlobal } from "./CabecalhoGlobal.js";
 import { a as BlocoHorarioCard, o as GradeSemanal } from "./List_Horario_Service.js";
-import { c as ListaAgendamentosCard, l as ConfirmarDelecaoModal } from "./Confirmar_Agendamento_Service.js";
+import { d as ConfirmarDelecaoModal, u as ListaAgendamentosCard } from "./agendamentoConflito.js";
 //#region src/lib/components/informacoes/InformacoesCard.svelte
 function InformacoesCard($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
-		let fotoExibida, classeForma, agendamentosComFoto, semanasHeatmap, rotulosMeses;
+		let podeSelecionarUsuarios, fotoExibida, classeForma, agendamentosComFoto, semanasHeatmap, rotulosMeses;
 		let usuarioId = fallback($$props["usuarioId"], null);
 		let cargo = fallback($$props["cargo"], "");
 		let subtitulo = fallback($$props["subtitulo"], "Detalhes do Item");
@@ -133,6 +133,7 @@ function InformacoesCard($$renderer, $$props) {
 			for (let i = 0; i < diasArr.length; i += 7) semanas.push(diasArr.slice(i, i + 7));
 			return semanas;
 		}
+		$: podeSelecionarUsuarios = cargo === "admin";
 		$: fotoExibida = item?.fotoUrl || "";
 		$: classeForma = item?.formaFoto === "quadrada" ? "foto-quadrada" : "foto-circular";
 		$: agendamentosComFoto = mostrarSeletor && tipo !== "usuario" && item?.fotoUrl ? agendamentos.map((ag) => ({
@@ -190,7 +191,12 @@ function InformacoesCard($$renderer, $$props) {
 					$$renderer.push(`${escape_html(it.nome)}`);
 				});
 			}
-			$$renderer.push(`<!--]--></select> <div class="seletor-tipos"><button type="button"${attr_class("btn-tipo", void 0, { "ativo": tipo === "sala" })}><span class="material-symbols-outlined">meeting_room</span> Salas</button> <button type="button"${attr_class("btn-tipo", void 0, { "ativo": tipo === "equipamento" })}><span class="material-symbols-outlined">devices</span> Equipamentos</button> <button type="button"${attr_class("btn-tipo", void 0, { "ativo": tipo === "usuario" })}><span class="material-symbols-outlined">person</span> Usuários</button></div></div></div>`);
+			$$renderer.push(`<!--]--></select> <div class="seletor-tipos"><button type="button"${attr_class("btn-tipo", void 0, { "ativo": tipo === "sala" })}><span class="material-symbols-outlined">meeting_room</span> Salas</button> <button type="button"${attr_class("btn-tipo", void 0, { "ativo": tipo === "equipamento" })}><span class="material-symbols-outlined">devices</span> Equipamentos</button> `);
+			if (podeSelecionarUsuarios) {
+				$$renderer.push("<!--[0-->");
+				$$renderer.push(`<button type="button"${attr_class("btn-tipo", void 0, { "ativo": tipo === "usuario" })}><span class="material-symbols-outlined">person</span> Usuários</button>`);
+			} else $$renderer.push("<!--[-1-->");
+			$$renderer.push(`<!--]--></div></div></div>`);
 		} else $$renderer.push("<!--[-1-->");
 		$$renderer.push(`<!--]--> <div class="card" id="dados"><div class="card-header"><span class="material-symbols-outlined">info</span> <h3>${escape_html(tituloDados)}</h3> `);
 		if (item && !carregandoItem && onSalvarPerfil) {

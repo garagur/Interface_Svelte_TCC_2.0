@@ -20,6 +20,8 @@
     import { carregarTurmas } from "$lib/services/TurmaServices/List_Turma_Service.js";
     import { cadastrarAgendamento as cadastrarAgendamentoEquipamento } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/Create_Agendamento_Equipamento_Service.js";
     import { carregarAgendamentosEquipamentos } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/List_Agendamento_Equipamento_Service.js";
+    import { deletarAgendamentoEquipamento } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/Deleted_Agendamento_equipamento.js";
+    import { deletarAgendamentoSala } from "$lib/services/AgendamentoServices/AgendamentoSala/Deleted_Agendamento_Sala_Service.js";
     import { confirmarAgendamento as confirmarAgendamentoService } from "$lib/services/AgendamentoServices/Confirmar_Agendamento_Service.js";
 
     // ── Imports de Recorrência ──
@@ -27,6 +29,8 @@
     import { gerarDatasRecorrentes } from "$lib/services/RecorrenciaService/Gerar_Datas_Recorrentes.js";
     import { executarLoteAgendamentos } from "$lib/services/RecorrenciaService/Executar_Lote_Agendamentos.js";
     import ListaAgendamentosCard from "$lib/components/Card/ListaAgendamentosCard.svelte";
+    import ConfirmarConflitoModal from "$lib/components/Card/ConfirmarConflitoModal.svelte";
+    import { encontrarConflitosOciosos } from "$lib/utils/agendamentoConflito.js";
 
     let visao = "calendario"; // "calendario" | "lista"
 
@@ -68,6 +72,8 @@
     let carregando = false;
     let erro = "";
     let sucesso = "";
+    let agendamentoEmConflito = null;
+    let confirmandoConflito = false;
 
     // ── Recorrência ──
     let ocorrenciasPendentes = null;
@@ -146,12 +152,89 @@
     }
 
     async function confirmarAgendamento(ag) {
+        const conflitos = encontrarConflitosOciosos(ag, agendamentos);
+
+        if (conflitos.length > 0) {
+            agendamentoEmConflito = { agendamento: ag, conflitos };
+            return;
+        }
+
         const atualizado = await confirmarAgendamentoService(ag);
         agendamentos = agendamentos.map((item) =>
             item.id === ag.id && item.tipo === ag.tipo
                 ? { ...item, status: atualizado?.status || "ativo" }
                 : item,
         );
+    }
+
+    async function confirmarConflito({
+        agendamento,
+        conflitos,
+        justificativa,
+    }) {
+        confirmandoConflito = true;
+
+        try {
+            await Promise.all(
+                conflitos.map(async (conflito) => {
+                    if (conflito.tipo === "sala") {
+                        await deletarAgendamentoSala(
+                            conflito.id,
+                            token,
+                            justificativa || "",
+                        );
+                    } else if (conflito.tipo === "equipamento") {
+                        await deletarAgendamentoEquipamento(
+                            conflito.id,
+                            token,
+                            justificativa || "",
+                        );
+                    }
+                }),
+            );
+
+            agendamentos = agendamentos.map((item) => {
+                const ehConflito = conflitos.some(
+                    (conflito) =>
+                        conflito.id === item.id && conflito.tipo === item.tipo,
+                );
+
+                if (ehConflito) {
+                    return {
+                        ...item,
+                        status: "inativo",
+                        justificativa:
+                            justificativa || item.justificativa || "",
+                    };
+                }
+
+                if (
+                    item.id === agendamento.id &&
+                    item.tipo === agendamento.tipo
+                ) {
+                    return {
+                        ...item,
+                        status: "ativo",
+                        justificativa: item.justificativa || "",
+                    };
+                }
+
+                return item;
+            });
+
+            const atualizado = await confirmarAgendamentoService(agendamento);
+            agendamentos = agendamentos.map((item) =>
+                item.id === agendamento.id && item.tipo === agendamento.tipo
+                    ? { ...item, status: atualizado?.status || "ativo" }
+                    : item,
+            );
+            agendamentoEmConflito = null;
+        } catch (e) {
+            erro = e?.message || "Erro ao confirmar o agendamento em conflito.";
+            throw e;
+        } finally {
+            confirmandoConflito = false;
+        }
     }
 
     async function carregarBlocosFixos(id) {
@@ -319,6 +402,14 @@
         return obterDataCuiaba();
     }
 </script>
+
+<ConfirmarConflitoModal
+    agendamento={agendamentoEmConflito?.agendamento ?? null}
+    conflitos={agendamentoEmConflito?.conflitos ?? []}
+    onConfirmar={confirmarConflito}
+    onCancelar={() => (agendamentoEmConflito = null)}
+    processando={confirmandoConflito}
+/>
 
 <AgendamentoCard
     bind:modo

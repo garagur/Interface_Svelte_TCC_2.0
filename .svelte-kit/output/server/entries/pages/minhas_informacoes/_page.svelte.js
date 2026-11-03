@@ -4,7 +4,7 @@ import { t as goto } from "../../../chunks/client.js";
 import "../../../chunks/navigation.js";
 import "../../../chunks/List_Horario_Service.js";
 import { t as atualizarUsuario } from "../../../chunks/Update_User_Service.js";
-import { i as deletarAgendamentoEquipamento, o as deletarAgendamentoSala, t as confirmarAgendamento } from "../../../chunks/Confirmar_Agendamento_Service.js";
+import { c as deletarAgendamentoSala, n as ConfirmarConflitoModal, o as deletarAgendamentoEquipamento, r as confirmarAgendamento, t as encontrarConflitosOciosos } from "../../../chunks/agendamentoConflito.js";
 import { t as InformacoesCard } from "../../../chunks/InformacoesCard.js";
 import "../../../chunks/Buscar_Usuario_Service.js";
 //#region src/routes/minhas_informacoes/+page.svelte
@@ -23,6 +23,8 @@ function _page($$renderer, $$props) {
 		let carregandoAgendamentos = false;
 		let carregandoEstatisticas = false;
 		let erro = "";
+		let agendamentoEmConflito = null;
+		let confirmandoConflito = false;
 		let estatisticas = {
 			resumo: [],
 			destaques: [],
@@ -133,6 +135,14 @@ function _page($$renderer, $$props) {
 			}
 		}
 		async function confirmar(ag) {
+			const conflitos = encontrarConflitosOciosos(ag, ag.tipo === "equipamento" ? agendamentosEquipamento : agendamentosSala);
+			if (conflitos.length > 0) {
+				agendamentoEmConflito = {
+					agendamento: ag,
+					conflitos
+				};
+				return;
+			}
 			try {
 				const status = (await confirmarAgendamento(ag))?.status || "ativo";
 				if (ag.tipo === "equipamento") agendamentosEquipamento = agendamentosEquipamento.map((item) => item.id === ag.id ? {
@@ -147,6 +157,47 @@ function _page($$renderer, $$props) {
 			} catch (e) {
 				erro = e?.message || "Erro ao confirmar o agendamento.";
 				throw e;
+			}
+		}
+		async function confirmarConflito({ agendamento, conflitos, justificativa }) {
+			confirmandoConflito = true;
+			try {
+				await Promise.all(conflitos.map(async (conflito) => {
+					if (conflito.tipo === "sala") await deletarAgendamentoSala(conflito.id, token, justificativa || "");
+					else if (conflito.tipo === "equipamento") await deletarAgendamentoEquipamento(conflito.id, token, justificativa || "");
+				}));
+				const status = (await confirmarAgendamento(agendamento))?.status || "ativo";
+				if (agendamento.tipo === "equipamento") agendamentosEquipamento = agendamentosEquipamento.map((item) => {
+					if (conflitos.some((conflito) => conflito.id === item.id && conflito.tipo === item.tipo)) return {
+						...item,
+						status: "inativo",
+						justificativa: justificativa || item.justificativa || ""
+					};
+					if (item.id === agendamento.id) return {
+						...item,
+						status
+					};
+					return item;
+				});
+				else agendamentosSala = agendamentosSala.map((item) => {
+					if (conflitos.some((conflito) => conflito.id === item.id && conflito.tipo === item.tipo)) return {
+						...item,
+						status: "inativo",
+						justificativa: justificativa || item.justificativa || ""
+					};
+					if (item.id === agendamento.id) return {
+						...item,
+						status
+					};
+					return item;
+				});
+				agendamentoEmConflito = null;
+				montarEstatisticas();
+			} catch (e) {
+				erro = e?.message || "Erro ao confirmar o agendamento em conflito.";
+				throw e;
+			} finally {
+				confirmandoConflito = false;
 			}
 		}
 		$: itemPerfil = usuario && {
@@ -175,6 +226,14 @@ function _page($$renderer, $$props) {
 				}
 			]
 		};
+		ConfirmarConflitoModal($$renderer, {
+			agendamento: agendamentoEmConflito?.agendamento ?? null,
+			conflitos: agendamentoEmConflito?.conflitos ?? [],
+			onConfirmar: confirmarConflito,
+			onCancelar: () => agendamentoEmConflito = null,
+			processando: confirmandoConflito
+		});
+		$$renderer.push(`<!----> `);
 		InformacoesCard($$renderer, {
 			subtitulo: "Minhas Informações",
 			tituloDados: "Meu Perfil",
@@ -199,6 +258,7 @@ function _page($$renderer, $$props) {
 			onConfirmar: confirmar,
 			onSalvarPerfil: salvarPerfil
 		});
+		$$renderer.push(`<!---->`);
 	});
 }
 //#endregion

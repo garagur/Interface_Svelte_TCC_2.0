@@ -10,6 +10,8 @@
     import { deletarAgendamentoEquipamento } from "$lib/services/AgendamentoServices/AgendamentoEquipamento/Deleted_Agendamento_equipamento.js";
     import { confirmarAgendamento as confirmarAgendamentoService } from "$lib/services/AgendamentoServices/Confirmar_Agendamento_Service.js";
     import { buscarUsuario } from "$lib/services/UserServices/Buscar_Usuario_Service.js";
+    import ConfirmarConflitoModal from "$lib/components/Card/ConfirmarConflitoModal.svelte";
+    import { encontrarConflitosOciosos } from "$lib/utils/agendamentoConflito.js";
     import { atualizarUsuario } from "$lib/services/UserServices/Update_User_Service.js";
     let token = "";
     let professor_id = "";
@@ -51,6 +53,8 @@
     let carregandoAgendamentos = false;
     let carregandoEstatisticas = false;
     let erro = "";
+    let agendamentoEmConflito = null;
+    let confirmandoConflito = false;
 
     let estatisticas = {
         resumo: [],
@@ -67,11 +71,9 @@
             return;
         }
 
-        await Promise.all([
-            carregarPerfil(),
-            carregarGrade(),
-            carregarMeusAgendamentos(),
-        ]);
+        await carregarPerfil();
+        await carregarGrade();
+        await carregarMeusAgendamentos();
 
         montarEstatisticas();
         await tick();
@@ -148,6 +150,14 @@
     async function carregarGrade() {
         carregandoBlocos = true;
         try {
+            const cargoAtual =
+                usuario?.cargo || localStorage.getItem("cargo") || "";
+
+            if (cargoAtual !== "educador") {
+                blocos = [];
+                return;
+            }
+
             blocos = await carregarHorariosProfessor(token, professor_id);
         } catch (e) {
             erro = e?.message || "Erro ao carregar grade de aulas.";
@@ -307,6 +317,17 @@
     }
 
     async function confirmar(ag) {
+        const listaAtual =
+            ag.tipo === "equipamento"
+                ? agendamentosEquipamento
+                : agendamentosSala;
+        const conflitos = encontrarConflitosOciosos(ag, listaAtual);
+
+        if (conflitos.length > 0) {
+            agendamentoEmConflito = { agendamento: ag, conflitos };
+            return;
+        }
+
         try {
             const atualizado = await confirmarAgendamentoService(ag);
             const status = atualizado?.status || "ativo";
@@ -325,7 +346,104 @@
             throw e;
         }
     }
+
+    async function confirmarConflito({
+        agendamento,
+        conflitos,
+        justificativa,
+    }) {
+        confirmandoConflito = true;
+
+        try {
+            await Promise.all(
+                conflitos.map(async (conflito) => {
+                    if (conflito.tipo === "sala") {
+                        await deletarAgendamentoSala(
+                            conflito.id,
+                            token,
+                            justificativa || "",
+                        );
+                    } else if (conflito.tipo === "equipamento") {
+                        await deletarAgendamentoEquipamento(
+                            conflito.id,
+                            token,
+                            justificativa || "",
+                        );
+                    }
+                }),
+            );
+
+            const atualizado = await confirmarAgendamentoService(agendamento);
+            const status = atualizado?.status || "ativo";
+
+            if (agendamento.tipo === "equipamento") {
+                agendamentosEquipamento = agendamentosEquipamento.map(
+                    (item) => {
+                        const ehConflito = conflitos.some(
+                            (conflito) =>
+                                conflito.id === item.id &&
+                                conflito.tipo === item.tipo,
+                        );
+
+                        if (ehConflito) {
+                            return {
+                                ...item,
+                                status: "inativo",
+                                justificativa:
+                                    justificativa || item.justificativa || "",
+                            };
+                        }
+
+                        if (item.id === agendamento.id) {
+                            return { ...item, status };
+                        }
+
+                        return item;
+                    },
+                );
+            } else {
+                agendamentosSala = agendamentosSala.map((item) => {
+                    const ehConflito = conflitos.some(
+                        (conflito) =>
+                            conflito.id === item.id &&
+                            conflito.tipo === item.tipo,
+                    );
+
+                    if (ehConflito) {
+                        return {
+                            ...item,
+                            status: "inativo",
+                            justificativa:
+                                justificativa || item.justificativa || "",
+                        };
+                    }
+
+                    if (item.id === agendamento.id) {
+                        return { ...item, status };
+                    }
+
+                    return item;
+                });
+            }
+
+            agendamentoEmConflito = null;
+            montarEstatisticas();
+        } catch (e) {
+            erro = e?.message || "Erro ao confirmar o agendamento em conflito.";
+            throw e;
+        } finally {
+            confirmandoConflito = false;
+        }
+    }
 </script>
+
+<ConfirmarConflitoModal
+    agendamento={agendamentoEmConflito?.agendamento ?? null}
+    conflitos={agendamentoEmConflito?.conflitos ?? []}
+    onConfirmar={confirmarConflito}
+    onCancelar={() => (agendamentoEmConflito = null)}
+    processando={confirmandoConflito}
+/>
 
 <MinhasInformacoesCard
     subtitulo="Minhas Informações"

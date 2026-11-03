@@ -1,5 +1,5 @@
 import { T as escape_html, c as slot, i as ensure_array_like, lt as fallback, n as bind_props, t as attr_class, u as stringify, w as attr } from "./server.js";
-import { u as AgendamentoDetalheModal } from "./Confirmar_Agendamento_Service.js";
+import { f as AgendamentoDetalheModal } from "./agendamentoConflito.js";
 //#region src/lib/components/Grades/GradeMensal.svelte
 function GradeMensal($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {

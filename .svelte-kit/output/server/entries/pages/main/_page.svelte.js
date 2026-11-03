@@ -4,7 +4,7 @@ import { t as goto } from "../../../chunks/client.js";
 import "../../../chunks/navigation.js";
 import { t as CabecalhoGlobal } from "../../../chunks/CabecalhoGlobal.js";
 import "../../../chunks/BlocoAgendamentoCard.js";
-import { c as ListaAgendamentosCard, i as deletarAgendamentoEquipamento, l as ConfirmarDelecaoModal, o as deletarAgendamentoSala, t as confirmarAgendamento } from "../../../chunks/Confirmar_Agendamento_Service.js";
+import { c as deletarAgendamentoSala, d as ConfirmarDelecaoModal, n as ConfirmarConflitoModal, o as deletarAgendamentoEquipamento, r as confirmarAgendamento, t as encontrarConflitosOciosos, u as ListaAgendamentosCard } from "../../../chunks/agendamentoConflito.js";
 import "../../../chunks/Buscar_Usuario_Service.js";
 //#region src/lib/components/main/MainCard.svelte
 function MainCard($$renderer, $$props) {
@@ -14,14 +14,15 @@ function MainCard($$renderer, $$props) {
 		let nome = fallback($$props["nome"], "");
 		let matricula = fallback($$props["matricula"], "");
 		let cargo = fallback($$props["cargo"], "");
-		let onSair = fallback($$props["onSair"], () => {});
-		let onNovoAgendamento = fallback($$props["onNovoAgendamento"], () => {});
-		let onConfirmarAgendamento = fallback($$props["onConfirmarAgendamento"], null);
+		let usuarioId = fallback($$props["usuarioId"], null);
 		let agendamentos = fallback($$props["agendamentos"], () => [], true);
 		let carregando = fallback($$props["carregando"], false);
 		let erro = fallback($$props["erro"], "");
-		let token = "";
-		let usuarioId = null;
+		let onSair = fallback($$props["onSair"], () => {});
+		let onNovoAgendamento = fallback($$props["onNovoAgendamento"], () => {});
+		let onConfirmarAgendamento = fallback($$props["onConfirmarAgendamento"], null);
+		/** @type {(ag: any) => Promise<void>} */
+		let onDeletar = fallback($$props["onDeletar"], async () => {});
 		let agendamentoParaDeletar = null;
 		let cancelandoId = null;
 		function abrirModalDeletar(ag) {
@@ -34,19 +35,10 @@ function MainCard($$renderer, $$props) {
 		}
 		async function confirmarDeletar(ag) {
 			cancelandoId = `${ag.tipo}-${ag.id}`;
-			erro = "";
 			try {
-				if (ag.tipo === "sala") await deletarAgendamentoSala(ag.id, token, ag.justificativa || "");
-				else if (ag.tipo === "equipamento") await deletarAgendamentoEquipamento(ag.id, token, ag.justificativa || "");
-				agendamentos = agendamentos.map((a) => a.id === ag.id && a.tipo === ag.tipo ? {
-					...a,
-					status: "inativo",
-					justificativa: ag.justificativa || ""
-				} : a);
+				await onDeletar(ag);
 				agendamentoParaDeletar = null;
-			} catch (e) {
-				erro = e?.message || "Erro ao deletar agendamento.";
-			} finally {
+			} catch {} finally {
 				cancelandoId = null;
 			}
 		}
@@ -91,12 +83,14 @@ function MainCard($$renderer, $$props) {
 			nome,
 			matricula,
 			cargo,
+			usuarioId,
+			agendamentos,
+			carregando,
+			erro,
 			onSair,
 			onNovoAgendamento,
 			onConfirmarAgendamento,
-			agendamentos,
-			carregando,
-			erro
+			onDeletar
 		});
 	});
 }
@@ -104,14 +98,26 @@ function MainCard($$renderer, $$props) {
 //#region src/routes/main/+page.svelte
 function _page($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
+		let token = "";
 		let titulo = "Portal de Agendamento";
 		let nome = "";
 		let matricula = "";
 		let cargo = "";
+		let usuarioId = null;
 		let agendamentos = [];
 		let carregando = false;
 		let erro = "";
+		let agendamentoEmConflito = null;
+		let confirmandoConflito = false;
 		async function confirmarAgendamento$1(ag) {
+			const conflitos = encontrarConflitosOciosos(ag, agendamentos);
+			if (conflitos.length > 0) {
+				agendamentoEmConflito = {
+					agendamento: ag,
+					conflitos
+				};
+				return;
+			}
 			try {
 				const atualizado = await confirmarAgendamento(ag);
 				agendamentos = agendamentos.map((item) => item.id === ag.id && item.tipo === ag.tipo ? {
@@ -123,6 +129,54 @@ function _page($$renderer, $$props) {
 				throw e;
 			}
 		}
+		async function confirmarConflito({ agendamento, conflitos, justificativa }) {
+			confirmandoConflito = true;
+			try {
+				await Promise.all(conflitos.map(async (conflito) => {
+					if (conflito.tipo === "sala") await deletarAgendamentoSala(conflito.id, token, justificativa || "");
+					else if (conflito.tipo === "equipamento") await deletarAgendamentoEquipamento(conflito.id, token, justificativa || "");
+				}));
+				agendamentos = agendamentos.map((item) => {
+					if (conflitos.some((conflito) => conflito.id === item.id && conflito.tipo === item.tipo)) return {
+						...item,
+						status: "inativo",
+						justificativa: justificativa || item.justificativa || ""
+					};
+					if (item.id === agendamento.id && item.tipo === agendamento.tipo) return {
+						...item,
+						status: "ativo",
+						justificativa: item.justificativa || ""
+					};
+					return item;
+				});
+				const atualizado = await confirmarAgendamento(agendamento);
+				agendamentos = agendamentos.map((item) => item.id === agendamento.id && item.tipo === agendamento.tipo ? {
+					...item,
+					status: atualizado?.status || "ativo"
+				} : item);
+				agendamentoEmConflito = null;
+			} catch (e) {
+				erro = e?.message || "Erro ao confirmar o agendamento em conflito.";
+				throw e;
+			} finally {
+				confirmandoConflito = false;
+			}
+		}
+		async function deletarAgendamento(ag) {
+			erro = "";
+			try {
+				if (ag.tipo === "sala") await deletarAgendamentoSala(ag.id, token, ag.justificativa || "");
+				else if (ag.tipo === "equipamento") await deletarAgendamentoEquipamento(ag.id, token, ag.justificativa || "");
+				agendamentos = agendamentos.map((item) => item.id === ag.id && item.tipo === ag.tipo ? {
+					...item,
+					status: "inativo",
+					justificativa: ag.justificativa || ""
+				} : item);
+			} catch (e) {
+				erro = e?.message || "Erro ao deletar agendamento.";
+				throw e;
+			}
+		}
 		function irParaNovoAgendamento() {
 			goto("/agendamento");
 		}
@@ -130,18 +184,29 @@ function _page($$renderer, $$props) {
 			localStorage.clear();
 			goto("/login");
 		}
+		ConfirmarConflitoModal($$renderer, {
+			agendamento: agendamentoEmConflito?.agendamento ?? null,
+			conflitos: agendamentoEmConflito?.conflitos ?? [],
+			onConfirmar: confirmarConflito,
+			onCancelar: () => agendamentoEmConflito = null,
+			processando: confirmandoConflito
+		});
+		$$renderer.push(`<!----> `);
 		MainCard($$renderer, {
 			titulo,
 			nome,
 			matricula,
 			cargo,
+			usuarioId,
 			agendamentos,
 			carregando,
 			erro,
 			onSair: sair,
 			onNovoAgendamento: irParaNovoAgendamento,
-			onConfirmarAgendamento: confirmarAgendamento$1
+			onConfirmarAgendamento: confirmarAgendamento$1,
+			onDeletar: deletarAgendamento
 		});
+		$$renderer.push(`<!---->`);
 	});
 }
 //#endregion

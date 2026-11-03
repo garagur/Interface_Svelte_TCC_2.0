@@ -7,7 +7,7 @@ import { t as carregarEquipamentos } from "../../../chunks/List_Equipamento_Serv
 import { t as carregarUsuarios } from "../../../chunks/List_User_Service.js";
 import { n as carregarHorariosProfessor, r as carregarHorariosSala } from "../../../chunks/List_Horario_Service.js";
 import { t as carregarSalas } from "../../../chunks/List_Sala_Service.js";
-import { i as deletarAgendamentoEquipamento, n as carregarAgendamentosEquipamentos, o as deletarAgendamentoSala, r as carregarAgendamentosSalas, t as confirmarAgendamento } from "../../../chunks/Confirmar_Agendamento_Service.js";
+import { a as carregarAgendamentosSalas, c as deletarAgendamentoSala, i as carregarAgendamentosEquipamentos, n as ConfirmarConflitoModal, o as deletarAgendamentoEquipamento, r as confirmarAgendamento, t as encontrarConflitosOciosos } from "../../../chunks/agendamentoConflito.js";
 import { t as InformacoesCard } from "../../../chunks/InformacoesCard.js";
 import { t as buscarUsuario } from "../../../chunks/Buscar_Usuario_Service.js";
 //#region src/routes/informacoes/+page.svelte
@@ -21,6 +21,7 @@ function _page($$renderer, $$props) {
 			educador: "Educador"
 		};
 		let token = "";
+		let cargo = "";
 		let tipo = "sala";
 		let itensDisponiveis = [];
 		let carregandoItens = false;
@@ -45,6 +46,8 @@ function _page($$renderer, $$props) {
 		};
 		let carregandoEstatisticas = false;
 		let erro = "";
+		let agendamentoEmConflito = null;
+		let confirmandoConflito = false;
 		async function carregarListaItens(tipoAlvo) {
 			carregandoItens = true;
 			try {
@@ -71,6 +74,7 @@ function _page($$renderer, $$props) {
 			}
 		}
 		async function selecionarTipo(novoTipo) {
+			if (novoTipo === "usuario" && true) return;
 			if (novoTipo === tipo) return;
 			tipo = novoTipo;
 			idSelecionado = null;
@@ -332,6 +336,14 @@ function _page($$renderer, $$props) {
 			}
 		}
 		async function confirmar(ag) {
+			const conflitos = encontrarConflitosOciosos(ag, ag.tipo === "equipamento" ? agendamentosEquipamentoItem : agendamentosSalaItem);
+			if (conflitos.length > 0) {
+				agendamentoEmConflito = {
+					agendamento: ag,
+					conflitos
+				};
+				return;
+			}
 			try {
 				const status = (await confirmarAgendamento(ag))?.status || "ativo";
 				if (ag.tipo === "equipamento") agendamentosEquipamentoItem = agendamentosEquipamentoItem.map((item) => item.id === ag.id ? {
@@ -348,8 +360,58 @@ function _page($$renderer, $$props) {
 				throw e;
 			}
 		}
+		async function confirmarConflito({ agendamento, conflitos, justificativa }) {
+			confirmandoConflito = true;
+			try {
+				await Promise.all(conflitos.map(async (conflito) => {
+					if (conflito.tipo === "sala") await deletarAgendamentoSala(conflito.id, token, justificativa || "");
+					else if (conflito.tipo === "equipamento") await deletarAgendamentoEquipamento(conflito.id, token, justificativa || "");
+				}));
+				const statusConfirmado = (await confirmarAgendamento(agendamento))?.status || "ativo";
+				if (agendamento.tipo === "equipamento") agendamentosEquipamentoItem = agendamentosEquipamentoItem.map((item) => {
+					if (conflitos.some((conflito) => conflito.id === item.id && conflito.tipo === item.tipo)) return {
+						...item,
+						status: "inativo",
+						justificativa: justificativa || item.justificativa || ""
+					};
+					if (item.id === agendamento.id) return {
+						...item,
+						status: statusConfirmado
+					};
+					return item;
+				});
+				else agendamentosSalaItem = agendamentosSalaItem.map((item) => {
+					if (conflitos.some((conflito) => conflito.id === item.id && conflito.tipo === item.tipo)) return {
+						...item,
+						status: "inativo",
+						justificativa: justificativa || item.justificativa || ""
+					};
+					if (item.id === agendamento.id) return {
+						...item,
+						status: statusConfirmado
+					};
+					return item;
+				});
+				agendamentoEmConflito = null;
+				montarEstatisticas();
+			} catch (e) {
+				erro = e?.message || "Erro ao confirmar o agendamento em conflito.";
+				throw e;
+			} finally {
+				confirmandoConflito = false;
+			}
+		}
 		$: agendamentos = [...agendamentosSalaItem, ...agendamentosEquipamentoItem];
+		ConfirmarConflitoModal($$renderer, {
+			agendamento: agendamentoEmConflito?.agendamento ?? null,
+			conflitos: agendamentoEmConflito?.conflitos ?? [],
+			onConfirmar: confirmarConflito,
+			onCancelar: () => agendamentoEmConflito = null,
+			processando: confirmandoConflito
+		});
+		$$renderer.push(`<!----> `);
 		InformacoesCard($$renderer, {
+			cargo,
 			tipo,
 			onTipoChange: selecionarTipo,
 			itensDisponiveis,
@@ -372,6 +434,7 @@ function _page($$renderer, $$props) {
 			onDeletar: deletar,
 			onConfirmar: confirmar
 		});
+		$$renderer.push(`<!---->`);
 		if ($$store_subs) unsubscribe_stores($$store_subs);
 	});
 }

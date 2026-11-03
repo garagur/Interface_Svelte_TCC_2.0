@@ -26,6 +26,7 @@
     /** @type {((tipo: "sala" | "equipamento" | "usuario") => void) | null} */
     export let onTipoChange = null;
     export let itensDisponiveis = [];
+    $: podeSelecionarUsuarios = cargo === "admin";
     export let carregandoItens = false;
     export let itemSelecionadoId = null;
     /** @type {((id: string) => void) | null} */
@@ -391,17 +392,19 @@
                                 >
                                 Equipamentos
                             </button>
-                            <button
-                                type="button"
-                                class="btn-tipo"
-                                class:ativo={tipo === "usuario"}
-                                on:click={() => onTipoChange?.("usuario")}
-                            >
-                                <span class="material-symbols-outlined"
-                                    >person</span
+                            {#if podeSelecionarUsuarios}
+                                <button
+                                    type="button"
+                                    class="btn-tipo"
+                                    class:ativo={tipo === "usuario"}
+                                    on:click={() => onTipoChange?.("usuario")}
                                 >
-                                Usuários
-                            </button>
+                                    <span class="material-symbols-outlined"
+                                        >person</span
+                                    >
+                                    Usuários
+                                </button>
+                            {/if}
                         </div>
                     </div>
                 </div>

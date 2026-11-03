@@ -225,24 +225,22 @@
                     <div class="acoes-agendamento">
                         {#if podeConfirmar}
                             <button
+                                type="button"
                                 class="btn-confirmar"
                                 on:click={confirmar}
                                 disabled={confirmando || processando}
                             >
-                                {confirmando
-                                    ? "Confirmando..."
-                                    : "Confirmar agendamento"}
+                                {confirmando ? "Confirmando..." : "Confirmar"}
                             </button>
                         {/if}
                         {#if !cancelado && onCancelar && podeCancelar}
                             <button
+                                type="button"
                                 class="btn-cancelar"
                                 on:click={() => onCancelar(ag)}
                                 disabled={processando || confirmando}
                             >
-                                {processando
-                                    ? "Cancelando..."
-                                    : "Cancelar agendamento"}
+                                {processando ? "Cancelando..." : "Cancelar"}
                             </button>
                         {/if}
                     </div>
@@ -415,15 +413,17 @@
     }
 
     .acoes-agendamento {
-        display: flex;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 0.75rem;
         margin-top: auto;
     }
 
     .btn-confirmar,
     .btn-cancelar {
-        flex: 1 1 0;
+        width: 100%;
         min-width: 0;
+        min-height: 52px;
         padding: 0.85rem 1rem;
         border: none;
         border-radius: 14px;
@@ -434,6 +434,9 @@
         cursor: pointer;
         box-shadow: var(--fora);
         transition: background 0.15s;
+        white-space: nowrap;
+        text-align: center;
+        line-height: 1.2;
     }
     .btn-confirmar {
         background: var(--confirm);

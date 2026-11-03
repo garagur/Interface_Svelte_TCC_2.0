@@ -9,7 +9,7 @@ import { a as BlocoHorarioCard, o as GradeSemanal, r as carregarHorariosSala } f
 import "../../../chunks/List_Turma_Service.js";
 import "../../../chunks/List_Sala_Service.js";
 import { n as GradeMensal, t as BlocoAgendamentoCard } from "../../../chunks/BlocoAgendamentoCard.js";
-import { a as AGENDAMENTOEQUIPAMENTO_ROUTE, i as deletarAgendamentoEquipamento, l as ConfirmarDelecaoModal, n as carregarAgendamentosEquipamentos, o as deletarAgendamentoSala, r as carregarAgendamentosSalas, s as AGENDAMENTOSALA_ROUTE, t as confirmarAgendamento } from "../../../chunks/Confirmar_Agendamento_Service.js";
+import { a as carregarAgendamentosSalas, c as deletarAgendamentoSala, d as ConfirmarDelecaoModal, i as carregarAgendamentosEquipamentos, l as AGENDAMENTOSALA_ROUTE, n as ConfirmarConflitoModal, o as deletarAgendamentoEquipamento, r as confirmarAgendamento, s as AGENDAMENTOEQUIPAMENTO_ROUTE, t as encontrarConflitosOciosos } from "../../../chunks/agendamentoConflito.js";
 //#region src/lib/components/Card/ConfirmarRecorrenciaModal.svelte
 function ConfirmarRecorrenciaModal($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
@@ -633,6 +633,8 @@ function _page($$renderer, $$props) {
 		let carregando = false;
 		let erro = "";
 		let sucesso = "";
+		let agendamentoEmConflito = null;
+		let confirmandoConflito = false;
 		let ocorrenciasPendentes = null;
 		let enviando = false;
 		let progresso = {
@@ -659,11 +661,52 @@ function _page($$renderer, $$props) {
 			}
 		}
 		async function confirmarAgendamento$1(ag) {
+			const conflitos = encontrarConflitosOciosos(ag, agendamentos);
+			if (conflitos.length > 0) {
+				agendamentoEmConflito = {
+					agendamento: ag,
+					conflitos
+				};
+				return;
+			}
 			const atualizado = await confirmarAgendamento(ag);
 			agendamentos = agendamentos.map((item) => item.id === ag.id && item.tipo === ag.tipo ? {
 				...item,
 				status: atualizado?.status || "ativo"
 			} : item);
+		}
+		async function confirmarConflito({ agendamento, conflitos, justificativa }) {
+			confirmandoConflito = true;
+			try {
+				await Promise.all(conflitos.map(async (conflito) => {
+					if (conflito.tipo === "sala") await deletarAgendamentoSala(conflito.id, token, justificativa || "");
+					else if (conflito.tipo === "equipamento") await deletarAgendamentoEquipamento(conflito.id, token, justificativa || "");
+				}));
+				agendamentos = agendamentos.map((item) => {
+					if (conflitos.some((conflito) => conflito.id === item.id && conflito.tipo === item.tipo)) return {
+						...item,
+						status: "inativo",
+						justificativa: justificativa || item.justificativa || ""
+					};
+					if (item.id === agendamento.id && item.tipo === agendamento.tipo) return {
+						...item,
+						status: "ativo",
+						justificativa: item.justificativa || ""
+					};
+					return item;
+				});
+				const atualizado = await confirmarAgendamento(agendamento);
+				agendamentos = agendamentos.map((item) => item.id === agendamento.id && item.tipo === agendamento.tipo ? {
+					...item,
+					status: atualizado?.status || "ativo"
+				} : item);
+				agendamentoEmConflito = null;
+			} catch (e) {
+				erro = e?.message || "Erro ao confirmar o agendamento em conflito.";
+				throw e;
+			} finally {
+				confirmandoConflito = false;
+			}
 		}
 		async function carregarBlocosFixos(id) {
 			carregandoBlocos = true;
@@ -799,6 +842,14 @@ function _page($$renderer, $$props) {
 		let $$settled = true;
 		let $$inner_renderer;
 		function $$render_inner($$renderer) {
+			ConfirmarConflitoModal($$renderer, {
+				agendamento: agendamentoEmConflito?.agendamento ?? null,
+				conflitos: agendamentoEmConflito?.conflitos ?? [],
+				onConfirmar: confirmarConflito,
+				onCancelar: () => agendamentoEmConflito = null,
+				processando: confirmandoConflito
+			});
+			$$renderer.push(`<!----> `);
 			AgendamentoCard($$renderer, {
 				salas: itensDisponiveis,
 				agendamentos,
@@ -884,6 +935,7 @@ function _page($$renderer, $$props) {
 					$$settled = false;
 				}
 			});
+			$$renderer.push(`<!---->`);
 		}
 		do {
 			$$settled = true;

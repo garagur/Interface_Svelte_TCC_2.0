@@ -89,6 +89,7 @@
 
             <div class="modal-acoes">
                 <button
+                    type="button"
                     class="btn-secondary"
                     on:click={cancelar}
                     disabled={processando}
@@ -96,6 +97,7 @@
                     Cancelar
                 </button>
                 <button
+                    type="button"
                     class="btn-danger"
                     on:click={confirmar}
                     disabled={processando}
