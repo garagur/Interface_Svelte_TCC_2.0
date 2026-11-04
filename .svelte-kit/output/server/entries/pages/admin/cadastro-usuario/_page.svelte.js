@@ -94,7 +94,10 @@ function _page($$renderer, $$props) {
 			carregando = true;
 			try {
 				if (editando && usuarioEditandoId) {
-					await atualizarUsuario(usuarioEditandoId, novoUsuario, token);
+					await atualizarUsuario(usuarioEditandoId, {
+						nome: novoUsuario.nome,
+						email: novoUsuario.email
+					}, token);
 					sucesso = "Usuário atualizado com sucesso.";
 				} else {
 					await cadastrarUsuario(novoUsuario, token);
@@ -168,7 +171,8 @@ function _page($$renderer, $$props) {
 						$$renderer.select({
 							id: "cargo-usuario",
 							value: novoUsuario.cargo,
-							required: true
+							required: true,
+							disabled: editando
 						}, ($$renderer) => {
 							$$renderer.option({
 								value: "",
@@ -187,10 +191,10 @@ function _page($$renderer, $$props) {
 								$$renderer.push(`Educador`);
 							});
 						});
-						$$renderer.push(`</div> <div class="field"><label for="matricula-usuario">Matrícula</label> <input id="matricula-usuario" type="text"${attr("value", novoUsuario.matricula)} placeholder="000000" required=""/></div>`);
+						$$renderer.push(`</div> <div class="field"><label for="matricula-usuario">Matrícula</label> <input id="matricula-usuario" type="text"${attr("value", novoUsuario.matricula)} placeholder="000000" required=""${attr("disabled", editando, true)}/></div>`);
 					},
 					toggle: ($$renderer) => {
-						$$renderer.push(`<label for="status-usuario">Status</label> <div class="toggle-wrapper"><label class="toggle-switch"><input id="status-usuario" type="checkbox"${attr("checked", novoUsuario.status, true)}/> <span class="toggle-track"><span class="toggle-thumb"></span></span></label> <span class="toggle-label">${escape_html(novoUsuario.status ? "Habilitado" : "Desabilitado")}</span></div>`);
+						$$renderer.push(`<label for="status-usuario">Status</label> <div class="toggle-wrapper"><label class="toggle-switch"><input id="status-usuario" type="checkbox"${attr("checked", novoUsuario.status, true)}${attr("disabled", editando, true)}/> <span class="toggle-track"><span class="toggle-thumb"></span></span></label> <span class="toggle-label">${escape_html(novoUsuario.status ? "Habilitado" : "Desabilitado")}</span></div>`);
 					},
 					"filtros-extra": ($$renderer) => {
 						$$renderer.push(`<div class="filtro-status"><button type="button"${attr_class(`chip ativo`)}>Todos</button> <button type="button"${attr_class(`chip `)}>Habilitados</button> <button type="button"${attr_class(`chip `)}>Desabilitados</button></div>`);

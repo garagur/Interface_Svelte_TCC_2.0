@@ -121,6 +121,32 @@
         return ag.user_nome || ag.usuario_nome || ag.professor_nome || "";
     }
 
+    function imagemItem(ag) {
+        const k = tipoAgendamento(ag);
+        const valor =
+            ag.fotoUrl ||
+            ag.foto_url ||
+            ag[`${k}_foto_url`] ||
+            ag[`${k}_imagem`] ||
+            ag[`${k}_foto`] ||
+            ag[k]?.fotoUrl ||
+            ag[k]?.foto_url ||
+            ag[k]?.imagem ||
+            ag[k]?.foto ||
+            "";
+
+        if (!valor || typeof valor !== "string") return "";
+        const caminho = valor.trim();
+        if (!caminho) return "";
+        if (/^(https?:|data:|blob:)/i.test(caminho)) return caminho;
+
+        try {
+            return new URL(caminho, window.location.origin).href;
+        } catch {
+            return caminho;
+        }
+    }
+
     // Nome do responsável pelo recurso (sala/equipamento), não do solicitante
     function nomeResponsavelRecurso(ag) {
         return tipoAgendamento(ag) === "equipamento"
@@ -328,6 +354,23 @@
                     class:passado={status === "passado"}
                 >
                     <div class="agendamento-faixa"></div>
+                    <div
+                        class="agendamento-foto"
+                        aria-label={`Foto de ${nomeAgendamento(ag) || "agendamento"}`}
+                    >
+                        {#if imagemItem(ag)}
+                            <img
+                                src={imagemItem(ag)}
+                                alt={nomeAgendamento(ag) || "Agendamento"}
+                            />
+                        {:else}
+                            <span class="material-symbols-outlined">
+                                {tipoAgendamento(ag) === "equipamento"
+                                    ? "devices"
+                                    : "meeting_room"}
+                            </span>
+                        {/if}
+                    </div>
                     <div class="agendamento-body">
                         <span
                             class="badge-status {status} {ag.status === 'ocioso'
@@ -615,12 +658,13 @@
     .agendamento-item {
         display: flex;
         flex-shrink: 0;
-        align-items: stretch;
+        align-items: center;
         gap: 0;
         background: var(--neu-bg);
         border: none;
         border-radius: 14px;
         overflow: hidden;
+        margin: 6px 8px 6px 16px;
         box-shadow:
             5px 5px 10px var(--neu-shadow-dark),
             -5px -5px 10px var(--neu-shadow-light);
@@ -650,6 +694,36 @@
         width: 4px;
         background: var(--primary);
         flex-shrink: 0;
+    }
+
+    .agendamento-foto {
+        width: 146px;
+        min-width: 146px;
+        min-height: 110px;
+        height: 100%;
+        max-height: 140px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.4);
+        border-right: 1px solid
+            color-mix(in srgb, var(--gray-300) 55%, transparent);
+        border-radius: 12px;
+        overflow: hidden;
+        margin: 10px 0 10px 10px;
+    }
+
+    .agendamento-foto img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        border-radius: 12px;
+    }
+
+    .agendamento-foto .material-symbols-outlined {
+        font-size: 2.3rem;
+        color: var(--text-muted);
     }
 
     .agendamento-body {
@@ -812,7 +886,13 @@
         }
 
         .agendamento-item {
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
+        }
+
+        .agendamento-foto {
+            width: 96px;
+            min-width: 96px;
+            height: 100px;
         }
 
         .agendamentos-lista {

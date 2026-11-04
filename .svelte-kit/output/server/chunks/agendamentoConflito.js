@@ -278,6 +278,19 @@ function ListaAgendamentosCard($$renderer, $$props) {
 		function nomeResponsavel(ag) {
 			return ag.user_nome || ag.usuario_nome || ag.professor_nome || "";
 		}
+		function imagemItem(ag) {
+			const k = tipoAgendamento(ag);
+			const valor = ag.fotoUrl || ag.foto_url || ag[`${k}_foto_url`] || ag[`${k}_imagem`] || ag[`${k}_foto`] || ag[k]?.fotoUrl || ag[k]?.foto_url || ag[k]?.imagem || ag[k]?.foto || "";
+			if (!valor || typeof valor !== "string") return "";
+			const caminho = valor.trim();
+			if (!caminho) return "";
+			if (/^(https?:|data:|blob:)/i.test(caminho)) return caminho;
+			try {
+				return new URL(caminho, window.location.origin).href;
+			} catch {
+				return caminho;
+			}
+		}
 		function responsavelId(ag) {
 			return tipoAgendamento(ag) === "equipamento" ? ag.equipamento_responsavel_id : ag.sala_responsavel_id;
 		}
@@ -397,7 +410,15 @@ function ListaAgendamentosCard($$renderer, $$props) {
 				$$renderer.push(`<div${attr_class(`agendamento-item ${ag.status === "ocioso" ? "ocioso" : ""} ${ag.status === "em_andamento" ? "em-andamento" : ""}`, "svelte-1c63qri", {
 					"cancelado": status === "cancelado",
 					"passado": status === "passado"
-				})}><div class="agendamento-faixa svelte-1c63qri"></div> <div class="agendamento-body svelte-1c63qri"><span${attr_class(`badge-status ${stringify(status)} ${ag.status === "ocioso" ? "ocioso" : ""} ${ag.status === "em_andamento" ? "em-andamento" : ""}`, "svelte-1c63qri")}>${escape_html(rotuloStatus(ag, status))}</span> <div class="agendamento-data-hora svelte-1c63qri"><span class="material-symbols-outlined svelte-1c63qri">schedule</span> ${escape_html(formatarPeriodo(ag.data_hora_inicio, ag.data_hora_fim))}</div> <div class="agendamento-sala svelte-1c63qri"><span class="material-symbols-outlined svelte-1c63qri">${escape_html(tipoAgendamento(ag) === "equipamento" ? "devices" : "meeting_room")}</span> ${escape_html(nomeAgendamento(ag) || (tipoAgendamento(ag) === "equipamento" ? "Equipamento não informado" : "Sala não informada"))}</div> `);
+				})}><div class="agendamento-faixa svelte-1c63qri"></div> <div class="agendamento-foto svelte-1c63qri"${attr("aria-label", `Foto de ${nomeAgendamento(ag) || "agendamento"}`)}>`);
+				if (imagemItem(ag)) {
+					$$renderer.push("<!--[0-->");
+					$$renderer.push(`<img${attr("src", imagemItem(ag))}${attr("alt", nomeAgendamento(ag) || "Agendamento")} class="svelte-1c63qri"/>`);
+				} else {
+					$$renderer.push("<!--[-1-->");
+					$$renderer.push(`<span class="material-symbols-outlined svelte-1c63qri">${escape_html(tipoAgendamento(ag) === "equipamento" ? "devices" : "meeting_room")}</span>`);
+				}
+				$$renderer.push(`<!--]--></div> <div class="agendamento-body svelte-1c63qri"><span${attr_class(`badge-status ${stringify(status)} ${ag.status === "ocioso" ? "ocioso" : ""} ${ag.status === "em_andamento" ? "em-andamento" : ""}`, "svelte-1c63qri")}>${escape_html(rotuloStatus(ag, status))}</span> <div class="agendamento-data-hora svelte-1c63qri"><span class="material-symbols-outlined svelte-1c63qri">schedule</span> ${escape_html(formatarPeriodo(ag.data_hora_inicio, ag.data_hora_fim))}</div> <div class="agendamento-sala svelte-1c63qri"><span class="material-symbols-outlined svelte-1c63qri">${escape_html(tipoAgendamento(ag) === "equipamento" ? "devices" : "meeting_room")}</span> ${escape_html(nomeAgendamento(ag) || (tipoAgendamento(ag) === "equipamento" ? "Equipamento não informado" : "Sala não informada"))}</div> `);
 				if (responsavel) {
 					$$renderer.push("<!--[0-->");
 					$$renderer.push(`<div class="agendamento-sala svelte-1c63qri"><span class="material-symbols-outlined svelte-1c63qri">person</span> ${escape_html(responsavel)}</div>`);

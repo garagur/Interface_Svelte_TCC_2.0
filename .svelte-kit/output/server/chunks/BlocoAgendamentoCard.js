@@ -285,9 +285,10 @@ function GradeMensal($$renderer, $$props) {
 //#region src/lib/components/Card/BlocoAgendamentoCard.svelte
 function BlocoAgendamentoCard($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
-		let ehEquipamento, proprio, responsavelId, ehResponsavel, podeDeletar, recursoNome, recursoIcone, agendamentoCancelado, agendamentoPassado;
+		let ehEquipamento, proprio, responsavelId, ehResponsavel, podeDeletar, podeConfirmar, recursoNome, recursoIcone, agendamentoCancelado, agendamentoPassado;
 		let ag = $$props["ag"];
 		let onDeletar = fallback($$props["onDeletar"], null);
+		let onConfirmar = fallback($$props["onConfirmar"], null);
 		let usuarioId = fallback($$props["usuarioId"], null);
 		let cargo = fallback($$props["cargo"], null);
 		let mostrarDetalhes = false;
@@ -305,6 +306,7 @@ function BlocoAgendamentoCard($$renderer, $$props) {
 		$: responsavelId = ehEquipamento ? ag.equipamento_responsavel_id : ag.sala_responsavel_id;
 		$: ehResponsavel = usuarioId != null && responsavelId != null && String(responsavelId) === String(usuarioId);
 		$: podeDeletar = cargo === "admin" || proprio || ehResponsavel;
+		$: podeConfirmar = !!onConfirmar && ag.status === "ocioso" && (responsavelId == null ? cargo === "admin" : usuarioId != null && String(responsavelId) === String(usuarioId));
 		$: recursoNome = ehEquipamento ? ag.equipamento_nome || ag.equipamento_id : ag.sala_nome || ag.sala_id;
 		$: recursoIcone = ehEquipamento ? "devices" : "meeting_room";
 		$: agendamentoCancelado = ag.status === "inativo";
@@ -316,7 +318,8 @@ function BlocoAgendamentoCard($$renderer, $$props) {
 				usuarioId,
 				cargo,
 				onFechar: () => mostrarDetalhes = false,
-				onCancelar: onDeletar && !agendamentoPassado && !agendamentoCancelado ? cancelarPeloModal : null
+				onCancelar: onDeletar && !agendamentoPassado && !agendamentoCancelado ? cancelarPeloModal : null,
+				onConfirmar: podeConfirmar ? onConfirmar : null
 			});
 		} else $$renderer.push("<!--[-1-->");
 		$$renderer.push(`<!--]--> <div${attr_class(`ag-bloco-inner ${proprio ? "proprio" : "outro"}`, "svelte-qzbw3r", {
@@ -348,6 +351,7 @@ function BlocoAgendamentoCard($$renderer, $$props) {
 		bind_props($$props, {
 			ag,
 			onDeletar,
+			onConfirmar,
 			usuarioId,
 			cargo
 		});

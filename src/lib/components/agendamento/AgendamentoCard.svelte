@@ -362,6 +362,7 @@
                                     {usuarioId}
                                     {cargo}
                                     onDeletar={abrirModalDeletar}
+                                    onConfirmar={onConfirmarAgendamento}
                                 />
                             </svelte:fragment>
                         </CalendarioAgendamentos>

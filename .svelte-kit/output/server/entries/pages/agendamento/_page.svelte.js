@@ -287,7 +287,8 @@ function AgendamentoCard($$renderer, $$props) {
 						ag,
 						usuarioId,
 						cargo,
-						onDeletar: abrirModalDeletar
+						onDeletar: abrirModalDeletar,
+						onConfirmar: onConfirmarAgendamento
 					});
 				} }
 			});

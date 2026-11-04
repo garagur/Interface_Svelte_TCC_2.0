@@ -4,6 +4,8 @@
     export let ag;
     /** @type {((ag: any) => void) | null} */
     export let onDeletar = null;
+    /** @type {((ag: any) => Promise<void> | void) | null} */
+    export let onConfirmar = null;
     export let usuarioId = null;
     export let cargo = null;
 
@@ -21,6 +23,12 @@
         responsavelId != null &&
         String(responsavelId) === String(usuarioId);
     $: podeDeletar = cargo === "admin" || proprio || ehResponsavel;
+    $: podeConfirmar =
+        !!onConfirmar &&
+        ag.status === "ocioso" &&
+        (responsavelId == null
+            ? cargo === "admin"
+            : usuarioId != null && String(responsavelId) === String(usuarioId));
 
     $: recursoNome = ehEquipamento
         ? ag.equipamento_nome || ag.equipamento_id
@@ -50,6 +58,7 @@
         onCancelar={onDeletar && !agendamentoPassado && !agendamentoCancelado
             ? cancelarPeloModal
             : null}
+        onConfirmar={podeConfirmar ? onConfirmar : null}
     />
 {/if}
 

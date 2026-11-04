@@ -68,7 +68,14 @@
     carregando = true;
     try {
       if (editando && usuarioEditandoId) {
-        await atualizarUsuario(usuarioEditandoId, novoUsuario, token);
+        await atualizarUsuario(
+          usuarioEditandoId,
+          {
+            nome: novoUsuario.nome,
+            email: novoUsuario.email,
+          },
+          token,
+        );
         sucesso = "Usuário atualizado com sucesso.";
       } else {
         await cadastrarUsuario(novoUsuario, token);
@@ -209,7 +216,12 @@
     </div>
     <div class="field">
       <label for="cargo-usuario">Cargo</label>
-      <select id="cargo-usuario" bind:value={novoUsuario.cargo} required>
+      <select
+        id="cargo-usuario"
+        bind:value={novoUsuario.cargo}
+        required
+        disabled={editando}
+      >
         <option value="" disabled selected>Selecione um cargo...</option>
         <option value="admin">Admin</option>
         <option value="servidor">Servidor</option>
@@ -224,6 +236,7 @@
         bind:value={novoUsuario.matricula}
         placeholder="000000"
         required
+        disabled={editando}
       />
     </div>
   </svelte:fragment>
@@ -236,6 +249,7 @@
           id="status-usuario"
           type="checkbox"
           bind:checked={novoUsuario.status}
+          disabled={editando}
         />
         <span class="toggle-track"><span class="toggle-thumb"></span></span>
       </label>
