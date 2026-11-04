@@ -88,6 +88,7 @@ function AgendamentoCard($$renderer, $$props) {
 		let tipo = fallback($$props["tipo"], "avulso");
 		let diasSemana = fallback($$props["diasSemana"], () => [], true);
 		let dataAgendamento = fallback($$props["dataAgendamento"], "");
+		let dataFimRecorrencia = fallback($$props["dataFimRecorrencia"], "");
 		let horaInicio = fallback($$props["horaInicio"], "");
 		let horaFim = fallback($$props["horaFim"], "");
 		let obs = fallback($$props["obs"], "");
@@ -291,7 +292,12 @@ function AgendamentoCard($$renderer, $$props) {
 				} }
 			});
 		}
-		$$renderer.push(`<!--]--></div> <div class="card form-card"><div class="card-header"><span class="material-symbols-outlined icon-large">calendar_add_on</span></div> <div class="tabs-recorrencia"><button type="button"${attr_class(`tab-btn ${tipo === "avulso" ? "ativo" : ""}`)}>Avulso</button> <button type="button"${attr_class(`tab-btn ${tipo === "semanal" ? "ativo" : ""}`)}>Semanal</button> <button type="button"${attr_class(`tab-btn ${tipo === "quinzenal" ? "ativo" : ""}`)}>Quinzenal</button></div> <form><div class="form-fields"><div class="field"><label for="data-agendamento">${escape_html(tipo === "avulso" ? "Data" : "Data de início")}</label> <input id="data-agendamento" type="date"${attr("value", dataAgendamento)}${attr("min", hojeStr)} required=""/></div> <div class="field"><label for="hora-inicio">Hora de Início</label> <input id="hora-inicio" type="time"${attr("value", horaInicio)} required=""/></div> <div class="field"><label for="hora-fim">Hora de Fim</label> <input id="hora-fim" type="time"${attr("value", horaFim)} required=""/></div> <div class="field"><label for="obs">Observação</label> <input id="obs" type="text"${attr("value", obs)} placeholder="Ex: Aula de reposição"/></div> <div class="field"><label for="turma-agendamento">Turma (opcional)</label> `);
+		$$renderer.push(`<!--]--></div> <div class="card form-card"><div class="card-header"><span class="material-symbols-outlined icon-large">calendar_add_on</span></div> <div class="tabs-recorrencia"><button type="button"${attr_class(`tab-btn ${tipo === "avulso" ? "ativo" : ""}`)}>Avulso</button> <button type="button"${attr_class(`tab-btn ${tipo === "semanal" ? "ativo" : ""}`)}>Semanal</button> <button type="button"${attr_class(`tab-btn ${tipo === "quinzenal" ? "ativo" : ""}`)}>Quinzenal</button></div> <form><div class="form-fields"><div class="field"><label for="data-agendamento">${escape_html(tipo === "avulso" ? "Data" : "Data de início")}</label> <input id="data-agendamento" type="date"${attr("value", dataAgendamento)}${attr("min", hojeStr)} required=""/></div> `);
+		if (tipo !== "avulso") {
+			$$renderer.push("<!--[0-->");
+			$$renderer.push(`<div class="field"><label for="data-fim-recorrencia">Data de fim</label> <input id="data-fim-recorrencia" type="date"${attr("value", dataFimRecorrencia)}${attr("min", dataAgendamento || hojeStr)} required=""/></div>`);
+		} else $$renderer.push("<!--[-1-->");
+		$$renderer.push(`<!--]--> <div class="field"><label for="hora-inicio">Hora de Início</label> <input id="hora-inicio" type="time"${attr("value", horaInicio)} required=""/></div> <div class="field"><label for="hora-fim">Hora de Fim</label> <input id="hora-fim" type="time"${attr("value", horaFim)} required=""/></div> <div class="field"><label for="obs">Observação</label> <input id="obs" type="text"${attr("value", obs)} placeholder="Ex: Aula de reposição"/></div> <div class="field"><label for="turma-agendamento">Turma (opcional)</label> `);
 		$$renderer.select({
 			id: "turma-agendamento",
 			value: turma_id
@@ -319,7 +325,7 @@ function AgendamentoCard($$renderer, $$props) {
 				let d = each_array_2[$$index_2];
 				$$renderer.push(`<button type="button"${attr_class(`dia-btn ${diasSemana.includes(d.key) ? "ativo" : ""}`)}>${escape_html(d.label)}</button>`);
 			}
-			$$renderer.push(`<!--]--></div></div> <p class="aviso-recorrencia"><span class="material-symbols-outlined">info</span> ${escape_html(tipo === "semanal" ? "Cobre 7 dias a partir da data escolhida." : "Cobre 14 dias a partir da data escolhida.")}
+			$$renderer.push(`<!--]--></div></div> <p class="aviso-recorrencia"><span class="material-symbols-outlined">info</span> ${escape_html(tipo === "semanal" ? "Repete nos dias selecionados a cada semana até a data final." : "Repete nos dias selecionados a cada 2 semanas, pulando 1 semana, até a data final.")}
                                 Agendamentos no mesmo dia exigem 15 minutos de antecedência.</p>`);
 		} else $$renderer.push("<!--[-1-->");
 		$$renderer.push(`<!--]--> `);
@@ -347,6 +353,7 @@ function AgendamentoCard($$renderer, $$props) {
 			tipo,
 			diasSemana,
 			dataAgendamento,
+			dataFimRecorrencia,
 			horaInicio,
 			horaFim,
 			obs,
@@ -503,12 +510,13 @@ function validarDataInicioRecorrencia(dataInicio) {
 * @param {string} params.horaFim - 'HH:mm'
 * @returns {string|null} mensagem de erro, ou null se válido
 */
-function validarRecorrencia({ tipo, diasSemana, dataInicio, horaInicio, horaFim }) {
+function validarRecorrencia({ tipo, diasSemana, dataInicio, dataFim, horaInicio, horaFim }) {
 	if (tipo === "avulso") return null;
 	if (!diasSemana || diasSemana.length === 0) return "Selecione pelo menos um dia da semana.";
-	if (!dataInicio || !horaInicio || !horaFim) return "Preencha a data de início e os horários.";
+	if (!dataInicio || !dataFim || !horaInicio || !horaFim) return "Preencha a data de início, a data final e os horários.";
 	const erroDataInicio = validarDataInicioRecorrencia(dataInicio);
 	if (erroDataInicio) return erroDataInicio;
+	if (dataFim < dataInicio) return "A data final não pode ser anterior à data de início.";
 	if (horaFim <= horaInicio) return "O horário de fim deve ser depois do horário de início.";
 	return null;
 }
@@ -522,10 +530,6 @@ var MAPA_DIAS = {
 	qui: 4,
 	sex: 5,
 	sab: 6
-};
-var DURACAO_DIAS = {
-	semanal: 7,
-	quinzenal: 14
 };
 /**
 * Formata um objeto Date como 'YYYY-MM-DD' no fuso local.
@@ -546,23 +550,28 @@ function formatarDataUTC(data) {
 * @param {'semanal'|'quinzenal'} params.recorrencia
 * @returns {{ data: string, data_hora_inicio: string, data_hora_fim: string }[]}
 */
-function gerarDatasRecorrentes({ diasSemana, dataInicio, horaInicio, horaFim, recorrencia }) {
-	const diasSelecionados = diasSemana.map((d) => MAPA_DIAS[d]);
+function gerarDatasRecorrentes({ diasSemana, dataInicio, dataFim, horaInicio, horaFim, recorrencia }) {
+	if (!diasSemana || diasSemana.length === 0 || !dataInicio || !dataFim) return [];
+	const diasSelecionados = new Set(diasSemana.map((d) => MAPA_DIAS[d]));
 	const [anoIni, mesIni, diaIni] = dataInicio.split("-").map(Number);
+	const [anoFim, mesFim, diaFim] = dataFim.split("-").map(Number);
 	const inicio = new Date(Date.UTC(anoIni, mesIni - 1, diaIni));
-	const totalDias = DURACAO_DIAS[recorrencia];
-	const fim = new Date(inicio);
-	fim.setDate(fim.getDate() + (totalDias - 1));
+	const fim = new Date(Date.UTC(anoFim, mesFim - 1, diaFim));
 	const ocorrencias = [];
 	let dataAtual = new Date(inicio);
 	while (dataAtual <= fim) {
-		if (diasSelecionados.includes(dataAtual.getUTCDay())) {
-			const dataStr = formatarDataUTC(dataAtual);
-			ocorrencias.push({
-				data: dataStr,
-				data_hora_inicio: `${dataStr} ${horaInicio}:00`,
-				data_hora_fim: `${dataStr} ${horaFim}:00`
-			});
+		const diaSemanaAtual = dataAtual.getUTCDay();
+		if (diasSelecionados.has(diaSemanaAtual)) {
+			const diasDesdeInicio = Math.floor((dataAtual.getTime() - inicio.getTime()) / 864e5);
+			const semanaDoPeriodo = Math.floor(diasDesdeInicio / 7);
+			if (recorrencia === "semanal" || semanaDoPeriodo % 2 === 0) {
+				const dataStr = formatarDataUTC(dataAtual);
+				ocorrencias.push({
+					data: dataStr,
+					data_hora_inicio: `${dataStr} ${horaInicio}:00`,
+					data_hora_fim: `${dataStr} ${horaFim}:00`
+				});
+			}
 		}
 		dataAtual.setUTCDate(dataAtual.getUTCDate() + 1);
 	}
@@ -622,6 +631,7 @@ function _page($$renderer, $$props) {
 		let tipo = "avulso";
 		let diasSemana = [];
 		let dataAgendamento = hoje();
+		let dataFimRecorrencia = hoje();
 		let horaInicio = "08:00";
 		let horaFim = "10:00";
 		let obs = "";
@@ -768,6 +778,7 @@ function _page($$renderer, $$props) {
 				tipo,
 				diasSemana,
 				dataInicio: dataAgendamento,
+				dataFim: dataFimRecorrencia,
 				horaInicio,
 				horaFim
 			});
@@ -778,6 +789,7 @@ function _page($$renderer, $$props) {
 			const datasGeradas = gerarDatasRecorrentes({
 				diasSemana,
 				dataInicio: dataAgendamento,
+				dataFim: dataFimRecorrencia,
 				horaInicio,
 				horaFim,
 				recorrencia: tipo
@@ -821,6 +833,7 @@ function _page($$renderer, $$props) {
 			tipo = "avulso";
 			diasSemana = [];
 			dataAgendamento = hoje();
+			dataFimRecorrencia = hoje();
 			horaInicio = "08:00";
 			horaFim = "10:00";
 			obs = "";
@@ -904,6 +917,13 @@ function _page($$renderer, $$props) {
 				},
 				set dataAgendamento($$value) {
 					dataAgendamento = $$value;
+					$$settled = false;
+				},
+				get dataFimRecorrencia() {
+					return dataFimRecorrencia;
+				},
+				set dataFimRecorrencia($$value) {
+					dataFimRecorrencia = $$value;
 					$$settled = false;
 				},
 				get horaInicio() {

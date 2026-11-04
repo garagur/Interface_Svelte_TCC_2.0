@@ -26,28 +26,41 @@ function formatarDataUTC(data) {
  * @param {'semanal'|'quinzenal'} params.recorrencia
  * @returns {{ data: string, data_hora_inicio: string, data_hora_fim: string }[]}
  */
-export function gerarDatasRecorrentes({ diasSemana, dataInicio, horaInicio, horaFim, recorrencia }) {
-    const diasSelecionados = diasSemana.map(d => MAPA_DIAS[d]);
+export function gerarDatasRecorrentes({ diasSemana, dataInicio, dataFim, horaInicio, horaFim, recorrencia }) {
+    if (!diasSemana || diasSemana.length === 0 || !dataInicio || !dataFim) {
+        return [];
+    }
+
+    const diasSelecionados = new Set(diasSemana.map(d => MAPA_DIAS[d]));
 
     const [anoIni, mesIni, diaIni] = dataInicio.split('-').map(Number);
+    const [anoFim, mesFim, diaFim] = dataFim.split('-').map(Number);
     const inicio = new Date(Date.UTC(anoIni, mesIni - 1, diaIni));
-
-    const totalDias = DURACAO_DIAS[recorrencia];
-    const fim = new Date(inicio);
-    fim.setDate(fim.getDate() + (totalDias - 1));
+    const fim = new Date(Date.UTC(anoFim, mesFim - 1, diaFim));
 
     const ocorrencias = [];
     let dataAtual = new Date(inicio);
 
     while (dataAtual <= fim) {
-        if (diasSelecionados.includes(dataAtual.getUTCDay())) {
-            const dataStr = formatarDataUTC(dataAtual);
-            ocorrencias.push({
-                data: dataStr,
-                data_hora_inicio: `${dataStr} ${horaInicio}:00`,
-                data_hora_fim: `${dataStr} ${horaFim}:00`,
-            });
+        const diaSemanaAtual = dataAtual.getUTCDay();
+        const ehDiaSelecionado = diasSelecionados.has(diaSemanaAtual);
+
+        if (ehDiaSelecionado) {
+            const diasDesdeInicio = Math.floor((dataAtual.getTime() - inicio.getTime()) / 86400000);
+            const semanaDoPeriodo = Math.floor(diasDesdeInicio / 7);
+            const deveIncluir =
+                recorrencia === 'semanal' || semanaDoPeriodo % 2 === 0;
+
+            if (deveIncluir) {
+                const dataStr = formatarDataUTC(dataAtual);
+                ocorrencias.push({
+                    data: dataStr,
+                    data_hora_inicio: `${dataStr} ${horaInicio}:00`,
+                    data_hora_fim: `${dataStr} ${horaFim}:00`,
+                });
+            }
         }
+
         dataAtual.setUTCDate(dataAtual.getUTCDate() + 1);
     }
 

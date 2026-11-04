@@ -25,6 +25,7 @@
     export let tipo = "avulso";
     export let diasSemana = [];
     export let dataAgendamento = "";
+    export let dataFimRecorrencia = "";
     export let horaInicio = "";
     export let horaFim = "";
     export let obs = "";
@@ -427,6 +428,20 @@
                                     required
                                 />
                             </div>
+                            {#if tipo !== "avulso"}
+                                <div class="field">
+                                    <label for="data-fim-recorrencia">
+                                        Data de fim
+                                    </label>
+                                    <input
+                                        id="data-fim-recorrencia"
+                                        type="date"
+                                        bind:value={dataFimRecorrencia}
+                                        min={dataAgendamento || hojeStr}
+                                        required
+                                    />
+                                </div>
+                            {/if}
                             <div class="field">
                                 <label for="hora-inicio">Hora de Início</label>
                                 <input
@@ -506,8 +521,8 @@
                                     >info</span
                                 >
                                 {tipo === "semanal"
-                                    ? "Cobre 7 dias a partir da data escolhida."
-                                    : "Cobre 14 dias a partir da data escolhida."}
+                                    ? "Repete nos dias selecionados a cada semana até a data final."
+                                    : "Repete nos dias selecionados a cada 2 semanas, pulando 1 semana, até a data final."}
                                 Agendamentos no mesmo dia exigem 15 minutos de antecedência.
                             </p>
                         {/if}

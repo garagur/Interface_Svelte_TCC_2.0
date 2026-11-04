@@ -29,7 +29,7 @@ export function validarDataInicioRecorrencia(dataInicio) {
  * @param {string} params.horaFim - 'HH:mm'
  * @returns {string|null} mensagem de erro, ou null se válido
  */
-export function validarRecorrencia({ tipo, diasSemana, dataInicio, horaInicio, horaFim }) {
+export function validarRecorrencia({ tipo, diasSemana, dataInicio, dataFim, horaInicio, horaFim }) {
     if (tipo === 'avulso') {
         return null;
     }
@@ -38,13 +38,17 @@ export function validarRecorrencia({ tipo, diasSemana, dataInicio, horaInicio, h
         return 'Selecione pelo menos um dia da semana.';
     }
 
-    if (!dataInicio || !horaInicio || !horaFim) {
-        return 'Preencha a data de início e os horários.';
+    if (!dataInicio || !dataFim || !horaInicio || !horaFim) {
+        return 'Preencha a data de início, a data final e os horários.';
     }
 
     const erroDataInicio = validarDataInicioRecorrencia(dataInicio);
     if (erroDataInicio) {
         return erroDataInicio;
+    }
+
+    if (dataFim < dataInicio) {
+        return 'A data final não pode ser anterior à data de início.';
     }
 
     if (horaFim <= horaInicio) {

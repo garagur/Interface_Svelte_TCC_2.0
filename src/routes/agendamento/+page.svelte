@@ -57,6 +57,7 @@
     let tipo = "avulso";
     let diasSemana = [];
     let dataAgendamento = hoje();
+    let dataFimRecorrencia = hoje();
     let horaInicio = "08:00";
     let horaFim = "10:00";
     let obs = "";
@@ -316,6 +317,7 @@
             tipo,
             diasSemana,
             dataInicio: dataAgendamento,
+            dataFim: dataFimRecorrencia,
             horaInicio,
             horaFim,
         });
@@ -328,6 +330,7 @@
         const datasGeradas = gerarDatasRecorrentes({
             diasSemana,
             dataInicio: dataAgendamento,
+            dataFim: dataFimRecorrencia,
             horaInicio,
             horaFim,
             recorrencia: /** @type {'semanal'|'quinzenal'} */ (tipo),
@@ -392,6 +395,7 @@
         tipo = "avulso";
         diasSemana = [];
         dataAgendamento = hoje();
+        dataFimRecorrencia = hoje();
         horaInicio = "08:00";
         horaFim = "10:00";
         obs = "";
@@ -425,6 +429,7 @@
     bind:tipo
     bind:diasSemana
     bind:dataAgendamento
+    bind:dataFimRecorrencia
     bind:horaInicio
     bind:horaFim
     bind:obs
