@@ -22,13 +22,18 @@ export async function deletarAgendamentoEquipamento(id, token, justificativa = '
         throw new Error('Token de autenticação não encontrado. Faça login novamente.')
     }
 
-    const resp = await apiFetch(AGENDAMENTOEQUIPAMENTO_ROUTE.deletar(id), {
-        method: 'DELETE',
+    const payload = { status: 'inativo' }
+    if (justificativa?.trim()) {
+        payload.justificativa = justificativa.trim()
+    }
+
+    const resp = await apiFetch(AGENDAMENTOEQUIPAMENTO_ROUTE.atualizarStatus(id), {
+        method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
         },
-        body: JSON.stringify({ justificativa }),
+        body: JSON.stringify(payload),
     })
 
     if (!resp) return;
