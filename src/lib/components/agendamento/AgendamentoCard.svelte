@@ -70,6 +70,7 @@
     let agendamentoParaDeletar = null;
     let cancelandoId = null; // ex: "sala-12" ou "equipamento-7" — null quando nada está em andamento
     let visao = "calendario";
+    let mostrarAulasFixasMes = false;
 
     function trocarVisao(novaVisao) {
         visao = novaVisao;
@@ -203,6 +204,7 @@
                     class="toggle-btn {modo === 'equipamento' ? 'active' : ''}"
                     on:click={() => {
                         modo = "equipamento";
+                        mostrarAulasFixasMes = false;
                         sala_id = null;
                         if (onLimpar) onLimpar();
                     }}
@@ -312,31 +314,53 @@
                             <h3>Agendamentos</h3>
                         </div>
 
-                        <div
-                            class="toggle-visao"
-                            role="group"
-                            aria-label="Modo de visualização"
-                        >
-                            <button
-                                type="button"
-                                class:ativo={visao === "calendario"}
-                                on:click={() => trocarVisao("calendario")}
-                                title="Calendário"
-                            >
-                                <span class="material-symbols-outlined"
-                                    >calendar_view_month</span
+                        <div class="calendario-acoes">
+                            {#if modo === "sala" && sala_id && visao === "calendario"}
+                                <button
+                                    type="button"
+                                    class="btn-aulas-fixas"
+                                    class:ativo={mostrarAulasFixasMes}
+                                    aria-pressed={mostrarAulasFixasMes}
+                                    title={mostrarAulasFixasMes
+                                        ? "Ocultar aulas fixas"
+                                        : "Mostrar aulas fixas na grade mensal"}
+                                    on:click={() =>
+                                        (mostrarAulasFixasMes =
+                                            !mostrarAulasFixasMes)}
                                 >
-                            </button>
-                            <button
-                                type="button"
-                                class:ativo={visao === "lista"}
-                                on:click={() => trocarVisao("lista")}
-                                title="Lista"
+                                    <span class="material-symbols-outlined"
+                                        >event_repeat</span
+                                    >
+                                    <span>Aulas fixas</span>
+                                </button>
+                            {/if}
+
+                            <div
+                                class="toggle-visao"
+                                role="group"
+                                aria-label="Modo de visualização"
                             >
-                                <span class="material-symbols-outlined"
-                                    >view_list</span
+                                <button
+                                    type="button"
+                                    class:ativo={visao === "calendario"}
+                                    on:click={() => trocarVisao("calendario")}
+                                    title="Calendário"
                                 >
-                            </button>
+                                    <span class="material-symbols-outlined"
+                                        >calendar_view_month</span
+                                    >
+                                </button>
+                                <button
+                                    type="button"
+                                    class:ativo={visao === "lista"}
+                                    on:click={() => trocarVisao("lista")}
+                                    title="Lista"
+                                >
+                                    <span class="material-symbols-outlined"
+                                        >view_list</span
+                                    >
+                                </button>
+                            </div>
                         </div>
 
                         <span class="badge">
@@ -355,6 +379,8 @@
                             agendamentos={agendamentosVisiveis}
                             {hojeStr}
                             {carregandoLista}
+                            blocosSemana={blocosFixos}
+                            mostrarBlocosSemana={mostrarAulasFixasMes}
                         >
                             <svelte:fragment let:ag>
                                 <AgendamentoBloco
@@ -364,6 +390,9 @@
                                     onDeletar={abrirModalDeletar}
                                     onConfirmar={onConfirmarAgendamento}
                                 />
+                            </svelte:fragment>
+                            <svelte:fragment slot="blocoSemanal" let:bloco>
+                                <BlocoCard {bloco} mostrarTurma={true} />
                             </svelte:fragment>
                         </CalendarioAgendamentos>
                     {:else}
@@ -563,3 +592,56 @@
         </main>
     </div>
 </div>
+
+<style>
+    .calendario-acoes {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-left: auto;
+    }
+
+    .calendario-acoes :global(.toggle-visao) {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .btn-aulas-fixas {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        min-height: 34px;
+        padding: 5px 10px;
+        border: 0;
+        border-radius: 9px;
+        background: var(--white);
+        color: var(--primary-dark);
+        font-size: 0.75rem;
+        font-weight: 700;
+        white-space: nowrap;
+        cursor: pointer;
+        width: auto;
+        height: 34px;
+        box-shadow:
+            3px 3px 6px var(--shadow-dark-soft),
+            -3px -3px 6px var(--shadow-light-medium);
+    }
+
+    .btn-aulas-fixas .material-symbols-outlined {
+        font-size: 18px;
+    }
+
+    .btn-aulas-fixas.ativo {
+        background: var(--confirm);
+        color: var(--white);
+        box-shadow:
+            inset 3px 3px 6px var(--shadow-dark-soft),
+            inset -3px -3px 6px var(--overlay-light);
+    }
+
+    .btn-aulas-fixas:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+    }
+</style>

@@ -12,6 +12,9 @@
     export let onLogout = null;
 
     let mostrarMenuUsuario = false;
+    let paginaRolada = false;
+    let cabecalhoVisivel = true;
+    let focoNoCabecalho = false;
     const atalhosAdmin = [
         {
             label: "Salas",
@@ -46,6 +49,18 @@
     ];
 
     $: caminhoAtual = $page.url.pathname;
+    $: recolhimentoPermitido =
+        !caminhoAtual.startsWith("/main") &&
+        ![
+            "/admin/cadastro-equipamento",
+            "/admin/cadastro-sala",
+            "/admin/cadastro-turma",
+            "/admin/cadastro-usuario",
+        ].some((caminho) => caminhoAtual.startsWith(caminho));
+    $: if (!recolhimentoPermitido) {
+        paginaRolada = false;
+        cabecalhoVisivel = true;
+    }
     $: subtituloAtual =
         subtitulo ||
         atalhosAdmin.find((atalho) => caminhoAtual.startsWith(atalho.path))
@@ -64,7 +79,44 @@
         nome ||= localStorage.getItem("nome") || "";
         matricula ||= localStorage.getItem("matricula") || "";
         cargo ||= localStorage.getItem("cargo") || "";
+
+        document.addEventListener("scroll", atualizarRolagem, true);
+        return () =>
+            document.removeEventListener("scroll", atualizarRolagem, true);
     });
+
+    function atualizarRolagem(event) {
+        if (!recolhimentoPermitido) {
+            paginaRolada = false;
+            cabecalhoVisivel = true;
+            return;
+        }
+
+        const alvo = event.target;
+        const scrollTop =
+            alvo === document || alvo === document.documentElement
+                ? window.scrollY
+                : (alvo?.scrollTop ?? window.scrollY);
+
+        paginaRolada = scrollTop > 48;
+        if (!paginaRolada) cabecalhoVisivel = true;
+        else if (!focoNoCabecalho) cabecalhoVisivel = false;
+    }
+
+    function revelarCabecalho() {
+        cabecalhoVisivel = true;
+    }
+
+    function recolherSeSemFoco() {
+        if (recolhimentoPermitido && paginaRolada && !focoNoCabecalho) {
+            cabecalhoVisivel = false;
+        }
+    }
+
+    function aoSairDoFoco(event) {
+        focoNoCabecalho = !!event.currentTarget.contains(event.relatedTarget);
+        recolherSeSemFoco();
+    }
 
     function fecharMenuUsuario(event) {
         if (event?.target?.closest?.(".cabecalho-global-conta")) return;
@@ -95,9 +147,44 @@
     }
 </script>
 
-<svelte:window on:click={fecharMenuUsuario} />
+<svelte:window
+    on:click={fecharMenuUsuario}
+    on:pointermove={(event) => {
+        if (recolhimentoPermitido && event.clientY <= 10) {
+            revelarCabecalho();
+        }
+    }}
+/>
 
-<header class="cabecalho-global">
+{#if recolhimentoPermitido && paginaRolada && !cabecalhoVisivel}
+    <button
+        type="button"
+        class="cabecalho-global-revelar"
+        aria-label="Mostrar cabeçalho de navegação"
+        title="Mostrar navegação"
+        on:pointerenter={revelarCabecalho}
+        on:focus={revelarCabecalho}
+        on:click={revelarCabecalho}
+    >
+        <span class="material-symbols-outlined" aria-hidden="true"
+            >keyboard_arrow_down</span
+        >
+    </button>
+{/if}
+
+<header
+    class="cabecalho-global"
+    class:recolhido={recolhimentoPermitido && paginaRolada && !cabecalhoVisivel}
+    aria-hidden={recolhimentoPermitido && paginaRolada && !cabecalhoVisivel}
+    inert={recolhimentoPermitido && paginaRolada && !cabecalhoVisivel}
+    on:pointerenter={revelarCabecalho}
+    on:pointerleave={recolherSeSemFoco}
+    on:focusin={() => {
+        focoNoCabecalho = true;
+        revelarCabecalho();
+    }}
+    on:focusout={aoSairDoFoco}
+>
     <div class="cabecalho-global-identidade">
         <h1>{titulo}</h1>
         {#if subtituloAtual}<span>{subtituloAtual}</span>{/if}

@@ -37,8 +37,8 @@ async function carregarEquipamentos(token) {
 		obs: s.obs || "",
 		obs_can: s.obs_can || "",
 		status: s.status === false || s.status === 0 || s.status === "0" ? false : true,
-		responsavel_id: s.responsavel?.id ?? null,
-		responsavel_nome: s.responsavel?.nome || s.responsavel?.name || "",
+		responsavel_id: s.responsavel_id ?? s.responsavel?.id ?? null,
+		responsavel_nome: s.responsavel_nome || s.responsavel?.nome || s.responsavel?.name || "",
 		fotoUrl: s.foto_url ?? null
 	}));
 }

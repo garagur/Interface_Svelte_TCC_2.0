@@ -46,6 +46,7 @@
     let pesquisa = "";
     let ordenacao = "asc"; // "asc" | "desc"
     let filtroStatus = "todos"; // "todos" | "ativos" | "inativos"
+    let filtroResponsavel = "todos";
 
     onMount(async () => {
         token = localStorage.getItem("token") || "";
@@ -197,6 +198,14 @@
             if (filtroStatus === "inativos") return !s.status;
             return true; // "todos"
         })
+        .filter((s) => {
+            if (filtroResponsavel === "todos") return true;
+            const responsavelId = s.responsavel_id ?? s.responsavel?.id;
+            if (filtroResponsavel === "sem-responsavel") {
+                return responsavelId == null || responsavelId === "";
+            }
+            return String(responsavelId ?? "") === filtroResponsavel;
+        })
         .sort((a, b) => {
             const nomeA = (a.nome || "").toLowerCase();
             const nomeB = (b.nome || "").toLowerCase();
@@ -330,29 +339,24 @@
     </svelte:fragment>
 
     <svelte:fragment slot="filtros-extra">
-        <div class="filtro-status">
-            <button
-                type="button"
-                class="chip {filtroStatus === 'todos' ? 'ativo' : ''}"
-                on:click={() => (filtroStatus = "todos")}
-            >
-                Todos
-            </button>
-            <button
-                type="button"
-                class="chip {filtroStatus === 'ativos' ? 'ativo' : ''}"
-                on:click={() => (filtroStatus = "ativos")}
-            >
-                Ativos
-            </button>
-            <button
-                type="button"
-                class="chip {filtroStatus === 'inativos' ? 'ativo' : ''}"
-                on:click={() => (filtroStatus = "inativos")}
-            >
-                Inativos
-            </button>
-        </div>
+        <label class="filtro-status">
+            <span>Status</span>
+            <select class="select-ordenacao" bind:value={filtroStatus}>
+                <option value="todos">Todos</option>
+                <option value="ativos">Ativos</option>
+                <option value="inativos">Inativos</option>
+            </select>
+        </label>
+        <label class="filtro-status">
+            <span>Responsável</span>
+            <select class="select-ordenacao" bind:value={filtroResponsavel}>
+                <option value="todos">Todos</option>
+                <option value="sem-responsavel">Sem responsável</option>
+                {#each usuarios as usuario (usuario.id)}
+                    <option value={String(usuario.id)}>{usuario.nome}</option>
+                {/each}
+            </select>
+        </label>
     </svelte:fragment>
 
     <svelte:fragment slot="tabela-header">
@@ -389,8 +393,14 @@
                 </div>
                 <div class="td flex-2">
                     <span class="text-truncate"
-                        >{s.responsavel?.nome ||
+                        >{s.responsavel_nome ||
+                            s.responsavel?.nome ||
                             s.responsavel?.name ||
+                            usuarios.find(
+                                (usuario) =>
+                                    String(usuario.id) ===
+                                    String(s.responsavel_id),
+                            )?.nome ||
                             "—"}</span
                     >
                 </div>

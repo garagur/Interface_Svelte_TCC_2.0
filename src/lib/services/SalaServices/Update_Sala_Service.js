@@ -46,9 +46,7 @@ export async function atualizarSalas(id, dadosSala, token) {
     if (dadosSala.obs) formData.append('obs', dadosSala.obs)
     formData.append('status', dadosSala.status ? '1' : '0')
     formData.append('obs_can', dadosSala.status ? '' : (dadosSala.obs_can || '').trim())
-    if (dadosSala.responsavel_id) {
-        formData.append('responsavel_id', String(dadosSala.responsavel_id))
-    }
+    formData.append('responsavel_id', dadosSala.responsavel_id == null ? '' : String(dadosSala.responsavel_id))
 
     if (foto) {
         formData.append('foto', foto)

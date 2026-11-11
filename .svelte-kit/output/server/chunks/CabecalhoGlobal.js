@@ -36,7 +36,7 @@ var page = { subscribe(fn) {
 function CabecalhoGlobal($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
 		var $$store_subs;
-		let caminhoAtual, subtituloAtual, paginaAtiva;
+		let caminhoAtual, recolhimentoPermitido, subtituloAtual, paginaAtiva;
 		let titulo = fallback($$props["titulo"], "Portal de Agendamento");
 		let subtitulo = fallback($$props["subtitulo"], "");
 		let nome = fallback($$props["nome"], "");
@@ -45,6 +45,8 @@ function CabecalhoGlobal($$renderer, $$props) {
 		let onVoltar = fallback($$props["onVoltar"], null);
 		let onLogout = fallback($$props["onLogout"], null);
 		let mostrarMenuUsuario = false;
+		let paginaRolada = false;
+		let cabecalhoVisivel = true;
 		const atalhosAdmin = [
 			{
 				label: "Salas",
@@ -78,9 +80,23 @@ function CabecalhoGlobal($$renderer, $$props) {
 			}
 		];
 		$: caminhoAtual = store_get($$store_subs ??= {}, "$page", page).url.pathname;
+		$: recolhimentoPermitido = !caminhoAtual.startsWith("/main") && ![
+			"/admin/cadastro-equipamento",
+			"/admin/cadastro-sala",
+			"/admin/cadastro-turma",
+			"/admin/cadastro-usuario"
+		].some((caminho) => caminhoAtual.startsWith(caminho));
+		$: if (!recolhimentoPermitido) {
+			paginaRolada = false;
+			cabecalhoVisivel = true;
+		}
 		$: subtituloAtual = subtitulo || atalhosAdmin.find((atalho) => caminhoAtual.startsWith(atalho.path))?.title || "";
 		$: paginaAtiva = caminhoAtual.startsWith("/main") ? "main" : caminhoAtual.startsWith("/agendamento") ? "agendamento" : caminhoAtual.startsWith("/informacoes") || caminhoAtual.startsWith("/minhas_informacoes") ? "informacoes" : "";
-		$$renderer.push(`<header class="cabecalho-global"><div class="cabecalho-global-identidade"><h1>${escape_html(titulo)}</h1> `);
+		if (recolhimentoPermitido && paginaRolada && !cabecalhoVisivel) {
+			$$renderer.push("<!--[0-->");
+			$$renderer.push(`<button type="button" class="cabecalho-global-revelar" aria-label="Mostrar cabeçalho de navegação" title="Mostrar navegação"><span class="material-symbols-outlined" aria-hidden="true">keyboard_arrow_down</span></button>`);
+		} else $$renderer.push("<!--[-1-->");
+		$$renderer.push(`<!--]--> <header${attr_class("cabecalho-global", void 0, { "recolhido": recolhimentoPermitido && paginaRolada && !cabecalhoVisivel })}${attr("aria-hidden", recolhimentoPermitido && paginaRolada && !cabecalhoVisivel)}${attr("inert", recolhimentoPermitido && paginaRolada && !cabecalhoVisivel, true)}><div class="cabecalho-global-identidade"><h1>${escape_html(titulo)}</h1> `);
 		if (subtituloAtual) {
 			$$renderer.push("<!--[0-->");
 			$$renderer.push(`<span>${escape_html(subtituloAtual)}</span>`);

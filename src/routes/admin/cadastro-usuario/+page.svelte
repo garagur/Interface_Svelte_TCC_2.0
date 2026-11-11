@@ -29,6 +29,7 @@
   let pesquisa = "";
   let ordenacao = "asc"; // "asc" | "desc"
   let filtroStatus = "todos"; // "todos" | "ativos" | "inativos"
+  let filtroCargo = "todos"; // "todos" | "admin" | "educador" | "servidor"
 
   onMount(async () => {
     token = localStorage.getItem("token") || "";
@@ -163,6 +164,7 @@
       if (filtroStatus === "inativos") return !u.status;
       return true; // "todos"
     })
+    .filter((u) => filtroCargo === "todos" || u.cargo === filtroCargo)
     .sort((a, b) => {
       const nomeA = (a.nome || "").toLowerCase();
       const nomeB = (b.nome || "").toLowerCase();
@@ -260,29 +262,23 @@
   </svelte:fragment>
 
   <svelte:fragment slot="filtros-extra">
-    <div class="filtro-status">
-      <button
-        type="button"
-        class="chip {filtroStatus === 'todos' ? 'ativo' : ''}"
-        on:click={() => (filtroStatus = "todos")}
-      >
-        Todos
-      </button>
-      <button
-        type="button"
-        class="chip {filtroStatus === 'ativos' ? 'ativo' : ''}"
-        on:click={() => (filtroStatus = "ativos")}
-      >
-        Habilitados
-      </button>
-      <button
-        type="button"
-        class="chip {filtroStatus === 'inativos' ? 'ativo' : ''}"
-        on:click={() => (filtroStatus = "inativos")}
-      >
-        Desabilitados
-      </button>
-    </div>
+    <label class="filtro-status">
+      <span>Status</span>
+      <select class="select-ordenacao" bind:value={filtroStatus}>
+        <option value="todos">Todos</option>
+        <option value="ativos">Habilitados</option>
+        <option value="inativos">Desabilitados</option>
+      </select>
+    </label>
+    <label class="filtro-status">
+      <span>Cargo</span>
+      <select class="select-ordenacao" bind:value={filtroCargo}>
+        <option value="todos">Todos</option>
+        <option value="admin">Admin</option>
+        <option value="educador">Educador</option>
+        <option value="servidor">Servidor</option>
+      </select>
+    </label>
   </svelte:fragment>
 
   <svelte:fragment slot="tabela-header">

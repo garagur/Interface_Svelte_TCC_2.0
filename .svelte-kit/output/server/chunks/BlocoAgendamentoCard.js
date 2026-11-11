@@ -7,6 +7,8 @@ function GradeMensal($$renderer, $$props) {
 		let agendamentos = fallback($$props["agendamentos"], () => [], true);
 		let carregandoLista = fallback($$props["carregandoLista"], false);
 		let hojeStr = fallback($$props["hojeStr"], "");
+		let blocosSemana = fallback($$props["blocosSemana"], () => [], true);
+		let mostrarBlocosSemana = fallback($$props["mostrarBlocosSemana"], false);
 		const LIMITE_VISIVEL = 1;
 		let diaExpandido = null;
 		let mesExibido = new Date((/* @__PURE__ */ new Date()).getFullYear(), (/* @__PURE__ */ new Date()).getMonth(), 1);
@@ -49,6 +51,29 @@ function GradeMensal($$renderer, $$props) {
 			if (!dataHora) return null;
 			const data = new Date(String(dataHora).replace(" ", "T").slice(0, 19));
 			return Number.isNaN(data.getTime()) ? null : data;
+		}
+		const DIAS_SEMANA_COMPLETOS = [
+			"domingo",
+			"segunda",
+			"terca",
+			"quarta",
+			"quinta",
+			"sexta",
+			"sabado"
+		];
+		function blocosDoDia(data, blocos, mostrar) {
+			if (!mostrar || !data) return [];
+			const ano = data.getFullYear();
+			const diaSemana = DIAS_SEMANA_COMPLETOS[data.getDay()];
+			return blocos.filter((bloco) => {
+				const anoTurma = bloco.turma_ano_letivo ?? bloco.turma_ano ?? bloco.ano_letivo ?? bloco.turma?.ano_letivo ?? bloco.turma?.ano;
+				const correspondeAoAno = anoTurma == null || anoTurma === "" || Number(anoTurma) === ano;
+				return bloco.dia_semana === diaSemana && correspondeAoAno;
+			});
+		}
+		function horarioInicioItem(item) {
+			const horario = item.tipo === "bloco-semanal" ? item.dados.hora_inicio : item.dados.data_hora_inicio;
+			return item.tipo === "bloco-semanal" ? String(horario || "").slice(0, 5) : String(horario || "").slice(11, 16);
 		}
 		function nomeAgendamento(ag) {
 			return ag.tipo === "equipamento" ? ag.equipamento_nome || String(ag.equipamento_id || "") : ag.sala_nome || String(ag.sala_id || "");
@@ -137,6 +162,9 @@ function GradeMensal($$renderer, $$props) {
 			$$renderer.select({ value: filtroStatusAg }, ($$renderer) => {
 				$$renderer.option({ value: "todos" }, ($$renderer) => {
 					$$renderer.push(`Todos`);
+				});
+				$$renderer.option({ value: "ocioso" }, ($$renderer) => {
+					$$renderer.push(`Ociosos`);
 				});
 				$$renderer.option({ value: "ativo" }, ($$renderer) => {
 					$$renderer.push(`Ativos`);
@@ -247,22 +275,42 @@ function GradeMensal($$renderer, $$props) {
 					let dia = each_array_5[$$index_5];
 					const chave = dia ? formatarChave(dia) : "";
 					const ags = dia ? agendamentosPorData[chave] || [] : [];
+					const blocosDia = blocosDoDia(dia, blocosSemana, mostrarBlocosSemana);
+					const itensDia = [...ags.map((ag) => ({
+						chave: `ag-${ag.tipo || "sala"}-${ag.id}`,
+						tipo: "agendamento",
+						dados: ag
+					})), ...blocosDia.map((bloco) => ({
+						chave: `fixo-${chave}-${bloco.id}`,
+						tipo: "bloco-semanal",
+						dados: bloco
+					}))].sort((a, b) => horarioInicioItem(a).localeCompare(horarioInicioItem(b)));
 					const expandido = !!chave && chave === diaExpandido;
-					const visiveis = expandido ? ags : ags.slice(0, LIMITE_VISIVEL);
+					const visiveis = expandido ? itensDia : itensDia.slice(0, LIMITE_VISIVEL);
 					$$renderer.push(`<div${attr_class(`dia-celula ${!dia ? "dia-vazio" : ""} ${dia && ehHoje(dia) ? "dia-hoje" : ""} ${expandido ? "expandido" : ""}`)}>`);
 					if (dia) {
 						$$renderer.push("<!--[0-->");
 						$$renderer.push(`<span${attr_class(`dia-numero ${ehHoje(dia) ? "numero-hoje" : ""}`)}>${escape_html(dia.getDate())}</span> <div class="dia-expandir-slot">`);
-						if (ags.length > LIMITE_VISIVEL || expandido) {
+						if (itensDia.length > LIMITE_VISIVEL || expandido) {
 							$$renderer.push("<!--[0-->");
-							$$renderer.push(`<button type="button"${attr_class("btn-expandir", void 0, { "aberto": expandido })}${attr("aria-expanded", expandido)}${attr("title", expandido ? "Recolher" : "Ver todos os agendamentos")}><span class="material-symbols-outlined" aria-hidden="true">${escape_html(expandido ? "expand_less" : "expand_more")}</span> <span>${escape_html(expandido ? "Recolher" : `Ver mais (${ags.length - LIMITE_VISIVEL})`)}</span></button>`);
+							$$renderer.push(`<button type="button"${attr_class("btn-expandir", void 0, { "aberto": expandido })}${attr("aria-expanded", expandido)}${attr("title", expandido ? "Recolher" : "Ver todos os agendamentos")}><span class="material-symbols-outlined" aria-hidden="true">${escape_html(expandido ? "expand_less" : "expand_more")}</span> <span>${escape_html(expandido ? "Recolher" : `Ver mais (${itensDia.length - LIMITE_VISIVEL})`)}</span></button>`);
 						} else $$renderer.push("<!--[-1-->");
 						$$renderer.push(`<!--]--></div> <div${attr_class("dia-conteudo", void 0, { "expandido": expandido })}><!--[-->`);
 						const each_array_6 = ensure_array_like(visiveis);
 						for (let $$index_4 = 0, $$length = each_array_6.length; $$index_4 < $$length; $$index_4++) {
-							let ag = each_array_6[$$index_4];
-							$$renderer.push(`<div${attr_class(`ag-bloco ${stringify(ag.tipo ?? "sala")}`)}><!--[-->`);
-							slot($$renderer, $$props, "default", { ag }, null);
+							let item = each_array_6[$$index_4];
+							$$renderer.push(`<div${attr_class(`ag-bloco ${stringify(item.tipo === "bloco-semanal" ? "horario-fixo" : item.dados.tipo ?? "sala")}`)}>`);
+							if (item.tipo === "bloco-semanal") {
+								$$renderer.push("<!--[0-->");
+								$$renderer.push(`<!--[-->`);
+								slot($$renderer, $$props, "blocoSemanal", { bloco: item.dados }, null);
+								$$renderer.push(`<!--]-->`);
+							} else {
+								$$renderer.push("<!--[-1-->");
+								$$renderer.push(`<!--[-->`);
+								slot($$renderer, $$props, "default", { ag: item.dados }, null);
+								$$renderer.push(`<!--]-->`);
+							}
 							$$renderer.push(`<!--]--></div>`);
 						}
 						$$renderer.push(`<!--]--></div>`);
@@ -277,7 +325,9 @@ function GradeMensal($$renderer, $$props) {
 		bind_props($$props, {
 			agendamentos,
 			carregandoLista,
-			hojeStr
+			hojeStr,
+			blocosSemana,
+			mostrarBlocosSemana
 		});
 	});
 }
@@ -323,6 +373,7 @@ function BlocoAgendamentoCard($$renderer, $$props) {
 			});
 		} else $$renderer.push("<!--[-1-->");
 		$$renderer.push(`<!--]--> <div${attr_class(`ag-bloco-inner ${proprio ? "proprio" : "outro"}`, "svelte-qzbw3r", {
+			"ativo": ag.status === "ativo",
 			"passado": agendamentoPassado,
 			"ocioso": ag.status === "ocioso",
 			"em-andamento": ag.status === "em_andamento",

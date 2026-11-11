@@ -43,6 +43,18 @@
         return String(str || "").match(/^\d{4}-\d{2}-\d{2}/)?.[0] || "";
     }
 
+    function formatarDataGrupo(data) {
+        if (!data) return "Data não informada";
+        const dataLocal = new Date(`${data}T12:00:00`);
+        const rotulo = dataLocal.toLocaleDateString("pt-BR", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+        });
+        return rotulo.charAt(0).toLocaleUpperCase("pt-BR") + rotulo.slice(1);
+    }
+
     function formatarDataHora(str) {
         const d = parseData(str);
         if (!d) return "—";
@@ -341,9 +353,23 @@
         </p>
     {:else}
         <div class="agendamentos-lista">
-            {#each agendamentosFiltrados as ag (`${tipoAgendamento(ag)}-${ag.id}`)}
+            {#each agendamentosFiltrados as ag, index (`${tipoAgendamento(ag)}-${ag.id}`)}
+                {@const dataGrupo = dataAgendamento(ag.data_hora_inicio)}
+                {@const dataAnterior =
+                    index > 0
+                        ? dataAgendamento(
+                              agendamentosFiltrados[index - 1].data_hora_inicio,
+                          )
+                        : null}
                 {@const status = statusExibicao(ag)}
                 {@const responsavel = nomeResponsavel(ag)}
+                {#if index === 0 || dataGrupo !== dataAnterior}
+                    <div class="agendamento-dia-separador">
+                        <time datetime={dataGrupo || undefined}>
+                            {formatarDataGrupo(dataGrupo)}
+                        </time>
+                    </div>
+                {/if}
                 <div
                     class="agendamento-item {ag.status === 'ocioso'
                         ? 'ocioso'
@@ -653,6 +679,24 @@
         padding: 6px 8px 10px 6px;
         scrollbar-gutter: stable;
         margin: 0;
+    }
+
+    .agendamento-dia-separador {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 4px 8px 0 16px;
+        color: var(--primary-dark);
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: capitalize;
+    }
+
+    .agendamento-dia-separador::after {
+        height: 1px;
+        flex: 1;
+        background: color-mix(in srgb, var(--text-muted) 24%, transparent);
+        content: "";
     }
 
     .agendamento-item {

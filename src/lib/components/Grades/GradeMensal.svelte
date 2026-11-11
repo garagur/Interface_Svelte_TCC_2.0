@@ -3,6 +3,8 @@
     export let agendamentos = [];
     export let carregandoLista = false;
     export let hojeStr = "";
+    export let blocosSemana = [];
+    export let mostrarBlocosSemana = false;
     const LIMITE_VISIVEL = 1;
     /** @type {string|null} */
     let diaExpandido = null;
@@ -89,8 +91,46 @@
     }
     function statusExibicao(ag) {
         if (ag.status === "inativo") return "cancelado";
+        if (ag.status === "ocioso") return "ocioso";
         const inicio = parseData(ag.data_hora_inicio);
         return inicio && inicio >= new Date() ? "ativo" : "finalizado";
+    }
+    const DIAS_SEMANA_COMPLETOS = [
+        "domingo",
+        "segunda",
+        "terca",
+        "quarta",
+        "quinta",
+        "sexta",
+        "sabado",
+    ];
+    function blocosDoDia(data, blocos, mostrar) {
+        if (!mostrar || !data) return [];
+
+        const ano = data.getFullYear();
+        const diaSemana = DIAS_SEMANA_COMPLETOS[data.getDay()];
+
+        return blocos.filter((bloco) => {
+            const anoTurma =
+                bloco.turma_ano_letivo ??
+                bloco.turma_ano ??
+                bloco.ano_letivo ??
+                bloco.turma?.ano_letivo ??
+                bloco.turma?.ano;
+            const correspondeAoAno =
+                anoTurma == null || anoTurma === "" || Number(anoTurma) === ano;
+
+            return bloco.dia_semana === diaSemana && correspondeAoAno;
+        });
+    }
+    function horarioInicioItem(item) {
+        const horario =
+            item.tipo === "bloco-semanal"
+                ? item.dados.hora_inicio
+                : item.dados.data_hora_inicio;
+        return item.tipo === "bloco-semanal"
+            ? String(horario || "").slice(0, 5)
+            : String(horario || "").slice(11, 16);
     }
     function nomeAgendamento(ag) {
         return ag.tipo === "equipamento"
@@ -280,6 +320,7 @@
                         on:change={mudarFiltroStatus}
                     >
                         <option value="todos">Todos</option>
+                        <option value="ocioso">Ociosos</option>
                         <option value="ativo">Ativos</option>
                         <option value="em_andamento">Em andamento</option>
                         <option value="finalizado">Concluídos</option>
@@ -352,11 +393,32 @@
                             {@const ags = dia
                                 ? agendamentosPorData[chave] || []
                                 : []}
+                            {@const blocosDia = blocosDoDia(
+                                dia,
+                                blocosSemana,
+                                mostrarBlocosSemana,
+                            )}
+                            {@const itensDia = [
+                                ...ags.map((ag) => ({
+                                    chave: `ag-${ag.tipo || "sala"}-${ag.id}`,
+                                    tipo: "agendamento",
+                                    dados: ag,
+                                })),
+                                ...blocosDia.map((bloco) => ({
+                                    chave: `fixo-${chave}-${bloco.id}`,
+                                    tipo: "bloco-semanal",
+                                    dados: bloco,
+                                })),
+                            ].sort((a, b) =>
+                                horarioInicioItem(a).localeCompare(
+                                    horarioInicioItem(b),
+                                ),
+                            )}
                             {@const expandido =
                                 !!chave && chave === diaExpandido}
                             {@const visiveis = expandido
-                                ? ags
-                                : ags.slice(0, LIMITE_VISIVEL)}
+                                ? itensDia
+                                : itensDia.slice(0, LIMITE_VISIVEL)}
                             <div
                                 class="dia-celula {!dia
                                     ? 'dia-vazio'
@@ -373,7 +435,7 @@
                                         {dia.getDate()}
                                     </span>
                                     <div class="dia-expandir-slot">
-                                        {#if ags.length > LIMITE_VISIVEL || expandido}
+                                        {#if itensDia.length > LIMITE_VISIVEL || expandido}
                                             <button
                                                 type="button"
                                                 class="btn-expandir"
@@ -396,18 +458,28 @@
                                                 <span>
                                                     {expandido
                                                         ? "Recolher"
-                                                        : `Ver mais (${ags.length - LIMITE_VISIVEL})`}
+                                                        : `Ver mais (${itensDia.length - LIMITE_VISIVEL})`}
                                                 </span>
                                             </button>
                                         {/if}
                                     </div>
                                     <div class="dia-conteudo" class:expandido>
-                                        {#each visiveis as ag}
+                                        {#each visiveis as item (item.chave)}
                                             <div
-                                                class="ag-bloco {ag.tipo ??
-                                                    'sala'}"
+                                                class="ag-bloco {item.tipo ===
+                                                'bloco-semanal'
+                                                    ? 'horario-fixo'
+                                                    : (item.dados.tipo ??
+                                                      'sala')}"
                                             >
-                                                <slot {ag} />
+                                                {#if item.tipo === "bloco-semanal"}
+                                                    <slot
+                                                        name="blocoSemanal"
+                                                        bloco={item.dados}
+                                                    />
+                                                {:else}
+                                                    <slot ag={item.dados} />
+                                                {/if}
                                             </div>
                                         {/each}
                                     </div>

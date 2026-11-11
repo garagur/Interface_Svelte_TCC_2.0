@@ -73,6 +73,8 @@ function _page($$renderer, $$props) {
 		let usuarioEditandoId = null;
 		let pesquisa = "";
 		let ordenacao = "asc";
+		let filtroStatus = "todos";
+		let filtroCargo = "todos";
 		async function carregarLista() {
 			carregandoLista = true;
 			erro = "";
@@ -131,7 +133,7 @@ function _page($$renderer, $$props) {
 			return u.nome?.toLowerCase().includes(termo) || u.email?.toLowerCase().includes(termo) || u.matricula?.toLowerCase().includes(termo);
 		}).filter((u) => {
 			return true;
-		}).sort((a, b) => {
+		}).filter((u) => true).sort((a, b) => {
 			const nomeA = (a.nome || "").toLowerCase();
 			const nomeB = (b.nome || "").toLowerCase();
 			return ordenacao === "asc" ? nomeA.localeCompare(nomeB) : nomeB.localeCompare(nomeA);
@@ -197,7 +199,40 @@ function _page($$renderer, $$props) {
 						$$renderer.push(`<label for="status-usuario">Status</label> <div class="toggle-wrapper"><label class="toggle-switch"><input id="status-usuario" type="checkbox"${attr("checked", novoUsuario.status, true)}${attr("disabled", editando, true)}/> <span class="toggle-track"><span class="toggle-thumb"></span></span></label> <span class="toggle-label">${escape_html(novoUsuario.status ? "Habilitado" : "Desabilitado")}</span></div>`);
 					},
 					"filtros-extra": ($$renderer) => {
-						$$renderer.push(`<div class="filtro-status"><button type="button"${attr_class(`chip ativo`)}>Todos</button> <button type="button"${attr_class(`chip `)}>Habilitados</button> <button type="button"${attr_class(`chip `)}>Desabilitados</button></div>`);
+						$$renderer.push(`<label class="filtro-status"><span>Status</span> `);
+						$$renderer.select({
+							class: "select-ordenacao",
+							value: filtroStatus
+						}, ($$renderer) => {
+							$$renderer.option({ value: "todos" }, ($$renderer) => {
+								$$renderer.push(`Todos`);
+							});
+							$$renderer.option({ value: "ativos" }, ($$renderer) => {
+								$$renderer.push(`Habilitados`);
+							});
+							$$renderer.option({ value: "inativos" }, ($$renderer) => {
+								$$renderer.push(`Desabilitados`);
+							});
+						});
+						$$renderer.push(`</label> <label class="filtro-status"><span>Cargo</span> `);
+						$$renderer.select({
+							class: "select-ordenacao",
+							value: filtroCargo
+						}, ($$renderer) => {
+							$$renderer.option({ value: "todos" }, ($$renderer) => {
+								$$renderer.push(`Todos`);
+							});
+							$$renderer.option({ value: "admin" }, ($$renderer) => {
+								$$renderer.push(`Admin`);
+							});
+							$$renderer.option({ value: "educador" }, ($$renderer) => {
+								$$renderer.push(`Educador`);
+							});
+							$$renderer.option({ value: "servidor" }, ($$renderer) => {
+								$$renderer.push(`Servidor`);
+							});
+						});
+						$$renderer.push(`</label>`);
 					},
 					"tabela-header": ($$renderer) => {
 						$$renderer.push(`<div class="table-header"><div class="th flex-2"><span class="material-symbols-outlined" style="font-size:16px; margin-right:4px; vertical-align:middle">person</span> Nome</div> <div class="th flex-2"><span class="material-symbols-outlined" style="font-size:16px; margin-right:4px; vertical-align:middle">mail</span> E-mail</div> <div class="th flex-1">Cargo</div> <div class="th flex-1">Matrícula</div> <div class="th flex-1">Status</div> <div class="th flex-1">Ações</div></div>`);

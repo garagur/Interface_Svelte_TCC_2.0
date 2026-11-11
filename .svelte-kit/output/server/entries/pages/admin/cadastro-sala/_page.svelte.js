@@ -91,7 +91,7 @@ async function atualizarSalas(id, dadosSala, token) {
 	if (dadosSala.obs) formData.append("obs", dadosSala.obs);
 	formData.append("status", dadosSala.status ? "1" : "0");
 	formData.append("obs_can", dadosSala.status ? "" : (dadosSala.obs_can || "").trim());
-	if (dadosSala.responsavel_id) formData.append("responsavel_id", String(dadosSala.responsavel_id));
+	formData.append("responsavel_id", dadosSala.responsavel_id == null ? "" : String(dadosSala.responsavel_id));
 	if (foto) formData.append("foto", foto);
 	else if (removerFoto) formData.append("remover_foto", "1");
 	const resp = await apiFetch(SALA_ROUTES.atualizar(id), {
@@ -138,6 +138,8 @@ function _page($$renderer, $$props) {
 		let salaEditandoId = null;
 		let pesquisa = "";
 		let ordenacao = "asc";
+		let filtroStatus = "todos";
+		let filtroResponsavel = "todos";
 		async function carregarLista() {
 			carregandoLista = true;
 			erro = "";
@@ -206,6 +208,8 @@ function _page($$renderer, $$props) {
 			const termo = pesquisa.toLowerCase();
 			const nomeResp = s.responsavel?.nome || s.responsavel?.name || "";
 			return s.nome?.toLowerCase().includes(termo) || s.obs?.toLowerCase().includes(termo) || s.obs_can?.toLowerCase().includes(termo) || nomeResp.toLowerCase().includes(termo);
+		}).filter((s) => {
+			return true;
 		}).filter((s) => {
 			return true;
 		}).sort((a, b) => {
@@ -292,7 +296,43 @@ function _page($$renderer, $$props) {
 						$$renderer.push(`<label for="status-sala">Status</label> <div class="toggle-wrapper"><label class="toggle-switch"><input id="status-sala" type="checkbox"${attr("checked", novaSala.status, true)}/> <span class="toggle-track"><span class="toggle-thumb"></span></span></label> <span class="toggle-label">${escape_html(novaSala.status ? "Ativo" : "Inativo")}</span></div>`);
 					},
 					"filtros-extra": ($$renderer) => {
-						$$renderer.push(`<div class="filtro-status"><button type="button"${attr_class(`chip ativo`)}>Todos</button> <button type="button"${attr_class(`chip `)}>Ativos</button> <button type="button"${attr_class(`chip `)}>Inativos</button></div>`);
+						$$renderer.push(`<label class="filtro-status"><span>Status</span> `);
+						$$renderer.select({
+							class: "select-ordenacao",
+							value: filtroStatus
+						}, ($$renderer) => {
+							$$renderer.option({ value: "todos" }, ($$renderer) => {
+								$$renderer.push(`Todos`);
+							});
+							$$renderer.option({ value: "ativos" }, ($$renderer) => {
+								$$renderer.push(`Ativos`);
+							});
+							$$renderer.option({ value: "inativos" }, ($$renderer) => {
+								$$renderer.push(`Inativos`);
+							});
+						});
+						$$renderer.push(`</label> <label class="filtro-status"><span>Responsável</span> `);
+						$$renderer.select({
+							class: "select-ordenacao",
+							value: filtroResponsavel
+						}, ($$renderer) => {
+							$$renderer.option({ value: "todos" }, ($$renderer) => {
+								$$renderer.push(`Todos`);
+							});
+							$$renderer.option({ value: "sem-responsavel" }, ($$renderer) => {
+								$$renderer.push(`Sem responsável`);
+							});
+							$$renderer.push(`<!--[-->`);
+							const each_array_1 = ensure_array_like(usuarios);
+							for (let $$index_1 = 0, $$length = each_array_1.length; $$index_1 < $$length; $$index_1++) {
+								let usuario = each_array_1[$$index_1];
+								$$renderer.option({ value: String(usuario.id) }, ($$renderer) => {
+									$$renderer.push(`${escape_html(usuario.nome)}`);
+								});
+							}
+							$$renderer.push(`<!--]-->`);
+						});
+						$$renderer.push(`</label>`);
 					},
 					"tabela-header": ($$renderer) => {
 						$$renderer.push(`<div class="table-header"><div class="th flex-2"><span class="material-symbols-outlined" style="font-size:16px; margin-right:4px; vertical-align:middle">meeting_room</span> Nome</div> <div class="th flex-2">Observação</div> <div class="th flex-2">Motivo (inativo)</div> <div class="th flex-2">Responsável</div> <div class="th flex-1">Status</div> <div class="th flex-1">Ações</div></div>`);
@@ -300,10 +340,10 @@ function _page($$renderer, $$props) {
 					"tabela-body": ($$renderer) => {
 						{
 							$$renderer.push(`<!--[-->`);
-							const each_array_1 = ensure_array_like(salasFiltradas);
-							for (let index = 0, $$length = each_array_1.length; index < $$length; index++) {
-								let s = each_array_1[index];
-								$$renderer.push(`<div${attr_class(`table-row ${index % 2 === 0 ? "even" : "odd"}`)}><div class="td flex-2"><span class="text-truncate">${escape_html(s.nome)}</span></div> <div class="td flex-2"><span class="text-truncate">${escape_html(s.obs)}</span></div> <div class="td flex-2"><span class="text-truncate">${escape_html(!s.status ? s.obs_can || "—" : "—")}</span></div> <div class="td flex-2"><span class="text-truncate">${escape_html(s.responsavel?.nome || s.responsavel?.name || "—")}</span></div> <div class="td flex-1"><span${attr_class(`badge-status ${s.status ? "ativo" : "inativo"}`)}>${escape_html(s.status ? "Ativo" : "Inativo")}</span></div> <div class="td flex-1 action-cell"><button type="button" class="btn-action info" title="Informações" aria-label="Informações da sala"><span class="material-symbols-outlined">info</span></button> <button class="btn-action edit" title="Editar"><span class="material-symbols-outlined">edit</span></button></div></div>`);
+							const each_array_2 = ensure_array_like(salasFiltradas);
+							for (let index = 0, $$length = each_array_2.length; index < $$length; index++) {
+								let s = each_array_2[index];
+								$$renderer.push(`<div${attr_class(`table-row ${index % 2 === 0 ? "even" : "odd"}`)}><div class="td flex-2"><span class="text-truncate">${escape_html(s.nome)}</span></div> <div class="td flex-2"><span class="text-truncate">${escape_html(s.obs)}</span></div> <div class="td flex-2"><span class="text-truncate">${escape_html(!s.status ? s.obs_can || "—" : "—")}</span></div> <div class="td flex-2"><span class="text-truncate">${escape_html(s.responsavel_nome || s.responsavel?.nome || s.responsavel?.name || usuarios.find((usuario) => String(usuario.id) === String(s.responsavel_id))?.nome || "—")}</span></div> <div class="td flex-1"><span${attr_class(`badge-status ${s.status ? "ativo" : "inativo"}`)}>${escape_html(s.status ? "Ativo" : "Inativo")}</span></div> <div class="td flex-1 action-cell"><button type="button" class="btn-action info" title="Informações" aria-label="Informações da sala"><span class="material-symbols-outlined">info</span></button> <button class="btn-action edit" title="Editar"><span class="material-symbols-outlined">edit</span></button></div></div>`);
 							}
 							$$renderer.push(`<!--]-->`);
 						}

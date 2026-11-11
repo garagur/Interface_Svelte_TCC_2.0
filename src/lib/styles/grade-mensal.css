@@ -254,7 +254,14 @@
 .grade-mensal .dia-conteudo:not(.expandido) .ag-bloco {
     display: flex;
     flex: 1 1 0;
+    width: 100%;
     min-height: 0;
+}
+
+.grade-mensal .dia-conteudo .ag-bloco>.bloco-card {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 .grade-mensal .dia-conteudo:not(.expandido) .ag-bloco :global(.ag-bloco-inner) {

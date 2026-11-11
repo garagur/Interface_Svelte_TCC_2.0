@@ -27,45 +27,27 @@ export function obterDataCuiaba(agora = new Date()) {
 
 function converterDataHoraCuiabaParaInstante(dataHoraInicio) {
     const partes = dataHoraInicio.match(
-        /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/,
+        /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})$/,
     );
     if (!partes) {
         return null;
     }
 
     const [, ano, mes, dia, horas, minutos] = partes.map(Number);
-    const horarioComoUtc = Date.UTC(ano, mes - 1, dia, horas, minutos);
-    const dataUtc = new Date(horarioComoUtc);
+    const instante = new Date(ano, mes - 1, dia, horas, minutos);
+
     if (
-        dataUtc.getUTCFullYear() !== ano ||
-        dataUtc.getUTCMonth() !== mes - 1 ||
-        dataUtc.getUTCDate() !== dia ||
-        dataUtc.getUTCHours() !== horas ||
-        dataUtc.getUTCMinutes() !== minutos
+        Number.isNaN(instante.getTime()) ||
+        instante.getFullYear() !== ano ||
+        instante.getMonth() !== mes - 1 ||
+        instante.getDate() !== dia ||
+        instante.getHours() !== horas ||
+        instante.getMinutes() !== minutos
     ) {
         return null;
     }
 
-    let instante = horarioComoUtc;
-    for (let tentativa = 0; tentativa < 3; tentativa += 1) {
-        const valores = Object.fromEntries(
-            formatadorCuiaba
-                .formatToParts(new Date(instante))
-                .map(({ type, value }) => [type, Number(value)]),
-        );
-        const representadoComoUtc = Date.UTC(
-            valores.year,
-            valores.month - 1,
-            valores.day,
-            valores.hour,
-            valores.minute,
-        );
-        const ajuste = horarioComoUtc - representadoComoUtc;
-        instante += ajuste;
-        if (ajuste === 0) break;
-    }
-
-    return new Date(instante);
+    return instante;
 }
 
 export function validarAntecedenciaAgendamento(dataHoraInicio, agora = new Date()) {
@@ -74,8 +56,8 @@ export function validarAntecedenciaAgendamento(dataHoraInicio, agora = new Date(
         return 'Informe uma data e um horário válidos.';
     }
 
-    if (inicio.getTime() - agora.getTime() < 15 * 60 * 1000) {
-        return 'O agendamento deve ser feito com pelo menos 15 minutos de antecedência.';
+    if (inicio.getTime() < agora.getTime()) {
+        return 'O agendamento não pode ser realizado antes do horário atual.';
     }
 
     return null;

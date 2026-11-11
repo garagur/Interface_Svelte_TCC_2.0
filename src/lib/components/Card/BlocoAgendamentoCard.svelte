@@ -64,6 +64,7 @@
 
 <div
     class="ag-bloco-inner {proprio ? 'proprio' : 'outro'}"
+    class:ativo={ag.status === "ativo"}
     class:passado={agendamentoPassado}
     class:ocioso={ag.status === "ocioso"}
     class:em-andamento={ag.status === "em_andamento"}
@@ -161,6 +162,11 @@
     .ag-bloco-inner.passado .ag-hora,
     .ag-bloco-inner.passado .ag-label {
         color: var(--text-muted);
+    }
+
+    .ag-bloco-inner.ativo:not(.passado) {
+        background: color-mix(in srgb, var(--confirm) 26%, var(--white));
+        border-left-color: var(--confirm);
     }
 
     .ag-bloco-inner.ocioso {

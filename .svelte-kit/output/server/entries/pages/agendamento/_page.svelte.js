@@ -152,6 +152,7 @@ function AgendamentoCard($$renderer, $$props) {
 		];
 		let agendamentoParaDeletar = null;
 		let cancelandoId = null;
+		let mostrarAulasFixasMes = false;
 		function abrirModalDeletar(ag) {
 			if (cancelandoId) return;
 			agendamentoParaDeletar = ag;
@@ -270,7 +271,12 @@ function AgendamentoCard($$renderer, $$props) {
 			});
 			$$renderer.push(`<!----></div>`);
 		} else $$renderer.push("<!--[-1-->");
-		$$renderer.push(`<!--]--> <div class="conteudo-principal"><div class="card calendario-card"><div class="grade-header-title"><div class="title-left"><span class="material-symbols-outlined text-primary">calendar_month</span> <h3>Agendamentos</h3></div> <div class="toggle-visao" role="group" aria-label="Modo de visualização"><button type="button" title="Calendário"${attr_class("", void 0, { "ativo": true })}><span class="material-symbols-outlined">calendar_view_month</span></button> <button type="button" title="Lista"${attr_class("", void 0, { "ativo": false })}><span class="material-symbols-outlined">view_list</span></button></div> <span class="badge">${escape_html(agendamentosVisiveis.length)}
+		$$renderer.push(`<!--]--> <div class="conteudo-principal"><div class="card calendario-card"><div class="grade-header-title"><div class="title-left"><span class="material-symbols-outlined text-primary">calendar_month</span> <h3>Agendamentos</h3></div> <div class="calendario-acoes svelte-lfr68h">`);
+		if (modo === "sala" && sala_id && true) {
+			$$renderer.push("<!--[0-->");
+			$$renderer.push(`<button type="button"${attr_class("btn-aulas-fixas svelte-lfr68h", void 0, { "ativo": mostrarAulasFixasMes })}${attr("aria-pressed", mostrarAulasFixasMes)}${attr("title", "Mostrar aulas fixas na grade mensal")}><span class="material-symbols-outlined svelte-lfr68h">event_repeat</span> <span>Aulas fixas</span></button>`);
+		} else $$renderer.push("<!--[-1-->");
+		$$renderer.push(`<!--]--> <div class="toggle-visao" role="group" aria-label="Modo de visualização"><button type="button" title="Calendário"${attr_class("", void 0, { "ativo": true })}><span class="material-symbols-outlined">calendar_view_month</span></button> <button type="button" title="Lista"${attr_class("", void 0, { "ativo": false })}><span class="material-symbols-outlined">view_list</span></button></div></div> <span class="badge">${escape_html(agendamentosVisiveis.length)}
                             ${escape_html(agendamentosVisiveis.length === 1 ? "registro" : "registros")}</span></div> `);
 		if (!sala_id) {
 			$$renderer.push("<!--[0-->");
@@ -281,16 +287,26 @@ function AgendamentoCard($$renderer, $$props) {
 				agendamentos: agendamentosVisiveis,
 				hojeStr,
 				carregandoLista,
+				blocosSemana: blocosFixos,
+				mostrarBlocosSemana: mostrarAulasFixasMes,
 				children: invalid_default_snippet,
-				$$slots: { default: ($$renderer, { ag }) => {
-					BlocoAgendamentoCard($$renderer, {
-						ag,
-						usuarioId,
-						cargo,
-						onDeletar: abrirModalDeletar,
-						onConfirmar: onConfirmarAgendamento
-					});
-				} }
+				$$slots: {
+					default: ($$renderer, { ag }) => {
+						BlocoAgendamentoCard($$renderer, {
+							ag,
+							usuarioId,
+							cargo,
+							onDeletar: abrirModalDeletar,
+							onConfirmar: onConfirmarAgendamento
+						});
+					},
+					blocoSemanal: ($$renderer, { bloco }) => {
+						BlocoHorarioCard($$renderer, {
+							bloco,
+							mostrarTurma: true
+						});
+					}
+				}
 			});
 		}
 		$$renderer.push(`<!--]--></div> <div class="card form-card"><div class="card-header"><span class="material-symbols-outlined icon-large">calendar_add_on</span></div> <div class="tabs-recorrencia"><button type="button"${attr_class(`tab-btn ${tipo === "avulso" ? "ativo" : ""}`)}>Avulso</button> <button type="button"${attr_class(`tab-btn ${tipo === "semanal" ? "ativo" : ""}`)}>Semanal</button> <button type="button"${attr_class(`tab-btn ${tipo === "quinzenal" ? "ativo" : ""}`)}>Quinzenal</button></div> <form><div class="form-fields"><div class="field"><label for="data-agendamento">${escape_html(tipo === "avulso" ? "Data" : "Data de início")}</label> <input id="data-agendamento" type="date"${attr("value", dataAgendamento)}${attr("min", hojeStr)} required=""/></div> `);
@@ -377,7 +393,7 @@ function AgendamentoCard($$renderer, $$props) {
 //#endregion
 //#region src/lib/services/AgendamentoServices/Validar_Antecedencia_Agendamento.js
 var FUSO_AGENDAMENTO = "America/Cuiaba";
-var formatadorCuiaba = new Intl.DateTimeFormat("en-US", {
+new Intl.DateTimeFormat("en-US", {
 	timeZone: FUSO_AGENDAMENTO,
 	year: "numeric",
 	month: "2-digit",
@@ -396,25 +412,17 @@ function obterDataCuiaba(agora = /* @__PURE__ */ new Date()) {
 	return `${partes.year}-${partes.month}-${partes.day}`;
 }
 function converterDataHoraCuiabaParaInstante(dataHoraInicio) {
-	const partes = dataHoraInicio.match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/);
+	const partes = dataHoraInicio.match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})$/);
 	if (!partes) return null;
 	const [, ano, mes, dia, horas, minutos] = partes.map(Number);
-	const horarioComoUtc = Date.UTC(ano, mes - 1, dia, horas, minutos);
-	const dataUtc = new Date(horarioComoUtc);
-	if (dataUtc.getUTCFullYear() !== ano || dataUtc.getUTCMonth() !== mes - 1 || dataUtc.getUTCDate() !== dia || dataUtc.getUTCHours() !== horas || dataUtc.getUTCMinutes() !== minutos) return null;
-	let instante = horarioComoUtc;
-	for (let tentativa = 0; tentativa < 3; tentativa += 1) {
-		const valores = Object.fromEntries(formatadorCuiaba.formatToParts(new Date(instante)).map(({ type, value }) => [type, Number(value)]));
-		const ajuste = horarioComoUtc - Date.UTC(valores.year, valores.month - 1, valores.day, valores.hour, valores.minute);
-		instante += ajuste;
-		if (ajuste === 0) break;
-	}
-	return new Date(instante);
+	const instante = new Date(ano, mes - 1, dia, horas, minutos);
+	if (Number.isNaN(instante.getTime()) || instante.getFullYear() !== ano || instante.getMonth() !== mes - 1 || instante.getDate() !== dia || instante.getHours() !== horas || instante.getMinutes() !== minutos) return null;
+	return instante;
 }
 function validarAntecedenciaAgendamento(dataHoraInicio, agora = /* @__PURE__ */ new Date()) {
 	const inicio = converterDataHoraCuiabaParaInstante(dataHoraInicio);
 	if (!inicio) return "Informe uma data e um horário válidos.";
-	if (inicio.getTime() - agora.getTime() < 900 * 1e3) return "O agendamento deve ser feito com pelo menos 15 minutos de antecedência.";
+	if (inicio.getTime() < agora.getTime()) return "O agendamento não pode ser realizado antes do horário atual.";
 	return null;
 }
 //#endregion

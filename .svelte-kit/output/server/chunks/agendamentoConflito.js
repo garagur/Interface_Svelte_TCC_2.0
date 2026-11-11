@@ -234,6 +234,16 @@ function ListaAgendamentosCard($$renderer, $$props) {
 		function dataAgendamento(str) {
 			return String(str || "").match(/^\d{4}-\d{2}-\d{2}/)?.[0] || "";
 		}
+		function formatarDataGrupo(data) {
+			if (!data) return "Data não informada";
+			const rotulo = (/* @__PURE__ */ new Date(`${data}T12:00:00`)).toLocaleDateString("pt-BR", {
+				weekday: "long",
+				day: "numeric",
+				month: "long",
+				year: "numeric"
+			});
+			return rotulo.charAt(0).toLocaleUpperCase("pt-BR") + rotulo.slice(1);
+		}
 		function formatarPeriodo(inicio, fim) {
 			const ini = parseData(inicio);
 			const f = parseData(fim);
@@ -403,11 +413,17 @@ function ListaAgendamentosCard($$renderer, $$props) {
 			$$renderer.push("<!--[-1-->");
 			$$renderer.push(`<div class="agendamentos-lista svelte-1c63qri"><!--[-->`);
 			const each_array = ensure_array_like(agendamentosFiltrados);
-			for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
-				let ag = each_array[$$index];
+			for (let index = 0, $$length = each_array.length; index < $$length; index++) {
+				let ag = each_array[index];
+				const dataGrupo = dataAgendamento(ag.data_hora_inicio);
+				const dataAnterior = index > 0 ? dataAgendamento(agendamentosFiltrados[index - 1].data_hora_inicio) : null;
 				const status = statusExibicao(ag);
 				const responsavel = nomeResponsavel(ag);
-				$$renderer.push(`<div${attr_class(`agendamento-item ${ag.status === "ocioso" ? "ocioso" : ""} ${ag.status === "em_andamento" ? "em-andamento" : ""}`, "svelte-1c63qri", {
+				if (index === 0 || dataGrupo !== dataAnterior) {
+					$$renderer.push("<!--[0-->");
+					$$renderer.push(`<div class="agendamento-dia-separador svelte-1c63qri"><time${attr("datetime", dataGrupo || void 0)}>${escape_html(formatarDataGrupo(dataGrupo))}</time></div>`);
+				} else $$renderer.push("<!--[-1-->");
+				$$renderer.push(`<!--]--> <div${attr_class(`agendamento-item ${ag.status === "ocioso" ? "ocioso" : ""} ${ag.status === "em_andamento" ? "em-andamento" : ""}`, "svelte-1c63qri", {
 					"cancelado": status === "cancelado",
 					"passado": status === "passado"
 				})}><div class="agendamento-faixa svelte-1c63qri"></div> <div class="agendamento-foto svelte-1c63qri"${attr("aria-label", `Foto de ${nomeAgendamento(ag) || "agendamento"}`)}>`);
