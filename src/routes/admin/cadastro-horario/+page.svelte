@@ -7,6 +7,7 @@
     import { carregarTurmas } from "$lib/services/TurmaServices/List_Turma_Service.js";
     import { carregarSalas } from "$lib/services/SalaServices/List_Sala_Service.js";
     import { carregarUsuarios } from "$lib/services/UserServices/List_User_Service.js";
+    import ConfirmarDelecaoHorarioModal from "$lib/components/admin/ConfirmarDelecaoHorarioModal.svelte";
 
     let token = "";
     let turmas = [];
@@ -28,6 +29,8 @@
     let carregandoLista = false;
     let erro = "";
     let sucesso = "";
+    let blocoParaDeletar = null;
+    let deletandoBloco = false;
 
     const dias = [
         "segunda",
@@ -149,16 +152,40 @@
         }
     }
 
-    async function removerBloco(id) {
+    function solicitarRemocaoBloco(id) {
+        blocoParaDeletar =
+            blocos.find((bloco) => String(bloco.id) === String(id)) || null;
+    }
+
+    function cancelarRemocaoBloco() {
+        if (!deletandoBloco) blocoParaDeletar = null;
+    }
+
+    async function confirmarRemocaoBloco() {
+        if (!blocoParaDeletar || deletandoBloco) return;
+
         erro = "";
+        sucesso = "";
+        deletandoBloco = true;
         try {
-            await deletarHorario(id, token);
+            await deletarHorario(blocoParaDeletar.id, token);
+            blocoParaDeletar = null;
             await carregarLista(turma_id);
+            sucesso = "Bloco removido com sucesso.";
         } catch (e) {
             erro = e?.message || "Erro ao remover bloco.";
+        } finally {
+            deletandoBloco = false;
         }
     }
 </script>
+
+<ConfirmarDelecaoHorarioModal
+    bloco={blocoParaDeletar}
+    onConfirmar={confirmarRemocaoBloco}
+    onCancelar={cancelarRemocaoBloco}
+    processando={deletandoBloco}
+/>
 
 <HorarioCard
     {turmas}
@@ -173,5 +200,5 @@
     {erro}
     {sucesso}
     onAdicionar={adicionarBloco}
-    onRemover={removerBloco}
+    onRemover={solicitarRemocaoBloco}
 />

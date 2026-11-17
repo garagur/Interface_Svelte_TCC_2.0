@@ -54,8 +54,9 @@ async function cadastrarUsuario(novoUsuario, token) {
 //#region src/routes/admin/cadastro-usuario/+page.svelte
 function _page($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
-		let usuariosFiltrados;
+		let usuarioEditandoEhProprio, usuariosFiltrados;
 		let token = "";
+		let matriculaLogado = "";
 		let novoUsuario = {
 			nome: "",
 			email: "",
@@ -96,10 +97,15 @@ function _page($$renderer, $$props) {
 			carregando = true;
 			try {
 				if (editando && usuarioEditandoId) {
-					await atualizarUsuario(usuarioEditandoId, {
+					const dadosAtualizacao = {
 						nome: novoUsuario.nome,
 						email: novoUsuario.email
-					}, token);
+					};
+					if (!usuarioEditandoEhProprio) {
+						dadosAtualizacao.cargo = novoUsuario.cargo;
+						dadosAtualizacao.matricula = novoUsuario.matricula;
+					}
+					await atualizarUsuario(usuarioEditandoId, dadosAtualizacao, token);
 					sucesso = "Usuário atualizado com sucesso.";
 				} else {
 					await cadastrarUsuario(novoUsuario, token);
@@ -124,9 +130,13 @@ function _page($$renderer, $$props) {
 			editando = false;
 			usuarioEditandoId = null;
 		}
+		function ehUsuarioLogado(usuario) {
+			return Boolean(matriculaLogado) && String(usuario?.matricula ?? "") === String(matriculaLogado);
+		}
 		function mudarOrdenacao(novoValor) {
 			ordenacao = novoValor;
 		}
+		$: usuarioEditandoEhProprio = editando && usuarios.some((usuario) => String(usuario.id) === String(usuarioEditandoId) && ehUsuarioLogado(usuario));
 		$: usuariosFiltrados = usuarios.filter((u) => {
 			if (!pesquisa.trim()) return true;
 			const termo = pesquisa.toLowerCase();
@@ -174,7 +184,7 @@ function _page($$renderer, $$props) {
 							id: "cargo-usuario",
 							value: novoUsuario.cargo,
 							required: true,
-							disabled: editando
+							disabled: usuarioEditandoEhProprio
 						}, ($$renderer) => {
 							$$renderer.option({
 								value: "",
@@ -193,7 +203,7 @@ function _page($$renderer, $$props) {
 								$$renderer.push(`Educador`);
 							});
 						});
-						$$renderer.push(`</div> <div class="field"><label for="matricula-usuario">Matrícula</label> <input id="matricula-usuario" type="text"${attr("value", novoUsuario.matricula)} placeholder="000000" required=""${attr("disabled", editando, true)}/></div>`);
+						$$renderer.push(`</div> <div class="field"><label for="matricula-usuario">Matrícula</label> <input id="matricula-usuario" type="text"${attr("value", novoUsuario.matricula)} placeholder="000000" required=""${attr("disabled", usuarioEditandoEhProprio, true)}/></div>`);
 					},
 					toggle: ($$renderer) => {
 						$$renderer.push(`<label for="status-usuario">Status</label> <div class="toggle-wrapper"><label class="toggle-switch"><input id="status-usuario" type="checkbox"${attr("checked", novoUsuario.status, true)}${attr("disabled", editando, true)}/> <span class="toggle-track"><span class="toggle-thumb"></span></span></label> <span class="toggle-label">${escape_html(novoUsuario.status ? "Habilitado" : "Desabilitado")}</span></div>`);

@@ -207,6 +207,47 @@ async function deletarHorario(id, token) {
 	}
 }
 //#endregion
+//#region src/lib/components/admin/ConfirmarDelecaoHorarioModal.svelte
+function ConfirmarDelecaoHorarioModal($$renderer, $$props) {
+	$$renderer.component(($$renderer) => {
+		let bloco = fallback($$props["bloco"], null);
+		let onConfirmar = $$props["onConfirmar"];
+		let onCancelar = $$props["onCancelar"];
+		let processando = fallback($$props["processando"], false);
+		const ROTULOS_DIA = {
+			segunda: "Segunda-feira",
+			terca: "Terça-feira",
+			quarta: "Quarta-feira",
+			quinta: "Quinta-feira",
+			sexta: "Sexta-feira",
+			sabado: "Sábado",
+			domingo: "Domingo"
+		};
+		function formatarHora(hora) {
+			return String(hora || "").split(":").slice(0, 2).join(":");
+		}
+		if (bloco) {
+			$$renderer.push("<!--[0-->");
+			$$renderer.push(`<div class="modal-overlay svelte-1tkfkgt" role="presentation"><div class="modal-box svelte-1tkfkgt" role="dialog" aria-modal="true" aria-labelledby="titulo-confirmacao-horario" tabindex="-1"><div class="modal-header svelte-1tkfkgt"><span class="material-symbols-outlined svelte-1tkfkgt">warning</span> <h2 id="titulo-confirmacao-horario" class="svelte-1tkfkgt">Excluir bloco de horário?</h2></div> <p class="modal-descricao svelte-1tkfkgt">Confirma a exclusão do bloco de <strong>${escape_html(bloco.disciplina || "horário")}</strong> da grade semanal?</p> <div class="modal-detalhes svelte-1tkfkgt"><span class="svelte-1tkfkgt">${escape_html(ROTULOS_DIA[bloco.dia_semana] || bloco.dia_semana)}</span> <span class="svelte-1tkfkgt">${escape_html(formatarHora(bloco.hora_inicio))} - ${escape_html(formatarHora(bloco.hora_fim))}</span> <span class="svelte-1tkfkgt">${escape_html(bloco.sala_nome || "Sala não informada")}</span></div> <div class="modal-acoes svelte-1tkfkgt"><button type="button" class="btn-secondary svelte-1tkfkgt"${attr("disabled", processando, true)}>Cancelar</button> <button type="button" class="btn-danger svelte-1tkfkgt"${attr("disabled", processando, true)}>`);
+			if (processando) {
+				$$renderer.push("<!--[0-->");
+				$$renderer.push(`<span class="material-symbols-outlined spin svelte-1tkfkgt">progress_activity</span> Excluindo...`);
+			} else {
+				$$renderer.push("<!--[-1-->");
+				$$renderer.push(`<span class="material-symbols-outlined">delete</span> Confirmar exclusão`);
+			}
+			$$renderer.push(`<!--]--></button></div></div></div>`);
+		} else $$renderer.push("<!--[-1-->");
+		$$renderer.push(`<!--]-->`);
+		bind_props($$props, {
+			bloco,
+			onConfirmar,
+			onCancelar,
+			processando
+		});
+	});
+}
+//#endregion
 //#region src/routes/admin/cadastro-horario/+page.svelte
 function _page($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
@@ -228,6 +269,8 @@ function _page($$renderer, $$props) {
 		let carregandoLista = false;
 		let erro = "";
 		let sucesso = "";
+		let blocoParaDeletar = null;
+		let deletandoBloco = false;
 		const dias = [
 			"segunda",
 			"terca",
@@ -293,13 +336,26 @@ function _page($$renderer, $$props) {
 				carregando = false;
 			}
 		}
-		async function removerBloco(id) {
+		function solicitarRemocaoBloco(id) {
+			blocoParaDeletar = blocos.find((bloco) => String(bloco.id) === String(id)) || null;
+		}
+		function cancelarRemocaoBloco() {
+			if (!deletandoBloco) blocoParaDeletar = null;
+		}
+		async function confirmarRemocaoBloco() {
+			if (!blocoParaDeletar || deletandoBloco) return;
 			erro = "";
+			sucesso = "";
+			deletandoBloco = true;
 			try {
-				await deletarHorario(id, token);
+				await deletarHorario(blocoParaDeletar.id, token);
+				blocoParaDeletar = null;
 				await carregarLista(turma_id);
+				sucesso = "Bloco removido com sucesso.";
 			} catch (e) {
 				erro = e?.message || "Erro ao remover bloco.";
+			} finally {
+				deletandoBloco = false;
 			}
 		}
 		$: if (turma_id) carregarLista(turma_id);
@@ -307,6 +363,13 @@ function _page($$renderer, $$props) {
 		let $$settled = true;
 		let $$inner_renderer;
 		function $$render_inner($$renderer) {
+			ConfirmarDelecaoHorarioModal($$renderer, {
+				bloco: blocoParaDeletar,
+				onConfirmar: confirmarRemocaoBloco,
+				onCancelar: cancelarRemocaoBloco,
+				processando: deletandoBloco
+			});
+			$$renderer.push(`<!----> `);
 			HorarioCard($$renderer, {
 				turmas,
 				salas,
@@ -318,7 +381,7 @@ function _page($$renderer, $$props) {
 				erro,
 				sucesso,
 				onAdicionar: adicionarBloco,
-				onRemover: removerBloco,
+				onRemover: solicitarRemocaoBloco,
 				get turma_id() {
 					return turma_id;
 				},
@@ -334,6 +397,7 @@ function _page($$renderer, $$props) {
 					$$settled = false;
 				}
 			});
+			$$renderer.push(`<!---->`);
 		}
 		do {
 			$$settled = true;

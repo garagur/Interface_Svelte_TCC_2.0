@@ -69,14 +69,15 @@
     carregando = true;
     try {
       if (editando && usuarioEditandoId) {
-        await atualizarUsuario(
-          usuarioEditandoId,
-          {
-            nome: novoUsuario.nome,
-            email: novoUsuario.email,
-          },
-          token,
-        );
+        const dadosAtualizacao = {
+          nome: novoUsuario.nome,
+          email: novoUsuario.email,
+        };
+        if (!usuarioEditandoEhProprio) {
+          dadosAtualizacao.cargo = novoUsuario.cargo;
+          dadosAtualizacao.matricula = novoUsuario.matricula;
+        }
+        await atualizarUsuario(usuarioEditandoId, dadosAtualizacao, token);
         sucesso = "Usuário atualizado com sucesso.";
       } else {
         await cadastrarUsuario(novoUsuario, token);
@@ -114,8 +115,23 @@
     usuarioEditandoId = null;
   }
 
+  function ehUsuarioLogado(usuario) {
+    return (
+      Boolean(matriculaLogado) &&
+      String(usuario?.matricula ?? "") === String(matriculaLogado)
+    );
+  }
+
+  $: usuarioEditandoEhProprio =
+    editando &&
+    usuarios.some(
+      (usuario) =>
+        String(usuario.id) === String(usuarioEditandoId) &&
+        ehUsuarioLogado(usuario),
+    );
+
   async function alternarStatus(usuario) {
-    if (usuario.matricula === matriculaLogado) {
+    if (ehUsuarioLogado(usuario)) {
       alert("Você não pode desabilitar o seu próprio usuário!");
       return;
     }
@@ -222,7 +238,7 @@
         id="cargo-usuario"
         bind:value={novoUsuario.cargo}
         required
-        disabled={editando}
+        disabled={usuarioEditandoEhProprio}
       >
         <option value="" disabled selected>Selecione um cargo...</option>
         <option value="admin">Admin</option>
@@ -238,7 +254,7 @@
         bind:value={novoUsuario.matricula}
         placeholder="000000"
         required
-        disabled={editando}
+        disabled={usuarioEditandoEhProprio}
       />
     </div>
   </svelte:fragment>

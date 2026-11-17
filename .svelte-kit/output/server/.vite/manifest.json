@@ -322,6 +322,9 @@
       "_List_Sala_Service.js",
       "_List_Turma_Service.js",
       "_List_User_Service.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.B0EGnd0e.css"
     ]
   },
   "src/routes/admin/cadastro-sala/+page.svelte": {

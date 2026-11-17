@@ -27,6 +27,8 @@ function _page($$renderer, $$props) {
 		let carregandoItens = false;
 		let salasCache = [];
 		let equipamentosCache = [];
+		let usuariosCache = [];
+		let usuariosCarregados = false;
 		let idSelecionado = null;
 		let usuarioBruto = null;
 		let item = null;
@@ -52,26 +54,57 @@ function _page($$renderer, $$props) {
 			carregandoItens = true;
 			try {
 				if (tipoAlvo === "sala") {
-					salasCache = await carregarSalas(token);
+					const [salas] = await Promise.all([carregarSalas(token), carregarCacheUsuarios()]);
+					salasCache = salas;
 					itensDisponiveis = salasCache.map((s) => ({
 						id: s.id,
 						nome: s.nome
 					}));
 				} else if (tipoAlvo === "equipamento") {
-					equipamentosCache = await carregarEquipamentos(token);
+					const [equipamentos] = await Promise.all([carregarEquipamentos(token), carregarCacheUsuarios()]);
+					equipamentosCache = equipamentos;
 					itensDisponiveis = equipamentosCache.map((e) => ({
 						id: e.id,
 						nome: e.nome
 					}));
-				} else itensDisponiveis = (await carregarUsuarios(token)).map((u) => ({
-					id: u.id,
-					nome: u.nome
-				}));
+				} else {
+					await carregarCacheUsuarios();
+					itensDisponiveis = usuariosCache.map((u) => ({
+						id: u.id,
+						nome: u.nome
+					}));
+				}
 			} catch (e) {
 				erro = e?.message || "Erro ao carregar a lista.";
 			} finally {
 				carregandoItens = false;
 			}
+		}
+		async function carregarCacheUsuarios() {
+			if (usuariosCarregados) return;
+			try {
+				usuariosCache = await carregarUsuarios(token);
+			} catch {
+				usuariosCache = [];
+			} finally {
+				usuariosCarregados = true;
+			}
+		}
+		function obterNomeResponsavel(dado) {
+			if (!dado) return "";
+			const candidatos = [
+				dado.responsavel_nome,
+				dado.responsavel?.nome,
+				dado.responsavel?.name,
+				dado.responsavel?.usuario?.nome,
+				dado.responsavel?.usuario?.name,
+				dado.responsavel?.full_name,
+				dado.nomeResponsavel,
+				dado.nome_responsavel
+			];
+			for (const candidato of candidatos) if (typeof candidato === "string" && candidato.trim()) return candidato.trim();
+			const responsavelId = dado.responsavel_id ?? dado.responsavel?.id;
+			return usuariosCache.find((usuario) => String(usuario.id) === String(responsavelId))?.nome || "";
 		}
 		async function selecionarTipo(novoTipo) {
 			if (novoTipo === "usuario" && true) return;
@@ -128,6 +161,7 @@ function _page($$renderer, $$props) {
 				} else if (tipo === "sala") {
 					const sala = salasCache.find((s) => String(s.id) === String(idSelecionado));
 					usuarioBruto = null;
+					const responsavelSala = obterNomeResponsavel(sala);
 					item = sala && {
 						id: sala.id,
 						nome: sala.nome,
@@ -137,7 +171,7 @@ function _page($$renderer, $$props) {
 						campos: [{
 							icone: "person",
 							label: "Responsável",
-							valor: sala.responsavel_nome || "—"
+							valor: responsavelSala || "—"
 						}, {
 							icone: "sticky_note_2",
 							label: "Observações",
@@ -147,6 +181,7 @@ function _page($$renderer, $$props) {
 				} else {
 					const equipamento = equipamentosCache.find((e) => String(e.id) === String(idSelecionado));
 					usuarioBruto = null;
+					const responsavelEquipamento = obterNomeResponsavel(equipamento);
 					item = equipamento && {
 						id: equipamento.id,
 						nome: equipamento.nome,
@@ -162,7 +197,7 @@ function _page($$renderer, $$props) {
 							{
 								icone: "person",
 								label: "Responsável",
-								valor: equipamento.responsavel_nome || "—"
+								valor: responsavelEquipamento || "—"
 							},
 							{
 								icone: "sticky_note_2",
