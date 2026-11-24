@@ -7,6 +7,7 @@
     export let carregando = false;
     export let usuarioId = null;
     export let cargo = "";
+    export let responsavelRecursoId = null;
     /** @type {((ag: any) => void) | null} */
     export let onDeletar = null;
     /** @type {((ag: any) => Promise<void> | void) | null} */
@@ -175,7 +176,7 @@
         if (!onDeletar || status !== "futuro") return false;
         if (cargo === "admin") return true;
         if (String(ag.user_id) === String(usuarioId)) return true;
-        const respId = responsavelId(ag);
+        const respId = responsavelId(ag) ?? responsavelRecursoId;
         return respId != null && String(respId) === String(usuarioId);
     }
 
@@ -183,7 +184,7 @@
         if (!onConfirmar || ag.status !== "ocioso") return false;
         const respId = responsavelId(ag);
         if (respId == null) return cargo === "admin";
-        return String(respId) === String(usuarioId);
+        return usuarioId != null && String(respId) === String(usuarioId);
     }
 
     function abrirDetalhes(ag) {
@@ -401,7 +402,7 @@
                         <span
                             class="badge-status {status} {ag.status === 'ocioso'
                                 ? 'ocioso'
-                                : ''} {ag.status === 'em_andamento'
+                                : ''} {ag.status === 'em-andamento'
                                 ? 'em-andamento'
                                 : ''}"
                         >
@@ -502,6 +503,7 @@
             ag={agDetalhe}
             {usuarioId}
             {cargo}
+            {responsavelRecursoId}
             onFechar={() => (agDetalhe = null)}
             onCancelar={podeDeletar(agDetalhe, statusExibicao(agDetalhe))
                 ? cancelarPeloModal

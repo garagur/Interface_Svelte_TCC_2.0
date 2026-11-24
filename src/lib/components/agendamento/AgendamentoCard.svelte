@@ -78,6 +78,10 @@
     $: itemSelecionado =
         salas.find((s) => String(s.id) === String(sala_id)) || null;
     $: agendamentosVisiveis = agendamentos;
+    $: responsavelRecursoId =
+        itemSelecionado?.responsavel_id ??
+        itemSelecionado?.responsavel?.id ??
+        null;
 
     function abrirModalDeletar(ag) {
         if (cancelandoId) return; // já tem um cancelamento em andamento, ignora
@@ -271,7 +275,8 @@
                         <div class="item-info-linha">
                             <span class="material-symbols-outlined">person</span
                             >
-                            Responsável: {itemSelecionado.responsavel?.nome ||
+                            Responsável: {itemSelecionado.responsavel_nome ||
+                                itemSelecionado.responsavel?.nome ||
                                 itemSelecionado.responsavel?.name ||
                                 "Nenhum"}
                         </div>
@@ -387,6 +392,7 @@
                                     {ag}
                                     {usuarioId}
                                     {cargo}
+                                    {responsavelRecursoId}
                                     onDeletar={abrirModalDeletar}
                                     onConfirmar={onConfirmarAgendamento}
                                 />

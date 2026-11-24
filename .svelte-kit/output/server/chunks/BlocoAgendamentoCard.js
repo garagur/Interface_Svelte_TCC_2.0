@@ -1,5 +1,5 @@
 import { T as escape_html, c as slot, i as ensure_array_like, lt as fallback, n as bind_props, t as attr_class, u as stringify, w as attr } from "./server.js";
-import { f as AgendamentoDetalheModal } from "./agendamentoConflito.js";
+import { p as AgendamentoDetalheModal } from "./Buscar_Usuario_Service.js";
 //#region src/lib/components/Grades/GradeMensal.svelte
 function GradeMensal($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
@@ -335,12 +335,13 @@ function GradeMensal($$renderer, $$props) {
 //#region src/lib/components/Card/BlocoAgendamentoCard.svelte
 function BlocoAgendamentoCard($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
-		let ehEquipamento, proprio, responsavelId, ehResponsavel, podeDeletar, podeConfirmar, recursoNome, recursoIcone, agendamentoCancelado, agendamentoPassado;
+		let ehEquipamento, proprio, responsavelId, responsavelEfetivoId, ehResponsavel, podeDeletar, podeConfirmar, recursoNome, recursoIcone, agendamentoCancelado, agendamentoPassado;
 		let ag = $$props["ag"];
 		let onDeletar = fallback($$props["onDeletar"], null);
 		let onConfirmar = fallback($$props["onConfirmar"], null);
 		let usuarioId = fallback($$props["usuarioId"], null);
 		let cargo = fallback($$props["cargo"], null);
+		let responsavelRecursoId = fallback($$props["responsavelRecursoId"], null);
 		let mostrarDetalhes = false;
 		function estaNoFuturo(dataHora) {
 			if (!dataHora) return false;
@@ -353,10 +354,11 @@ function BlocoAgendamentoCard($$renderer, $$props) {
 		}
 		$: ehEquipamento = ag.tipo === "equipamento";
 		$: proprio = usuarioId != null && ag.user_id == usuarioId;
-		$: responsavelId = ehEquipamento ? ag.equipamento_responsavel_id : ag.sala_responsavel_id;
-		$: ehResponsavel = usuarioId != null && responsavelId != null && String(responsavelId) === String(usuarioId);
+		$: responsavelId = ehEquipamento ? ag.equipamento_responsavel_id ?? ag.responsavel_id ?? ag.responsavelId ?? ag.equipamento?.responsavel_id ?? ag.equipamento?.responsavel?.id ?? null : ag.sala_responsavel_id ?? ag.responsavel_id ?? ag.responsavelId ?? ag.sala?.responsavel_id ?? ag.sala?.responsavel?.id ?? null;
+		$: responsavelEfetivoId = responsavelId != null && responsavelId !== "" ? responsavelId : responsavelRecursoId;
+		$: ehResponsavel = usuarioId != null && responsavelEfetivoId != null && String(responsavelEfetivoId) === String(usuarioId);
 		$: podeDeletar = cargo === "admin" || proprio || ehResponsavel;
-		$: podeConfirmar = !!onConfirmar && ag.status === "ocioso" && (responsavelId == null ? cargo === "admin" : usuarioId != null && String(responsavelId) === String(usuarioId));
+		$: podeConfirmar = !!onConfirmar && ag.status === "ocioso" && (responsavelEfetivoId == null ? cargo === "admin" : usuarioId != null && String(responsavelEfetivoId) === String(usuarioId));
 		$: recursoNome = ehEquipamento ? ag.equipamento_nome || ag.equipamento_id : ag.sala_nome || ag.sala_id;
 		$: recursoIcone = ehEquipamento ? "devices" : "meeting_room";
 		$: agendamentoCancelado = ag.status === "inativo";
@@ -367,6 +369,7 @@ function BlocoAgendamentoCard($$renderer, $$props) {
 				ag,
 				usuarioId,
 				cargo,
+				responsavelRecursoId: responsavelEfetivoId,
 				onFechar: () => mostrarDetalhes = false,
 				onCancelar: onDeletar && !agendamentoPassado && !agendamentoCancelado ? cancelarPeloModal : null,
 				onConfirmar: podeConfirmar ? onConfirmar : null
@@ -404,7 +407,8 @@ function BlocoAgendamentoCard($$renderer, $$props) {
 			onDeletar,
 			onConfirmar,
 			usuarioId,
-			cargo
+			cargo,
+			responsavelRecursoId
 		});
 	});
 }

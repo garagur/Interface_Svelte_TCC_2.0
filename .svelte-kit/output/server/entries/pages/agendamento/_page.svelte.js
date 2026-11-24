@@ -5,11 +5,12 @@ import "../../../chunks/navigation.js";
 import { t as CabecalhoGlobal } from "../../../chunks/CabecalhoGlobal.js";
 import { t as apiFetch } from "../../../chunks/api.js";
 import "../../../chunks/List_Equipamento_Service.js";
+import "../../../chunks/List_User_Service.js";
 import { a as BlocoHorarioCard, o as GradeSemanal, r as carregarHorariosSala } from "../../../chunks/List_Horario_Service.js";
 import "../../../chunks/List_Turma_Service.js";
 import "../../../chunks/List_Sala_Service.js";
 import { n as GradeMensal, t as BlocoAgendamentoCard } from "../../../chunks/BlocoAgendamentoCard.js";
-import { a as carregarAgendamentosSalas, c as deletarAgendamentoSala, d as ConfirmarDelecaoModal, i as carregarAgendamentosEquipamentos, l as AGENDAMENTOSALA_ROUTE, n as ConfirmarConflitoModal, o as deletarAgendamentoEquipamento, r as confirmarAgendamento, s as AGENDAMENTOEQUIPAMENTO_ROUTE, t as encontrarConflitosOciosos } from "../../../chunks/agendamentoConflito.js";
+import { a as carregarAgendamentosEquipamentos, c as AGENDAMENTOEQUIPAMENTO_ROUTE, f as ConfirmarDelecaoModal, i as confirmarAgendamento, l as deletarAgendamentoSala, n as encontrarConflitosOciosos, o as carregarAgendamentosSalas, r as ConfirmarConflitoModal, s as deletarAgendamentoEquipamento, u as AGENDAMENTOSALA_ROUTE } from "../../../chunks/Buscar_Usuario_Service.js";
 //#region src/lib/components/Card/ConfirmarRecorrenciaModal.svelte
 function ConfirmarRecorrenciaModal($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
@@ -74,7 +75,7 @@ function ConfirmarRecorrenciaModal($$renderer, $$props) {
 //#region src/lib/components/agendamento/AgendamentoCard.svelte
 function AgendamentoCard($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
-		let itemSelecionado, agendamentosVisiveis;
+		let itemSelecionado, agendamentosVisiveis, responsavelRecursoId;
 		let modo = fallback($$props["modo"], "sala");
 		let salas = fallback($$props["salas"], () => [], true);
 		let sala_id = fallback($$props["sala_id"], null);
@@ -181,6 +182,7 @@ function AgendamentoCard($$renderer, $$props) {
 		}
 		$: itemSelecionado = salas.find((s) => String(s.id) === String(sala_id)) || null;
 		$: agendamentosVisiveis = agendamentos;
+		$: responsavelRecursoId = itemSelecionado?.responsavel_id ?? itemSelecionado?.responsavel?.id ?? null;
 		$$renderer.push(`<div class="escopo-agendamento">`);
 		ConfirmarDelecaoModal($$renderer, {
 			agendamento: agendamentoParaDeletar,
@@ -247,7 +249,7 @@ function AgendamentoCard($$renderer, $$props) {
 				$$renderer.push("<!--[0-->");
 				$$renderer.push(`<div class="item-info-linha"><span class="material-symbols-outlined">info</span> ${escape_html(itemSelecionado.obs)}</div>`);
 			} else $$renderer.push("<!--[-1-->");
-			$$renderer.push(`<!--]--> <div class="item-info-linha"><span class="material-symbols-outlined">person</span> Responsável: ${escape_html(itemSelecionado.responsavel?.nome || itemSelecionado.responsavel?.name || "Nenhum")}</div></div></div>`);
+			$$renderer.push(`<!--]--> <div class="item-info-linha"><span class="material-symbols-outlined">person</span> Responsável: ${escape_html(itemSelecionado.responsavel_nome || itemSelecionado.responsavel?.nome || itemSelecionado.responsavel?.name || "Nenhum")}</div></div></div>`);
 		} else $$renderer.push("<!--[-1-->");
 		$$renderer.push(`<!--]--> `);
 		if (sala_id && modo === "sala") {
@@ -296,6 +298,7 @@ function AgendamentoCard($$renderer, $$props) {
 							ag,
 							usuarioId,
 							cargo,
+							responsavelRecursoId,
 							onDeletar: abrirModalDeletar,
 							onConfirmar: onConfirmarAgendamento
 						});
@@ -665,14 +668,24 @@ function _page($$renderer, $$props) {
 			carregandoLista = true;
 			erro = "";
 			try {
-				if (modo === "sala") agendamentos = (await carregarAgendamentosSalas(token, id)).map((agendamento) => ({
-					...agendamento,
-					tipo: "sala"
-				}));
-				else agendamentos = (await carregarAgendamentosEquipamentos(token)).filter((agendamento) => agendamento.equipamento_id === id).map((agendamento) => ({
-					...agendamento,
-					tipo: "equipamento"
-				}));
+				if (modo === "sala") {
+					const salaSelecionada = salas.find((sala) => String(sala.id) === String(id));
+					agendamentos = (await carregarAgendamentosSalas(token, id)).map((agendamento) => ({
+						...agendamento,
+						tipo: "sala",
+						sala_responsavel_id: agendamento.sala_responsavel_id ?? salaSelecionada?.responsavel_id ?? salaSelecionada?.responsavel?.id ?? null,
+						sala_responsavel_nome: agendamento.sala_responsavel_nome || salaSelecionada?.responsavel_nome || salaSelecionada?.responsavel?.nome || salaSelecionada?.responsavel?.name || ""
+					}));
+				} else {
+					const todos = await carregarAgendamentosEquipamentos(token);
+					const equipamentoSelecionado = equipamentos.find((equipamento) => String(equipamento.id) === String(id));
+					agendamentos = todos.filter((agendamento) => String(agendamento.equipamento_id) === String(id)).map((agendamento) => ({
+						...agendamento,
+						tipo: "equipamento",
+						equipamento_responsavel_id: agendamento.equipamento_responsavel_id ?? equipamentoSelecionado?.responsavel_id ?? equipamentoSelecionado?.responsavel?.id ?? null,
+						equipamento_responsavel_nome: agendamento.equipamento_responsavel_nome || equipamentoSelecionado?.responsavel_nome || equipamentoSelecionado?.responsavel?.nome || equipamentoSelecionado?.responsavel?.name || ""
+					}));
+				}
 			} catch (e) {
 				erro = e?.message || "Erro ao carregar agendamentos.";
 			} finally {

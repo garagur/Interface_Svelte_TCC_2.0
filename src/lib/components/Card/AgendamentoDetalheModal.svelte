@@ -10,10 +10,23 @@
     export let usuarioId = null;
     export let cargo = null;
     export let processando = false;
+    export let responsavelRecursoId = null;
     let imagemQuebrada = false;
     let confirmando = false;
     let erroConfirmacao = "";
-
+    $: console.log("modal-debug", {
+        status: ag.status,
+        cargo,
+        usuarioId,
+        agUserId: ag.user_id,
+        respId,
+        respIdEfetivo,
+        responsavelRecursoId,
+        temOnConfirmar: !!onConfirmar,
+        temOnCancelar: !!onCancelar,
+        podeCancelar,
+        podeConfirmar,
+    });
     $: k = ag.tipo === "equipamento" ? "equipamento" : "sala";
     $: recursoNome = ag[`${k}_nome`] || ag[`${k}_id`];
     $: recursoIcone = k === "sala" ? "meeting_room" : "devices";
@@ -45,20 +58,29 @@
         }
     }
 
-    $: respId = ag[`${k}_responsavel_id`];
+    $: respId =
+        ag[`${k}_responsavel_id`] ??
+        ag.responsavel_id ??
+        ag.responsavelId ??
+        ag[`${k}`]?.responsavel_id ??
+        ag[`${k}`]?.responsavel?.id ??
+        null;
+    $: respIdEfetivo =
+        respId != null && respId !== "" ? respId : responsavelRecursoId;
     $: podeCancelar =
         cargo === "admin" ||
         (usuarioId != null &&
             (ag.user_id == usuarioId ||
-                (respId != null && String(respId) === String(usuarioId))));
+                (respIdEfetivo != null &&
+                    String(respIdEfetivo) === String(usuarioId))));
     $: cancelado = ag.status === "inativo";
     $: podeConfirmar =
         ag.status === "ocioso" &&
-        onConfirmar &&
-        (respId == null
-            ? cargo === "admin"
-            : String(respId) === String(usuarioId));
-
+        !!onConfirmar &&
+        (cargo === "admin" ||
+            (usuarioId != null &&
+                respIdEfetivo != null &&
+                String(respIdEfetivo) === String(usuarioId)));
     $: idRecurso = k === "sala" ? ag.sala_id : ag.equipamento_id;
     $: rotaRecurso = rotaInformacoes(k, idRecurso);
     $: rotaUsuario = rotaInformacoes("usuario", ag.user_id);

@@ -49,7 +49,17 @@ export async function carregarAgendamentosSalas(token, sala_id = null) {
             usuario_nome: s.usuario_nome || '',
             sala_id: s.sala_id || '',
             sala_nome: s.sala_nome || '',
-            sala_responsavel_id: s.sala_responsavel_id ?? s.sala?.responsavel_id ?? null,
+            sala_responsavel_id:
+                s.sala_responsavel_id ?? s.salaResponsavelId ??
+                s.responsavel_id ?? s.responsavelId ??
+                s.sala?.responsavel_id ?? s.sala?.responsavelId ??
+                s.sala?.responsavel?.id ?? s.sala?.responsavel?.usuario_id ??
+                s.sala?.responsavel?.user_id ?? null,
+            sala_responsavel_nome:
+                s.sala_responsavel_nome || s.salaResponsavelNome || s.responsavel_nome ||
+                s.sala?.responsavel_nome || s.sala?.responsavel?.nome ||
+                s.sala?.responsavel?.name || s.sala?.responsavel?.usuario?.nome ||
+                s.sala?.responsavel?.usuario?.name || '',
             fotoUrl: s.sala_foto_url ?? null,
             turma_id: s.turma_id ?? s.turma?.id ?? null,
             turma_nome: s.turma_nome || s.turma?.nome || '',

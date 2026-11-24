@@ -142,11 +142,12 @@
         }
     }
 
-    function obterNomeResponsavel(dado) {
+    async function obterNomeResponsavel(dado) {
         if (!dado) return "";
 
         const candidatos = [
             dado.responsavel_nome,
+            dado.responsavel_name,
             dado.responsavel?.nome,
             dado.responsavel?.name,
             dado.responsavel?.usuario?.nome,
@@ -162,11 +163,29 @@
             }
         }
 
-        const responsavelId = dado.responsavel_id ?? dado.responsavel?.id;
+        const responsavelId =
+            dado.responsavel_id ??
+            dado.responsavel?.id ??
+            dado.responsavel?.usuario_id;
+
+        if (responsavelId == null || responsavelId === "") return "";
+
         const responsavel = usuariosCache.find(
             (usuario) => String(usuario.id) === String(responsavelId),
         );
-        return responsavel?.nome || "";
+        if (responsavel?.nome) return responsavel.nome;
+
+        try {
+            const usuario = await buscarUsuario(token, responsavelId);
+            if (usuario?.nome) {
+                usuariosCache = [...usuariosCache, usuario];
+                return usuario.nome;
+            }
+        } catch {
+            // Mantém — se o usuário não puder ser consultado.
+        }
+
+        return "";
     }
 
     async function selecionarTipo(novoTipo) {
@@ -227,7 +246,7 @@
                     (s) => String(s.id) === String(idSelecionado),
                 );
                 usuarioBruto = null;
-                const responsavelSala = obterNomeResponsavel(sala);
+                const responsavelSala = await obterNomeResponsavel(sala);
                 item = sala && {
                     id: sala.id,
                     nome: sala.nome,
@@ -253,7 +272,7 @@
                 );
                 usuarioBruto = null;
                 const responsavelEquipamento =
-                    obterNomeResponsavel(equipamento);
+                    await obterNomeResponsavel(equipamento);
                 item = equipamento && {
                     id: equipamento.id,
                     nome: equipamento.nome,

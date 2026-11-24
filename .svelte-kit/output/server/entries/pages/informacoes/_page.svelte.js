@@ -7,9 +7,8 @@ import { t as carregarEquipamentos } from "../../../chunks/List_Equipamento_Serv
 import { t as carregarUsuarios } from "../../../chunks/List_User_Service.js";
 import { n as carregarHorariosProfessor, r as carregarHorariosSala } from "../../../chunks/List_Horario_Service.js";
 import { t as carregarSalas } from "../../../chunks/List_Sala_Service.js";
-import { a as carregarAgendamentosSalas, c as deletarAgendamentoSala, i as carregarAgendamentosEquipamentos, n as ConfirmarConflitoModal, o as deletarAgendamentoEquipamento, r as confirmarAgendamento, t as encontrarConflitosOciosos } from "../../../chunks/agendamentoConflito.js";
+import { a as carregarAgendamentosEquipamentos, i as confirmarAgendamento, l as deletarAgendamentoSala, n as encontrarConflitosOciosos, o as carregarAgendamentosSalas, r as ConfirmarConflitoModal, s as deletarAgendamentoEquipamento, t as buscarUsuario } from "../../../chunks/Buscar_Usuario_Service.js";
 import { t as InformacoesCard } from "../../../chunks/InformacoesCard.js";
-import { t as buscarUsuario } from "../../../chunks/Buscar_Usuario_Service.js";
 //#region src/routes/informacoes/+page.svelte
 function _page($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {
@@ -90,10 +89,11 @@ function _page($$renderer, $$props) {
 				usuariosCarregados = true;
 			}
 		}
-		function obterNomeResponsavel(dado) {
+		async function obterNomeResponsavel(dado) {
 			if (!dado) return "";
 			const candidatos = [
 				dado.responsavel_nome,
+				dado.responsavel_name,
 				dado.responsavel?.nome,
 				dado.responsavel?.name,
 				dado.responsavel?.usuario?.nome,
@@ -103,8 +103,18 @@ function _page($$renderer, $$props) {
 				dado.nome_responsavel
 			];
 			for (const candidato of candidatos) if (typeof candidato === "string" && candidato.trim()) return candidato.trim();
-			const responsavelId = dado.responsavel_id ?? dado.responsavel?.id;
-			return usuariosCache.find((usuario) => String(usuario.id) === String(responsavelId))?.nome || "";
+			const responsavelId = dado.responsavel_id ?? dado.responsavel?.id ?? dado.responsavel?.usuario_id;
+			if (responsavelId == null || responsavelId === "") return "";
+			const responsavel = usuariosCache.find((usuario) => String(usuario.id) === String(responsavelId));
+			if (responsavel?.nome) return responsavel.nome;
+			try {
+				const usuario = await buscarUsuario(token, responsavelId);
+				if (usuario?.nome) {
+					usuariosCache = [...usuariosCache, usuario];
+					return usuario.nome;
+				}
+			} catch {}
+			return "";
 		}
 		async function selecionarTipo(novoTipo) {
 			if (novoTipo === "usuario" && true) return;
@@ -161,7 +171,7 @@ function _page($$renderer, $$props) {
 				} else if (tipo === "sala") {
 					const sala = salasCache.find((s) => String(s.id) === String(idSelecionado));
 					usuarioBruto = null;
-					const responsavelSala = obterNomeResponsavel(sala);
+					const responsavelSala = await obterNomeResponsavel(sala);
 					item = sala && {
 						id: sala.id,
 						nome: sala.nome,
@@ -181,7 +191,7 @@ function _page($$renderer, $$props) {
 				} else {
 					const equipamento = equipamentosCache.find((e) => String(e.id) === String(idSelecionado));
 					usuarioBruto = null;
-					const responsavelEquipamento = obterNomeResponsavel(equipamento);
+					const responsavelEquipamento = await obterNomeResponsavel(equipamento);
 					item = equipamento && {
 						id: equipamento.id,
 						nome: equipamento.nome,

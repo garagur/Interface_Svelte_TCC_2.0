@@ -4,9 +4,8 @@ import { t as goto } from "../../../chunks/client.js";
 import "../../../chunks/navigation.js";
 import "../../../chunks/List_Horario_Service.js";
 import { t as atualizarUsuario } from "../../../chunks/Update_User_Service.js";
-import { c as deletarAgendamentoSala, n as ConfirmarConflitoModal, o as deletarAgendamentoEquipamento, r as confirmarAgendamento, t as encontrarConflitosOciosos } from "../../../chunks/agendamentoConflito.js";
+import { i as confirmarAgendamento, l as deletarAgendamentoSala, n as encontrarConflitosOciosos, r as ConfirmarConflitoModal, s as deletarAgendamentoEquipamento } from "../../../chunks/Buscar_Usuario_Service.js";
 import { t as InformacoesCard } from "../../../chunks/InformacoesCard.js";
-import "../../../chunks/Buscar_Usuario_Service.js";
 //#region src/routes/minhas_informacoes/+page.svelte
 function _page($$renderer, $$props) {
 	$$renderer.component(($$renderer) => {

@@ -39,7 +39,17 @@ export async function carregarAgendamentosEquipamentos(token) {
         usuario_nome: s.usuario_nome || '',
         equipamento_id: s.equipamento_id || '',
         equipamento_nome: s.equipamento_nome || '',
-        equipamento_responsavel_id: s.equipamento_responsavel_id ?? s.equipamento?.responsavel_id ?? null,
+        equipamento_responsavel_id:
+            s.equipamento_responsavel_id ?? s.equipamentoResponsavelId ??
+            s.responsavel_id ?? s.responsavelId ??
+            s.equipamento?.responsavel_id ?? s.equipamento?.responsavelId ??
+            s.equipamento?.responsavel?.id ?? s.equipamento?.responsavel?.usuario_id ??
+            s.equipamento?.responsavel?.user_id ?? null,
+        equipamento_responsavel_nome:
+            s.equipamento_responsavel_nome || s.equipamentoResponsavelNome || s.responsavel_nome ||
+            s.equipamento?.responsavel_nome || s.equipamento?.responsavel?.nome ||
+            s.equipamento?.responsavel?.name || s.equipamento?.responsavel?.usuario?.nome ||
+            s.equipamento?.responsavel?.usuario?.name || '',
         fotoUrl: s.equipamento_foto_url ?? null,
         turma_id: s.turma_id ?? s.turma?.id ?? null,
         turma_nome: s.turma_nome || s.turma?.nome || '',

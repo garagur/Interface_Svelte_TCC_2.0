@@ -31,6 +31,8 @@
     import ListaAgendamentosCard from "$lib/components/Card/ListaAgendamentosCard.svelte";
     import ConfirmarConflitoModal from "$lib/components/Card/ConfirmarConflitoModal.svelte";
     import { encontrarConflitosOciosos } from "$lib/utils/agendamentoConflito.js";
+    import { carregarUsuarios } from "$lib/services/UserServices/List_User_Service.js";
+    import { buscarUsuario } from "$lib/services/UserServices/Buscar_Usuario_Service.js";
 
     let visao = "calendario"; // "calendario" | "lista"
 
@@ -47,6 +49,7 @@
     let salas = [];
     let equipamentos = [];
     let turmas = [];
+    let usuarios = [];
 
     // Variáveis dinâmicas que alimentam o card
     let itensDisponiveis = [];
@@ -115,13 +118,91 @@
     async function carregarListasIniciais() {
         try {
             // Carrega salas e equipamentos simultaneamente (se não houver carregarEquipamentos ainda, comente as linhas)
-            const [resSalas, resEquip, resTurmas] = await Promise.all([
-                carregarSalas(token).catch(() => []),
-                carregarEquipamentos(token).catch(() => []),
-                carregarTurmas(token).catch(() => []),
-            ]);
-            salas = resSalas.filter((s) => s.status !== false);
-            equipamentos = resEquip.filter((e) => e.status !== false);
+            const [resSalas, resEquip, resTurmas, resUsuarios] =
+                await Promise.all([
+                    carregarSalas(token).catch(() => []),
+                    carregarEquipamentos(token).catch(() => []),
+                    carregarTurmas(token).catch(() => []),
+                    carregarUsuarios(token).catch(() => []),
+                ]);
+            usuarios = resUsuarios.filter(Boolean);
+
+            const resolverResponsavel = async (item) => {
+                const responsavelId =
+                    item.responsavel_id ??
+                    item.responsavelId ??
+                    item.responsavel?.id ??
+                    item.responsavel?.usuario_id ??
+                    item.responsavel?.user_id ??
+                    item.responsavel_usuario_id ??
+                    item.responsavel_user_id ??
+                    null;
+
+                let responsavelNome =
+                    item.responsavel_nome ||
+                    item.responsavelName ||
+                    item.responsavel?.nome ||
+                    item.responsavel?.name ||
+                    item.responsavel?.usuario?.nome ||
+                    item.responsavel?.usuario?.name ||
+                    "";
+
+                if (!responsavelNome && responsavelId != null) {
+                    responsavelNome =
+                        usuarios.find(
+                            (usuario) =>
+                                String(usuario.id) === String(responsavelId),
+                        )?.nome || "";
+                }
+
+                if (!responsavelNome && responsavelId != null) {
+                    try {
+                        const usuario = await buscarUsuario(
+                            token,
+                            responsavelId,
+                        );
+                        responsavelNome = usuario?.nome || "";
+                        if (
+                            usuario &&
+                            !usuarios.some(
+                                (u) => String(u.id) === String(usuario.id),
+                            )
+                        ) {
+                            usuarios = [...usuarios, usuario];
+                        }
+                    } catch {
+                        responsavelNome = "";
+                    }
+                }
+
+                return {
+                    ...item,
+                    responsavel_id: responsavelId,
+                    responsavel_nome: responsavelNome,
+                    responsavel:
+                        responsavelId || responsavelNome
+                            ? {
+                                  ...(typeof item.responsavel === "object"
+                                      ? item.responsavel
+                                      : {}),
+                                  id: responsavelId,
+                                  nome: responsavelNome,
+                                  name: responsavelNome,
+                              }
+                            : null,
+                };
+            };
+
+            salas = await Promise.all(
+                resSalas
+                    .filter((s) => s.status !== false)
+                    .map(resolverResponsavel),
+            );
+            equipamentos = await Promise.all(
+                resEquip
+                    .filter((e) => e.status !== false)
+                    .map(resolverResponsavel),
+            );
             turmas = resTurmas.filter(Boolean);
         } catch (e) {
             erro = "Erro ao carregar dados iniciais.";
@@ -132,17 +213,50 @@
         erro = "";
         try {
             if (modo === "sala") {
+                const salaSelecionada = salas.find(
+                    (sala) => String(sala.id) === String(id),
+                );
                 agendamentos = (await carregarAgendamentosSalas(token, id)).map(
-                    (agendamento) => ({ ...agendamento, tipo: "sala" }),
+                    (agendamento) => ({
+                        ...agendamento,
+                        tipo: "sala",
+                        sala_responsavel_id:
+                            agendamento.sala_responsavel_id ??
+                            salaSelecionada?.responsavel_id ??
+                            salaSelecionada?.responsavel?.id ??
+                            null,
+                        sala_responsavel_nome:
+                            agendamento.sala_responsavel_nome ||
+                            salaSelecionada?.responsavel_nome ||
+                            salaSelecionada?.responsavel?.nome ||
+                            salaSelecionada?.responsavel?.name ||
+                            "",
+                    }),
                 );
             } else {
                 // O endpoint de equipamentos retorna todos. Precisamos filtrar pelo selecionado no front:
                 const todos = await carregarAgendamentosEquipamentos(token);
+                const equipamentoSelecionado = equipamentos.find(
+                    (equipamento) => String(equipamento.id) === String(id),
+                );
                 agendamentos = todos
-                    .filter((agendamento) => agendamento.equipamento_id === id)
+                    .filter((agendamento) =>
+                        String(agendamento.equipamento_id) === String(id),
+                    )
                     .map((agendamento) => ({
                         ...agendamento,
                         tipo: "equipamento",
+                        equipamento_responsavel_id:
+                            agendamento.equipamento_responsavel_id ??
+                            equipamentoSelecionado?.responsavel_id ??
+                            equipamentoSelecionado?.responsavel?.id ??
+                            null,
+                        equipamento_responsavel_nome:
+                            agendamento.equipamento_responsavel_nome ||
+                            equipamentoSelecionado?.responsavel_nome ||
+                            equipamentoSelecionado?.responsavel?.nome ||
+                            equipamentoSelecionado?.responsavel?.name ||
+                            "",
                     }));
             }
         } catch (e) {

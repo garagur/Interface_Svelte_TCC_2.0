@@ -8,6 +8,7 @@
     export let onConfirmar = null;
     export let usuarioId = null;
     export let cargo = null;
+    export let responsavelRecursoId = null;
 
     let mostrarDetalhes = false;
 
@@ -16,19 +17,31 @@
     $: proprio = usuarioId != null && ag.user_id == usuarioId;
     // AJUSTAR: espelhe a mesma regra de permissão do backend (DeletedAgendamentoXController)
     $: responsavelId = ehEquipamento
-        ? ag.equipamento_responsavel_id
-        : ag.sala_responsavel_id;
+        ? (ag.equipamento_responsavel_id ??
+          ag.responsavel_id ??
+          ag.responsavelId ??
+          ag.equipamento?.responsavel_id ??
+          ag.equipamento?.responsavel?.id ??
+          null)
+        : (ag.sala_responsavel_id ??
+          ag.responsavel_id ??
+          ag.responsavelId ??
+          ag.sala?.responsavel_id ??
+          ag.sala?.responsavel?.id ??
+          null);
+    $: responsavelEfetivoId =
+        responsavelId != null && responsavelId !== ""
+            ? responsavelId
+            : responsavelRecursoId;
     $: ehResponsavel =
         usuarioId != null &&
-        responsavelId != null &&
-        String(responsavelId) === String(usuarioId);
+        responsavelEfetivoId != null &&
+        String(responsavelEfetivoId) === String(usuarioId);
     $: podeDeletar = cargo === "admin" || proprio || ehResponsavel;
     $: podeConfirmar =
         !!onConfirmar &&
         ag.status === "ocioso" &&
-        (responsavelId == null
-            ? cargo === "admin"
-            : usuarioId != null && String(responsavelId) === String(usuarioId));
+        (cargo === "admin" || ehResponsavel);
 
     $: recursoNome = ehEquipamento
         ? ag.equipamento_nome || ag.equipamento_id
@@ -54,6 +67,7 @@
         {ag}
         {usuarioId}
         {cargo}
+        responsavelRecursoId={responsavelEfetivoId}
         onFechar={() => (mostrarDetalhes = false)}
         onCancelar={onDeletar && !agendamentoPassado && !agendamentoCancelado
             ? cancelarPeloModal
